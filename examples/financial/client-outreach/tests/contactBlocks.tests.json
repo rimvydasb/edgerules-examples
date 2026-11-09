@@ -1,0 +1,115 @@
+{
+  "rows": [
+    {
+      "path": "channel",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "tier",
+      "section": "inputs",
+      "order": 1,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "phoneConsent",
+      "section": "inputs",
+      "order": 2,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "hasEmail",
+      "section": "inputs",
+      "order": 3,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "daysSinceContact",
+      "section": "inputs",
+      "order": 4,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "[0].code",
+      "section": "assertions",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "[1].code",
+      "section": "assertions",
+      "order": 1,
+      "type": "string",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "[2].code",
+      "section": "assertions",
+      "order": 2,
+      "type": "string",
+      "present": true,
+      "custom": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "contactBlocks-1",
+      "name": "Nothing blocks a call",
+      "order": 0,
+      "inputs": {
+        "channel": "call",
+        "tier": "premium",
+        "phoneConsent": "true",
+        "hasEmail": "true",
+        "daysSinceContact": "30"
+      },
+      "assertions": {
+        "[0].code": "",
+        "[1].code": "",
+        "[2].code": ""
+      }
+    },
+    {
+      "id": "contactBlocks-2",
+      "name": "No email address",
+      "order": 1,
+      "inputs": {
+        "channel": "email",
+        "tier": "mass",
+        "phoneConsent": "true",
+        "hasEmail": "false",
+        "daysSinceContact": "14"
+      },
+      "assertions": {
+        "[0].code": "NO_EMAIL",
+        "[1].code": "",
+        "[2].code": ""
+      }
+    },
+    {
+      "id": "contactBlocks-3",
+      "name": "Every rule blocks an SMS",
+      "order": 2,
+      "inputs": {
+        "channel": "sms",
+        "tier": "private",
+        "phoneConsent": "false",
+        "hasEmail": "true",
+        "daysSinceContact": "5"
+      },
+      "assertions": {
+        "[0].code": "COOLING_OFF",
+        "[1].code": "NO_PHONE_CONSENT",
+        "[2].code": "PRIVATE_NO_SMS"
+      }
+    }
+  ]
+}

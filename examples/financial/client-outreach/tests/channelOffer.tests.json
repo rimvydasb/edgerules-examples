@@ -1,0 +1,173 @@
+{
+  "rows": [
+    {
+      "path": "client.id",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "client.name",
+      "section": "inputs",
+      "order": 1,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "client.wealth",
+      "section": "inputs",
+      "order": 2,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "client.propensity",
+      "section": "inputs",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "client.preferredChannel",
+      "section": "inputs",
+      "order": 4,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "client.hasEmail",
+      "section": "inputs",
+      "order": 5,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "client.phoneConsent",
+      "section": "inputs",
+      "order": 6,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "client.daysSinceContact",
+      "section": "inputs",
+      "order": 7,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "tier",
+      "section": "inputs",
+      "order": 8,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "channel",
+      "section": "inputs",
+      "order": 9,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "fit",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "allowed",
+      "section": "assertions",
+      "order": 1,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "probability",
+      "section": "assertions",
+      "order": 2,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "value",
+      "section": "assertions",
+      "order": 3,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "channelOffer-1",
+      "name": "Private client, preferred call",
+      "order": 0,
+      "inputs": {
+        "client.id": "T1",
+        "client.name": "Ann Private",
+        "client.wealth": "2000000",
+        "client.propensity": "0.6",
+        "client.preferredChannel": "call",
+        "client.hasEmail": "true",
+        "client.phoneConsent": "true",
+        "client.daysSinceContact": "40",
+        "tier": "private",
+        "channel": "call"
+      },
+      "assertions": {
+        "fit": "1.5",
+        "allowed": "true",
+        "probability": "0.225",
+        "value": "956.25"
+      }
+    },
+    {
+      "id": "channelOffer-2",
+      "name": "Private client, SMS is blocked",
+      "order": 1,
+      "inputs": {
+        "client.id": "T1",
+        "client.name": "Ann Private",
+        "client.wealth": "2000000",
+        "client.propensity": "0.6",
+        "client.preferredChannel": "call",
+        "client.hasEmail": "true",
+        "client.phoneConsent": "true",
+        "client.daysSinceContact": "40",
+        "tier": "private",
+        "channel": "sms"
+      },
+      "assertions": {
+        "fit": "0.7",
+        "allowed": "false",
+        "probability": "0.0336",
+        "value": "0"
+      }
+    },
+    {
+      "id": "channelOffer-3",
+      "name": "Affluent client, any channel",
+      "order": 2,
+      "inputs": {
+        "client.id": "T2",
+        "client.name": "Bo Affluent",
+        "client.wealth": "120000",
+        "client.propensity": "0.5",
+        "client.preferredChannel": "any",
+        "client.hasEmail": "true",
+        "client.phoneConsent": "true",
+        "client.daysSinceContact": "40",
+        "tier": "affluent",
+        "channel": "email"
+      },
+      "assertions": {
+        "fit": "1",
+        "allowed": "true",
+        "probability": "0.075",
+        "value": "36.75"
+      }
+    }
+  ]
+}

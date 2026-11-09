@@ -1,0 +1,60 @@
+{
+  "rows": [
+    {
+      "path": "amount",
+      "section": "inputs",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "annualRate",
+      "section": "inputs",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "years",
+      "section": "inputs",
+      "order": 2,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "monthlyPayment-1",
+      "name": "30-year mortgage at 5%",
+      "order": 0,
+      "inputs": {
+        "amount": "180000",
+        "annualRate": "0.05",
+        "years": "30"
+      },
+      "assertions": {
+        "": "966.28"
+      }
+    },
+    {
+      "id": "monthlyPayment-2",
+      "name": "5-year car loan at 5%",
+      "order": 1,
+      "inputs": {
+        "amount": "20000",
+        "annualRate": "0.05",
+        "years": "5"
+      },
+      "assertions": {
+        "": "377.42"
+      }
+    }
+  ]
+}

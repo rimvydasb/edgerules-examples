@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "byPath": {
+    "*": "Prices consumer loans and mortgages by credit score and term, and plans their monthly repayment: the payment, the amortization schedule, the total cost and the yearly split of interest and principal",
+    "Installment": "One monthly installment of the repayment schedule",
+    "LoanRequest": "A loan application: the amount, the term in years and the credit score of the borrower",
+    "annualRate": "The base rate of 3.5% plus the premium of the price tier",
+    "compareTerms": "The remaining balance of two schedules at the end of each year",
+    "loanCost": "The total interest and the total amount paid over the schedule",
+    "loanRepayment": "Prices a loan request and returns its monthly repayment schedule",
+    "monthlyPayment": "The fixed monthly annuity payment, rounded to cents",
+    "mortgageBook": "A 250 000 mortgage over 25 years for a prime borrower: the monthly payment, the total cost, the remaining balance and the yearly split of interest and principal",
+    "mortgageBook.mortgage": "The mortgage to price",
+    "mortgageBook.repayment": "The repayment plan of the mortgage",
+    "mortgageBook.yearly": "The interest and the principal paid in each year of the mortgage",
+    "pricingTier": "Selects the price tier and the rate premium from the credit score and the term",
+    "repaymentSchedule": "The monthly amortization schedule of the loan",
+    "samplePayment": "The monthly payment of the example loan request",
+    "sampleRequest": "An example loan request",
+    "termComparisonBook": "The same 180 000 loan over 15 and over 30 years: how much the monthly payment drops, and how much longer the balance stays high",
+    "termComparisonBook.comparison": "The remaining balance of both plans at the end of each year",
+    "termComparisonBook.longTerm": "The loan over 30 years",
+    "termComparisonBook.shortTerm": "The loan over 15 years",
+    "yearlySummary": "The interest and the principal paid in each year, and the balance at the end of the year"
+  }
+}

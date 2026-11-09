@@ -1,0 +1,31 @@
+{
+  "kind": "EdgeRulesProject",
+  "formatVersion": 3,
+  "name": "Loan origination",
+  "description": "Scores, checks, prices and decides a joint mortgage application",
+  "tags": ["finance", "loan", "origination", "scorecard", "decision-table", "workbook"],
+  "model": {
+    "format": "dsl",
+    "source": "model/main.edge",
+    "name": "Mortgage Origination",
+    "version": "2.0.0"
+  },
+  "documentation": "docs/descriptions.json",
+  "tests": [
+    "tests/HouseholdRisk.tests.json",
+    "tests/affordability.tests.json",
+    "tests/decisionMatrix.tests.json",
+    "tests/loanOriginationDecision.tests.json",
+    "tests/policyRules.tests.json",
+    "tests/pricingGrid.tests.json",
+    "tests/riskGrade.tests.json"
+  ],
+  "flow": "flow/layout.json",
+  "example": {
+    "industry": "financial",
+    "level": "intermediate",
+    "features": ["facts", "decision-table", "decision", "function", "service", "workbook", "chart"],
+    "engine": ">=0.2.7-alpha",
+    "authors": ["edgerules"]
+  }
+}

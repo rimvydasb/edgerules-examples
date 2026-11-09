@@ -1,0 +1,78 @@
+{
+    type LoanRequest: { amount: <number>; years: <number>; creditScore: <number> }
+    type Installment: { period: <number>; payment: <number>; interest: <number>; principal: <number>; balance: <number> }
+    ruleset pricingTier(creditScore: number, years: number): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { creditScore: >= 760, years: <= 15 }, then: { tier: "prime", premium: 0.005, approved: true } }
+            { when: { creditScore: >= 760 }, then: { tier: "prime", premium: 0.0075, approved: true } }
+            { when: { creditScore: 680..759 }, then: { tier: "standard", premium: 0.015, approved: true } }
+            { when: { creditScore: 600..679, years: <= 10 }, then: { tier: "near-prime", premium: 0.03, approved: true } }
+        ]
+        default: { tier: "declined", premium: 0, approved: false }
+    }
+    func annualRate(creditScore: number, years: number): 0.035 + pricingTier(creditScore, years).premium
+    func monthlyPayment(amount: number, annualRate: number, years: number): round(-pmt(annualRate / 12, years * 12, amount), 2)
+    func repaymentSchedule(amount: number, annualRate: number, years: number): amortizationSchedule(amount, annualRate / 12, years * 12)
+    func loanCost(schedule: Installment[]): {
+        totalInterest: round(sum(for installment in schedule return installment.interest), 2)
+        totalPaid: round(sum(for installment in schedule return installment.payment), 2)
+    }
+    func yearlySummary(schedule: Installment[]): for n in 1..(count(schedule) / 12) return {
+        year: n
+        interest: round(sum(for installment in schedule[period > (n - 1) * 12 and period <= n * 12] return installment.interest), 2)
+        principal: round(sum(for installment in schedule[period > (n - 1) * 12 and period <= n * 12] return installment.principal), 2)
+        balance: schedule[period = n * 12][0].balance
+    }
+    func compareTerms(shorter: Installment[], longer: Installment[]): for n in 1..(count(longer) / 12) return {
+        year: n
+        shorterBalance: if n * 12 <= count(shorter) then shorter[period = n * 12][0].balance else 0
+        longerBalance: longer[period = n * 12][0].balance
+    }
+    service loanRepayment(request: LoanRequest): {
+        @FunctionNode(name: "Price tier")
+        pricing: pricingTier(creditScore: request.creditScore, years: request.years)
+        @FunctionNode(name: "Annual rate")
+        rate: annualRate(creditScore: request.creditScore, years: request.years)
+        @FunctionNode(name: "Monthly annuity")
+        annuity: monthlyPayment(amount: request.amount, annualRate: rate, years: request.years)
+        @FunctionNode(name: "Full schedule")
+        fullSchedule: repaymentSchedule(amount: request.amount, annualRate: rate, years: request.years)
+        payment: if pricing.approved then annuity else 0
+        schedule: fullSchedule[pricing.approved]
+        @FunctionNode(name: "Cost of the loan")
+        cost: loanCost(schedule: schedule)
+        @ReturnNode(name: "Repayment")
+        return: {
+            pricing: pricing
+            rate: rate
+            payment: payment
+            schedule: schedule
+            cost: cost
+        }
+    }
+    sampleRequest: { amount: 25000; years: 3; creditScore: 700 }
+    samplePayment: loanRepayment(request: sampleRequest).payment
+    @Name("Mortgage plan")
+    workbook mortgageBook: {
+        @InputNode(name: "Mortgage request")
+        mortgage: { amount: 250000; years: 25; creditScore: 780 }
+        @FunctionNode(name: "Repayment plan")
+        repayment: loanRepayment(request: mortgage)
+        @FunctionNode(name: "Yearly summary")
+        yearly: yearlySummary(schedule: repayment.schedule)
+    }
+    @Name("15 vs 30 years")
+    workbook termComparisonBook: {
+        @InputNode(name: "15-year loan")
+        shortTerm: { amount: 180000; years: 15; creditScore: 720 }
+        @InputNode(name: "30-year loan")
+        longTerm: { amount: 180000; years: 30; creditScore: 720 }
+        @FunctionNode(name: "15-year plan")
+        shortPlan: loanRepayment(request: shortTerm)
+        @FunctionNode(name: "30-year plan")
+        longPlan: loanRepayment(request: longTerm)
+        @FunctionNode(name: "Balance by year")
+        comparison: compareTerms(shorter: shortPlan.schedule, longer: longPlan.schedule)
+    }
+}

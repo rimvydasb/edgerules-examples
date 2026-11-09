@@ -1,0 +1,86 @@
+{
+  "rows": [
+    {
+      "path": "wealth",
+      "section": "inputs",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "tier",
+      "section": "assertions",
+      "order": 0,
+      "type": "string",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "wealthTier-1",
+      "name": "Millionaire",
+      "order": 0,
+      "inputs": {
+        "wealth": "2500000"
+      },
+      "assertions": {
+        "tier": "private"
+      }
+    },
+    {
+      "id": "wealthTier-2",
+      "name": "Lowest private",
+      "order": 1,
+      "inputs": {
+        "wealth": "1000000"
+      },
+      "assertions": {
+        "tier": "private"
+      }
+    },
+    {
+      "id": "wealthTier-3",
+      "name": "Highest premium",
+      "order": 2,
+      "inputs": {
+        "wealth": "999999"
+      },
+      "assertions": {
+        "tier": "premium"
+      }
+    },
+    {
+      "id": "wealthTier-4",
+      "name": "Lowest premium",
+      "order": 3,
+      "inputs": {
+        "wealth": "250000"
+      },
+      "assertions": {
+        "tier": "premium"
+      }
+    },
+    {
+      "id": "wealthTier-5",
+      "name": "Lowest affluent",
+      "order": 4,
+      "inputs": {
+        "wealth": "50000"
+      },
+      "assertions": {
+        "tier": "affluent"
+      }
+    },
+    {
+      "id": "wealthTier-6",
+      "name": "Below every band",
+      "order": 5,
+      "inputs": {
+        "wealth": "49999"
+      },
+      "assertions": {
+        "tier": "mass"
+      }
+    }
+  ]
+}

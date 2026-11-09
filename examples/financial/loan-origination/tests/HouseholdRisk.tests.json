@@ -1,0 +1,326 @@
+{
+  "rows": [
+    {
+      "path": "application.applicationDate",
+      "section": "inputs",
+      "order": 0,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "application.loanAmount",
+      "section": "inputs",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "application.propertyValue",
+      "section": "inputs",
+      "order": 2,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "application.termYears",
+      "section": "inputs",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "application.applicants[0].name",
+      "section": "inputs",
+      "order": 4,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "application.applicants[0].birthDate",
+      "section": "inputs",
+      "order": 5,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "application.applicants[0].employment",
+      "section": "inputs",
+      "order": 6,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "application.applicants[0].yearsEmployed",
+      "section": "inputs",
+      "order": 7,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "application.applicants[0].monthlyIncome",
+      "section": "inputs",
+      "order": 8,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "application.applicants[0].monthlyExpenses",
+      "section": "inputs",
+      "order": 9,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "application.applicants[0].monthlyDebtPayments",
+      "section": "inputs",
+      "order": 10,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "application.applicants[0].bureauScore",
+      "section": "inputs",
+      "order": 11,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "application.applicants[0].delinquencies",
+      "section": "inputs",
+      "order": 12,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "application.applicants[1].name",
+      "section": "inputs",
+      "order": 13,
+      "type": "string",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "application.applicants[1].birthDate",
+      "section": "inputs",
+      "order": 14,
+      "type": "date",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "application.applicants[1].employment",
+      "section": "inputs",
+      "order": 15,
+      "type": "string",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "application.applicants[1].yearsEmployed",
+      "section": "inputs",
+      "order": 16,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "application.applicants[1].monthlyIncome",
+      "section": "inputs",
+      "order": 17,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "application.applicants[1].monthlyExpenses",
+      "section": "inputs",
+      "order": 18,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "application.applicants[1].monthlyDebtPayments",
+      "section": "inputs",
+      "order": 19,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "application.applicants[1].bureauScore",
+      "section": "inputs",
+      "order": 20,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "application.applicants[1].delinquencies",
+      "section": "inputs",
+      "order": 21,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "score",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "grade.grade",
+      "section": "assertions",
+      "order": 1,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "grade.probabilityOfDefault",
+      "section": "assertions",
+      "order": 2,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "HouseholdRisk-1",
+      "name": "Graded by the weaker applicant",
+      "order": 0,
+      "inputs": {
+        "application.applicationDate": "2026-10-01",
+        "application.loanAmount": "240000",
+        "application.propertyValue": "320000",
+        "application.termYears": "25",
+        "application.applicants[0].name": "Jonas Petraitis",
+        "application.applicants[0].birthDate": "1988-04-12",
+        "application.applicants[0].employment": "permanent",
+        "application.applicants[0].yearsEmployed": "8",
+        "application.applicants[0].monthlyIncome": "4200",
+        "application.applicants[0].monthlyExpenses": "1300",
+        "application.applicants[0].monthlyDebtPayments": "250",
+        "application.applicants[0].bureauScore": "765",
+        "application.applicants[0].delinquencies": "0",
+        "application.applicants[1].name": "Ieva Petraitiene",
+        "application.applicants[1].birthDate": "1990-09-30",
+        "application.applicants[1].employment": "contract",
+        "application.applicants[1].yearsEmployed": "3",
+        "application.applicants[1].monthlyIncome": "2600",
+        "application.applicants[1].monthlyExpenses": "900",
+        "application.applicants[1].monthlyDebtPayments": "0",
+        "application.applicants[1].bureauScore": "702",
+        "application.applicants[1].delinquencies": "1"
+      },
+      "assertions": {
+        "score": "115",
+        "grade.grade": "C",
+        "grade.probabilityOfDefault": "0.03"
+      }
+    },
+    {
+      "id": "HouseholdRisk-2",
+      "name": "Permanent employee, good bureau score",
+      "order": 1,
+      "inputs": {
+        "application.applicationDate": "2026-10-01",
+        "application.loanAmount": "240000",
+        "application.propertyValue": "320000",
+        "application.termYears": "25",
+        "application.applicants[0].name": "Jonas Petraitis",
+        "application.applicants[0].birthDate": "1988-04-12",
+        "application.applicants[0].employment": "permanent",
+        "application.applicants[0].yearsEmployed": "8",
+        "application.applicants[0].monthlyIncome": "4200",
+        "application.applicants[0].monthlyExpenses": "1300",
+        "application.applicants[0].monthlyDebtPayments": "250",
+        "application.applicants[0].bureauScore": "765",
+        "application.applicants[0].delinquencies": "0",
+        "application.applicants[1].name": "",
+        "application.applicants[1].birthDate": "",
+        "application.applicants[1].employment": "",
+        "application.applicants[1].yearsEmployed": "",
+        "application.applicants[1].monthlyIncome": "",
+        "application.applicants[1].monthlyExpenses": "",
+        "application.applicants[1].monthlyDebtPayments": "",
+        "application.applicants[1].bureauScore": "",
+        "application.applicants[1].delinquencies": ""
+      },
+      "assertions": {
+        "score": "175",
+        "grade.grade": "A",
+        "grade.probabilityOfDefault": "0.005"
+      }
+    },
+    {
+      "id": "HouseholdRisk-3",
+      "name": "Young self-employed",
+      "order": 2,
+      "inputs": {
+        "application.applicationDate": "2026-10-01",
+        "application.loanAmount": "150000",
+        "application.propertyValue": "320000",
+        "application.termYears": "25",
+        "application.applicants[0].name": "Tomas Kazlauskas",
+        "application.applicants[0].birthDate": "2003-02-01",
+        "application.applicants[0].employment": "self-employed",
+        "application.applicants[0].yearsEmployed": "1",
+        "application.applicants[0].monthlyIncome": "5200",
+        "application.applicants[0].monthlyExpenses": "1500",
+        "application.applicants[0].monthlyDebtPayments": "0",
+        "application.applicants[0].bureauScore": "690",
+        "application.applicants[0].delinquencies": "1",
+        "application.applicants[1].name": "",
+        "application.applicants[1].birthDate": "",
+        "application.applicants[1].employment": "",
+        "application.applicants[1].yearsEmployed": "",
+        "application.applicants[1].monthlyIncome": "",
+        "application.applicants[1].monthlyExpenses": "",
+        "application.applicants[1].monthlyDebtPayments": "",
+        "application.applicants[1].bureauScore": "",
+        "application.applicants[1].delinquencies": ""
+      },
+      "assertions": {
+        "score": "85",
+        "grade.grade": "D",
+        "grade.probabilityOfDefault": "0.07"
+      }
+    },
+    {
+      "id": "HouseholdRisk-4",
+      "name": "Pensioner, excellent bureau score",
+      "order": 3,
+      "inputs": {
+        "application.applicationDate": "2026-10-01",
+        "application.loanAmount": "100000",
+        "application.propertyValue": "320000",
+        "application.termYears": "10",
+        "application.applicants[0].name": "Ona Jankauskiene",
+        "application.applicants[0].birthDate": "1962-03-01",
+        "application.applicants[0].employment": "pensioner",
+        "application.applicants[0].yearsEmployed": "0",
+        "application.applicants[0].monthlyIncome": "1900",
+        "application.applicants[0].monthlyExpenses": "800",
+        "application.applicants[0].monthlyDebtPayments": "0",
+        "application.applicants[0].bureauScore": "810",
+        "application.applicants[0].delinquencies": "0",
+        "application.applicants[1].name": "",
+        "application.applicants[1].birthDate": "",
+        "application.applicants[1].employment": "",
+        "application.applicants[1].yearsEmployed": "",
+        "application.applicants[1].monthlyIncome": "",
+        "application.applicants[1].monthlyExpenses": "",
+        "application.applicants[1].monthlyDebtPayments": "",
+        "application.applicants[1].bureauScore": "",
+        "application.applicants[1].delinquencies": ""
+      },
+      "assertions": {
+        "score": "125",
+        "grade.grade": "C",
+        "grade.probabilityOfDefault": "0.03"
+      }
+    }
+  ]
+}

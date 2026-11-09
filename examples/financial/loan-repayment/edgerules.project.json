@@ -1,0 +1,23 @@
+{
+  "kind": "EdgeRulesProject",
+  "formatVersion": 3,
+  "name": "Loan repayment",
+  "description": "Prices a loan request and returns its monthly repayment schedule",
+  "tags": ["finance", "loan", "decision-table", "workbook"],
+  "model": {
+    "format": "dsl",
+    "source": "model/main.edge",
+    "name": "Loan Repayment Planner",
+    "version": "1.2.0"
+  },
+  "documentation": "docs/descriptions.json",
+  "tests": ["tests/loanRepayment.tests.json", "tests/monthlyPayment.tests.json", "tests/pricingTier.tests.json"],
+  "flow": "flow/layout.json",
+  "example": {
+    "industry": "financial",
+    "level": "beginner",
+    "features": ["decision-table", "function", "service", "workbook", "chart"],
+    "engine": ">=0.2.7-alpha",
+    "authors": ["edgerules"]
+  }
+}

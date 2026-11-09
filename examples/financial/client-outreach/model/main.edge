@@ -1,0 +1,265 @@
+{
+    type Client: { id: <string>; name: <string>; wealth: <number>; propensity: <number>; preferredChannel: <string>; hasEmail: <boolean>; phoneConsent: <boolean>; daysSinceContact: <number> }
+    type Team: { workers: <number>; dayHours: <number> }
+    type Action: { clientId: <string>; name: <string>; channel: <string>; minutes: <number>; expectedValue: <number> }
+    type Task: { clientId: <string>; name: <string>; channel: <string>; minutes: <number>; expectedValue: <number>; worker: <number>; startMinute: <number>; startsAt: <string> }
+    func campaign(): {
+        productFee: 250
+        wealthRate: 0.002
+        smsDailyCap: 40
+        dayStart: time("09:00:00")
+    }
+    ruleset channelTerms(channel: string): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { channel: "call" }, then: { minutes: 30, lift: 0.25 } }
+            { when: { channel: "email" }, then: { minutes: 15, lift: 0.15 } }
+            { when: { channel: "sms" }, then: { minutes: 5, lift: 0.08 } }
+        ]
+        default: { minutes: 0, lift: 0 }
+    }
+    ruleset wealthTier(wealth: number): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { wealth: >= 1000000 }, then: { tier: "private" } }
+            { when: { wealth: >= 250000 }, then: { tier: "premium" } }
+            { when: { wealth: >= 50000 }, then: { tier: "affluent" } }
+        ]
+        default: { tier: "mass" }
+    }
+    ruleset preferenceFit(preferred: string, channel: string): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { preferred: "call", channel: "call" }, then: { factor: 1.5 } }
+            { when: { preferred: "email", channel: "email" }, then: { factor: 1.5 } }
+            { when: { preferred: "sms", channel: "sms" }, then: { factor: 1.5 } }
+            { when: { preferred: "any" }, then: { factor: 1 } }
+        ]
+        default: { factor: 0.7 }
+    }
+    ruleset contactBlocks(channel: string, tier: string, phoneConsent: boolean, hasEmail: boolean, daysSinceContact: number): {
+        hitPolicy: "collect-matches"
+        rules: [
+            { when: { daysSinceContact: < 14 }, then: { code: "COOLING_OFF", reason: "Contacted less than 14 days ago" } }
+            { when: { channel: "call", phoneConsent: false }, then: { code: "NO_PHONE_CONSENT", reason: "No consent to phone contact" } }
+            { when: { channel: "sms", phoneConsent: false }, then: { code: "NO_PHONE_CONSENT", reason: "No consent to phone contact" } }
+            { when: { channel: "email", hasEmail: false }, then: { code: "NO_EMAIL", reason: "No email address" } }
+            { when: { channel: "sms", tier: "private" }, then: { code: "PRIVATE_NO_SMS", reason: "Private clients are not contacted by SMS" } }
+        ]
+    }
+    func channelOffer(client: Client, tier: string, channel: string): {
+        terms: channelTerms(channel)
+        fit: preferenceFit(client.preferredChannel, channel).factor
+        blocks: contactBlocks(channel, tier, client.phoneConsent, client.hasEmail, client.daysSinceContact)
+        allowed: count(blocks) = 0
+        probability: round(client.propensity * terms.lift * fit, 4)
+        value: if allowed then round((campaign().productFee + client.wealth * campaign().wealthRate) * probability, 2) else 0
+    }
+    func clientRecord(client: Client): {
+        data: client
+        tier: wealthTier(client.wealth).tier
+        call: channelOffer(client, tier, "call")
+        email: channelOffer(client, tier, "email")
+        sms: channelOffer(client, tier, "sms")
+        contactable: call.allowed or email.allowed or sms.allowed
+        blockCodes: distinctValues(flatten([for b in call.blocks return b.code, for b in email.blocks return b.code, for b in sms.blocks return b.code]))
+    }
+    func allowedFlag(offer): {
+        result: if offer.allowed then 1 else 0
+    }
+    optimise contactMix(clients: Client[], callOk: number[], emailOk: number[], smsOk: number[], callValue: number[], emailValue: number[], smsValue: number[], callMinutes: number, emailMinutes: number, smsMinutes: number, capacityMinutes: number, smsCap: number): {
+        variables: {
+            call: <number[], integer: true, min: 0, max: 1, over: clients>
+            email: <number[], integer: true, min: 0, max: 1, over: clients>
+            sms: <number[], integer: true, min: 0, max: 1, over: clients>
+        }
+        maximise: sum(for i in 0..(count(clients) - 1) return callValue[i] * call[i] + emailValue[i] * email[i] + smsValue[i] * sms[i])
+        constraints: {
+            oneAction: for i in 0..(count(clients) - 1) return call[i] + email[i] + sms[i] <= 1
+            callAllowed: for i in 0..(count(clients) - 1) return call[i] <= callOk[i]
+            emailAllowed: for i in 0..(count(clients) - 1) return email[i] <= emailOk[i]
+            smsAllowed: for i in 0..(count(clients) - 1) return sms[i] <= smsOk[i]
+            teamTime: sum(for c in call return callMinutes * c) + sum(for e in email return emailMinutes * e) + sum(for s in sms return smsMinutes * s) <= capacityMinutes
+            smsGateway: sum(for s in sms return s) <= smsCap
+        }
+        timeLimit: 5000
+    }
+    func clientAction(record, call: number, email: number, sms: number): {
+        channel: if call > 0.5 then "call" else if email > 0.5 then "email" else if sms > 0.5 then "sms" else "none"
+        offer: if channel = "call" then record.call else if channel = "email" then record.email else record.sms
+        minutes: if channel = "none" then 0 else offer.terms.minutes
+        expectedValue: if channel = "none" then 0 else offer.value
+        reason: if channel != "none" then "Selected: " + toString(round(offer.probability * 100, 2)) + "% chance to buy" else if not(record.contactable) then "Not contactable: " + join(record.blockCodes, ", ") else "Not selected: the day is full"
+    }
+    func clockTime(minutesIntoDay: number): {
+        at: campaign().dayStart + duration("PT" + toString(minutesIntoDay) + "M")
+        text: padStart(toString(at.hour), 2, "0") + ":" + padStart(toString(at.minute), 2, "0")
+    }
+    loop workSchedule(actions: Action[], workers: number): {
+        over: actions
+        state: { slot: 0, loads: for w in 1..workers return 0, tasks: <Task[], []> }
+        do: {
+            slot: find(state.loads, min(state.loads))
+            loads: for i in 0..(workers - 1) return if i = slot then state.loads[i] + item.minutes else state.loads[i]
+            tasks: append(state.tasks, { clientId: item.clientId, name: item.name, channel: item.channel, minutes: item.minutes, expectedValue: item.expectedValue, worker: slot + 1, startMinute: state.loads[slot], startsAt: clockTime(state.loads[slot]).text })
+        }
+        return: state.tasks
+    }
+    func inWorkOrder(actions: Action[]): {
+        ranked: for a in actions return { action: a, seq: count(actions[minutes > a.minutes]) + count(actions[minutes = a.minutes and expectedValue > a.expectedValue]) + count(actions[minutes = a.minutes and expectedValue = a.expectedValue and clientId < a.clientId]) + 1 }
+        result: for k in 1..count(actions) return ranked[seq = k][0].action
+    }
+    func channelTotals(plan, channelName: string): {
+        channel: channelName
+        clients: count(plan[action = channelName])
+        minutes: sum(for p in plan[action = channelName] return p.minutes)
+        expectedValue: round(sum(for p in plan[action = channelName] return p.expectedValue), 2)
+    }
+    func tierTotals(plan, tierName: string): {
+        tier: tierName
+        calls: count(plan[tier = tierName and action = "call"])
+        emails: count(plan[tier = tierName and action = "email"])
+        sms: count(plan[tier = tierName and action = "sms"])
+        none: count(plan[tier = tierName and action = "none"])
+    }
+    service contactPlan(clients: Client[], team: Team): {
+        records: for client in clients return clientRecord(client)
+        capacityMinutes: team.workers * team.dayHours * 60
+        mix: contactMix(clients: clients, callOk: for r in records return allowedFlag(r.call).result, emailOk: for r in records return allowedFlag(r.email).result, smsOk: for r in records return allowedFlag(r.sms).result, callValue: for r in records return r.call.value, emailValue: for r in records return r.email.value, smsValue: for r in records return r.sms.value, callMinutes: channelTerms("call").minutes, emailMinutes: channelTerms("email").minutes, smsMinutes: channelTerms("sms").minutes, capacityMinutes: capacityMinutes, smsCap: campaign().smsDailyCap)
+        actions: for i in 0..(count(records) - 1) return clientAction(records[i], mix.call[i], mix.email[i], mix.sms[i])
+        contacted: for i in 0..(count(records) - 1) return { clientId: records[i].data.id, name: records[i].data.name, channel: actions[i].channel, minutes: actions[i].minutes, expectedValue: actions[i].expectedValue }
+        schedule: workSchedule(actions: inWorkOrder(contacted[channel != "none"]).result, workers: team.workers)
+        plan: for i in 0..(count(records) - 1) return {
+            clientId: records[i].data.id
+            name: records[i].data.name
+            tier: records[i].tier
+            action: actions[i].channel
+            worker: if actions[i].channel = "none" then 0 else schedule[clientId = records[i].data.id][0].worker
+            startsAt: if actions[i].channel = "none" then "" else schedule[clientId = records[i].data.id][0].startsAt
+            minutes: actions[i].minutes
+            expectedValue: actions[i].expectedValue
+            reason: actions[i].reason
+        }
+        byChannel: [channelTotals(plan, "call"), channelTotals(plan, "email"), channelTotals(plan, "sms")]
+        byTier: [tierTotals(plan, "private"), tierTotals(plan, "premium"), tierTotals(plan, "affluent"), tierTotals(plan, "mass")]
+        summary: {
+            status: mix.status
+            contacted: count(plan[action != "none"])
+            notContacted: count(plan[action = "none"])
+            minutesUsed: sum(for p in plan return p.minutes)
+            minutesAvailable: capacityMinutes
+            expectedRevenue: round(sum(for p in plan return p.expectedValue), 2)
+            plannedRevenue: round(mix.objective, 2)
+        }
+    }
+    @Name("Daily outreach plan")
+    workbook outreachBook: {
+        @InputNode(name: "Team")
+        team: { workers: 2; dayHours: 7 }
+        @InputNode(name: "Clients")
+        clients: [
+            { id: "C001"; name: "Xavier Turner"; wealth: 43000; propensity: 0.47; preferredChannel: "call"; hasEmail: true; phoneConsent: true; daysSinceContact: 92 }
+            { id: "C002"; name: "Quinn Harper"; wealth: 148000; propensity: 0.79; preferredChannel: "sms"; hasEmail: true; phoneConsent: false; daysSinceContact: 86 }
+            { id: "C003"; name: "Yara King"; wealth: 831000; propensity: 0.72; preferredChannel: "email"; hasEmail: true; phoneConsent: true; daysSinceContact: 79 }
+            { id: "C004"; name: "Kate Baker"; wealth: 206000; propensity: 0.31; preferredChannel: "email"; hasEmail: true; phoneConsent: true; daysSinceContact: 100 }
+            { id: "C005"; name: "Rose Adams"; wealth: 1568000; propensity: 0.65; preferredChannel: "email"; hasEmail: true; phoneConsent: true; daysSinceContact: 108 }
+            { id: "C006"; name: "Anna Underwood"; wealth: 832000; propensity: 0.84; preferredChannel: "sms"; hasEmail: true; phoneConsent: true; daysSinceContact: 15 }
+            { id: "C007"; name: "Leo Davis"; wealth: 77000; propensity: 0.56; preferredChannel: "any"; hasEmail: true; phoneConsent: true; daysSinceContact: 45 }
+            { id: "C008"; name: "Jack Scott"; wealth: 25000; propensity: 0.33; preferredChannel: "sms"; hasEmail: true; phoneConsent: true; daysSinceContact: 71 }
+            { id: "C009"; name: "David Zimmer"; wealth: 22000; propensity: 0.47; preferredChannel: "any"; hasEmail: true; phoneConsent: true; daysSinceContact: 5 }
+            { id: "C010"; name: "David Vance"; wealth: 1849000; propensity: 0.75; preferredChannel: "email"; hasEmail: false; phoneConsent: true; daysSinceContact: 5 }
+            { id: "C011"; name: "Xavier Scott"; wealth: 23000; propensity: 0.32; preferredChannel: "sms"; hasEmail: true; phoneConsent: true; daysSinceContact: 73 }
+            { id: "C012"; name: "Diana Reed"; wealth: 31000; propensity: 0.77; preferredChannel: "call"; hasEmail: true; phoneConsent: true; daysSinceContact: 7 }
+            { id: "C013"; name: "Mia Jones"; wealth: 211000; propensity: 0.49; preferredChannel: "call"; hasEmail: true; phoneConsent: true; daysSinceContact: 41 }
+            { id: "C014"; name: "Iris King"; wealth: 89000; propensity: 0.72; preferredChannel: "email"; hasEmail: true; phoneConsent: true; daysSinceContact: 30 }
+            { id: "C015"; name: "Mia Lewis"; wealth: 43000; propensity: 0.77; preferredChannel: "any"; hasEmail: true; phoneConsent: true; daysSinceContact: 75 }
+            { id: "C016"; name: "Olivia Lewis"; wealth: 12000; propensity: 0.75; preferredChannel: "any"; hasEmail: true; phoneConsent: true; daysSinceContact: 102 }
+            { id: "C017"; name: "Felix Davis"; wealth: 409000; propensity: 0.15; preferredChannel: "any"; hasEmail: true; phoneConsent: true; daysSinceContact: 34 }
+            { id: "C018"; name: "Diana Green"; wealth: 555000; propensity: 0.67; preferredChannel: "any"; hasEmail: true; phoneConsent: true; daysSinceContact: 36 }
+            { id: "C019"; name: "Bella Parker"; wealth: 14000; propensity: 0.49; preferredChannel: "call"; hasEmail: true; phoneConsent: true; daysSinceContact: 74 }
+            { id: "C020"; name: "Adam Quinn"; wealth: 12000; propensity: 0.43; preferredChannel: "any"; hasEmail: true; phoneConsent: true; daysSinceContact: 73 }
+            { id: "C021"; name: "Uma Irwin"; wealth: 3313000; propensity: 0.44; preferredChannel: "call"; hasEmail: true; phoneConsent: true; daysSinceContact: 114 }
+            { id: "C022"; name: "Henry Parker"; wealth: 17000; propensity: 0.78; preferredChannel: "call"; hasEmail: true; phoneConsent: true; daysSinceContact: 116 }
+            { id: "C023"; name: "Henry Nash"; wealth: 2997000; propensity: 0.72; preferredChannel: "sms"; hasEmail: true; phoneConsent: true; daysSinceContact: 84 }
+            { id: "C024"; name: "Carl Nash"; wealth: 61000; propensity: 0.37; preferredChannel: "sms"; hasEmail: true; phoneConsent: true; daysSinceContact: 63 }
+            { id: "C025"; name: "Diana Jones"; wealth: 97000; propensity: 0.14; preferredChannel: "email"; hasEmail: true; phoneConsent: true; daysSinceContact: 18 }
+            { id: "C026"; name: "Zoe Parker"; wealth: 594000; propensity: 0.89; preferredChannel: "any"; hasEmail: true; phoneConsent: false; daysSinceContact: 28 }
+            { id: "C027"; name: "Mia Quinn"; wealth: 40000; propensity: 0.55; preferredChannel: "sms"; hasEmail: true; phoneConsent: true; daysSinceContact: 111 }
+            { id: "C028"; name: "Sam Evans"; wealth: 40000; propensity: 0.47; preferredChannel: "call"; hasEmail: true; phoneConsent: true; daysSinceContact: 40 }
+            { id: "C029"; name: "Xavier Vance"; wealth: 43000; propensity: 0.4; preferredChannel: "call"; hasEmail: true; phoneConsent: true; daysSinceContact: 101 }
+            { id: "C030"; name: "Grace Lewis"; wealth: 34000; propensity: 0.44; preferredChannel: "call"; hasEmail: true; phoneConsent: false; daysSinceContact: 25 }
+            { id: "C031"; name: "Clara Reed"; wealth: 96000; propensity: 0.39; preferredChannel: "any"; hasEmail: true; phoneConsent: true; daysSinceContact: 72 }
+            { id: "C032"; name: "Felix King"; wealth: 133000; propensity: 0.57; preferredChannel: "sms"; hasEmail: true; phoneConsent: true; daysSinceContact: 9 }
+            { id: "C033"; name: "Quinn Reed"; wealth: 208000; propensity: 0.34; preferredChannel: "email"; hasEmail: true; phoneConsent: false; daysSinceContact: 27 }
+            { id: "C034"; name: "Wendy Young"; wealth: 120000; propensity: 0.13; preferredChannel: "email"; hasEmail: false; phoneConsent: true; daysSinceContact: 11 }
+            { id: "C035"; name: "Leo Zimmer"; wealth: 21000; propensity: 0.25; preferredChannel: "any"; hasEmail: true; phoneConsent: false; daysSinceContact: 55 }
+            { id: "C036"; name: "Felix Underwood"; wealth: 22000; propensity: 0.6; preferredChannel: "sms"; hasEmail: true; phoneConsent: true; daysSinceContact: 17 }
+            { id: "C037"; name: "Leo Nash"; wealth: 53000; propensity: 0.5; preferredChannel: "email"; hasEmail: true; phoneConsent: true; daysSinceContact: 25 }
+            { id: "C038"; name: "Adam Reed"; wealth: 10000; propensity: 0.36; preferredChannel: "sms"; hasEmail: false; phoneConsent: false; daysSinceContact: 112 }
+            { id: "C039"; name: "Emma Underwood"; wealth: 30000; propensity: 0.58; preferredChannel: "any"; hasEmail: false; phoneConsent: true; daysSinceContact: 12 }
+            { id: "C040"; name: "Sam Turner"; wealth: 597000; propensity: 0.29; preferredChannel: "sms"; hasEmail: true; phoneConsent: true; daysSinceContact: 36 }
+            { id: "C041"; name: "Rose Scott"; wealth: 73000; propensity: 0.48; preferredChannel: "any"; hasEmail: true; phoneConsent: true; daysSinceContact: 66 }
+            { id: "C042"; name: "Quinn Baker"; wealth: 147000; propensity: 0.23; preferredChannel: "call"; hasEmail: true; phoneConsent: true; daysSinceContact: 55 }
+            { id: "C043"; name: "Victor Reed"; wealth: 447000; propensity: 0.1; preferredChannel: "sms"; hasEmail: true; phoneConsent: false; daysSinceContact: 16 }
+            { id: "C044"; name: "Diana Vance"; wealth: 3234000; propensity: 0.25; preferredChannel: "sms"; hasEmail: true; phoneConsent: true; daysSinceContact: 44 }
+            { id: "C045"; name: "Yara Zimmer"; wealth: 78000; propensity: 0.84; preferredChannel: "call"; hasEmail: true; phoneConsent: false; daysSinceContact: 32 }
+            { id: "C046"; name: "Sam Jones"; wealth: 119000; propensity: 0.85; preferredChannel: "call"; hasEmail: true; phoneConsent: true; daysSinceContact: 22 }
+            { id: "C047"; name: "Uma Foster"; wealth: 4750000; propensity: 0.77; preferredChannel: "email"; hasEmail: true; phoneConsent: true; daysSinceContact: 34 }
+            { id: "C048"; name: "Wendy Nash"; wealth: 403000; propensity: 0.68; preferredChannel: "sms"; hasEmail: true; phoneConsent: true; daysSinceContact: 60 }
+            { id: "C049"; name: "Noah Walker"; wealth: 42000; propensity: 0.62; preferredChannel: "call"; hasEmail: true; phoneConsent: true; daysSinceContact: 32 }
+            { id: "C050"; name: "Clara Scott"; wealth: 230000; propensity: 0.65; preferredChannel: "call"; hasEmail: false; phoneConsent: true; daysSinceContact: 63 }
+            { id: "C051"; name: "Xavier Owens"; wealth: 45000; propensity: 0.83; preferredChannel: "any"; hasEmail: true; phoneConsent: true; daysSinceContact: 104 }
+            { id: "C052"; name: "Noah Owens"; wealth: 210000; propensity: 0.34; preferredChannel: "call"; hasEmail: true; phoneConsent: true; daysSinceContact: 7 }
+            { id: "C053"; name: "David Owens"; wealth: 87000; propensity: 0.44; preferredChannel: "any"; hasEmail: true; phoneConsent: true; daysSinceContact: 11 }
+            { id: "C054"; name: "Anna Reed"; wealth: 229000; propensity: 0.63; preferredChannel: "call"; hasEmail: true; phoneConsent: true; daysSinceContact: 104 }
+            { id: "C055"; name: "Anna Foster"; wealth: 870000; propensity: 0.6; preferredChannel: "any"; hasEmail: true; phoneConsent: true; daysSinceContact: 62 }
+            { id: "C056"; name: "Paul Parker"; wealth: 61000; propensity: 0.3; preferredChannel: "call"; hasEmail: true; phoneConsent: true; daysSinceContact: 68 }
+            { id: "C057"; name: "Wendy Foster"; wealth: 111000; propensity: 0.21; preferredChannel: "call"; hasEmail: true; phoneConsent: false; daysSinceContact: 108 }
+            { id: "C058"; name: "Clara Underwood"; wealth: 133000; propensity: 0.42; preferredChannel: "email"; hasEmail: true; phoneConsent: true; daysSinceContact: 86 }
+            { id: "C059"; name: "Henry Underwood"; wealth: 81000; propensity: 0.85; preferredChannel: "email"; hasEmail: true; phoneConsent: true; daysSinceContact: 19 }
+            { id: "C060"; name: "Noah King"; wealth: 706000; propensity: 0.77; preferredChannel: "sms"; hasEmail: true; phoneConsent: true; daysSinceContact: 80 }
+            { id: "C061"; name: "Victor Nash"; wealth: 43000; propensity: 0.26; preferredChannel: "sms"; hasEmail: false; phoneConsent: true; daysSinceContact: 32 }
+            { id: "C062"; name: "Zoe Adams"; wealth: 15000; propensity: 0.76; preferredChannel: "call"; hasEmail: true; phoneConsent: true; daysSinceContact: 29 }
+            { id: "C063"; name: "Zoe Baker"; wealth: 187000; propensity: 0.58; preferredChannel: "sms"; hasEmail: true; phoneConsent: false; daysSinceContact: 40 }
+            { id: "C064"; name: "Paul Foster"; wealth: 13000; propensity: 0.64; preferredChannel: "email"; hasEmail: true; phoneConsent: true; daysSinceContact: 37 }
+            { id: "C065"; name: "Felix Adams"; wealth: 214000; propensity: 0.37; preferredChannel: "sms"; hasEmail: true; phoneConsent: true; daysSinceContact: 109 }
+            { id: "C066"; name: "Henry Vance"; wealth: 72000; propensity: 0.74; preferredChannel: "call"; hasEmail: true; phoneConsent: true; daysSinceContact: 111 }
+            { id: "C067"; name: "Clara Vance"; wealth: 23000; propensity: 0.46; preferredChannel: "sms"; hasEmail: true; phoneConsent: true; daysSinceContact: 66 }
+            { id: "C068"; name: "Victor Owens"; wealth: 34000; propensity: 0.89; preferredChannel: "sms"; hasEmail: true; phoneConsent: true; daysSinceContact: 14 }
+            { id: "C069"; name: "Wendy Vance"; wealth: 70000; propensity: 0.62; preferredChannel: "call"; hasEmail: true; phoneConsent: true; daysSinceContact: 62 }
+            { id: "C070"; name: "Tara Zimmer"; wealth: 918000; propensity: 0.12; preferredChannel: "email"; hasEmail: true; phoneConsent: true; daysSinceContact: 114 }
+            { id: "C071"; name: "Uma Nash"; wealth: 40000; propensity: 0.2; preferredChannel: "sms"; hasEmail: false; phoneConsent: true; daysSinceContact: 112 }
+            { id: "C072"; name: "Noah Zimmer"; wealth: 235000; propensity: 0.78; preferredChannel: "email"; hasEmail: true; phoneConsent: true; daysSinceContact: 6 }
+            { id: "C073"; name: "Paul Zimmer"; wealth: 944000; propensity: 0.36; preferredChannel: "sms"; hasEmail: true; phoneConsent: true; daysSinceContact: 39 }
+            { id: "C074"; name: "Tara Clark"; wealth: 15000; propensity: 0.31; preferredChannel: "email"; hasEmail: true; phoneConsent: true; daysSinceContact: 99 }
+            { id: "C075"; name: "David Reed"; wealth: 16000; propensity: 0.78; preferredChannel: "email"; hasEmail: true; phoneConsent: true; daysSinceContact: 79 }
+            { id: "C076"; name: "Xavier Moore"; wealth: 10000; propensity: 0.18; preferredChannel: "email"; hasEmail: true; phoneConsent: true; daysSinceContact: 18 }
+            { id: "C077"; name: "Jack Baker"; wealth: 41000; propensity: 0.34; preferredChannel: "email"; hasEmail: true; phoneConsent: true; daysSinceContact: 45 }
+            { id: "C078"; name: "Ben King"; wealth: 42000; propensity: 0.4; preferredChannel: "email"; hasEmail: false; phoneConsent: true; daysSinceContact: 104 }
+            { id: "C079"; name: "Victor Baker"; wealth: 21000; propensity: 0.26; preferredChannel: "any"; hasEmail: true; phoneConsent: true; daysSinceContact: 98 }
+            { id: "C080"; name: "Wendy Moore"; wealth: 886000; propensity: 0.42; preferredChannel: "any"; hasEmail: true; phoneConsent: true; daysSinceContact: 17 }
+            { id: "C081"; name: "Henry Scott"; wealth: 197000; propensity: 0.86; preferredChannel: "email"; hasEmail: false; phoneConsent: true; daysSinceContact: 76 }
+            { id: "C082"; name: "Emma Young"; wealth: 275000; propensity: 0.21; preferredChannel: "call"; hasEmail: false; phoneConsent: true; daysSinceContact: 92 }
+            { id: "C083"; name: "Ben Moore"; wealth: 41000; propensity: 0.61; preferredChannel: "email"; hasEmail: true; phoneConsent: true; daysSinceContact: 46 }
+            { id: "C084"; name: "Olivia Baker"; wealth: 10000; propensity: 0.34; preferredChannel: "email"; hasEmail: true; phoneConsent: true; daysSinceContact: 44 }
+            { id: "C085"; name: "David Quinn"; wealth: 32000; propensity: 0.71; preferredChannel: "sms"; hasEmail: true; phoneConsent: true; daysSinceContact: 74 }
+            { id: "C086"; name: "Anna Young"; wealth: 29000; propensity: 0.45; preferredChannel: "call"; hasEmail: false; phoneConsent: false; daysSinceContact: 59 }
+            { id: "C087"; name: "Rose Moore"; wealth: 3898000; propensity: 0.38; preferredChannel: "sms"; hasEmail: true; phoneConsent: true; daysSinceContact: 16 }
+            { id: "C088"; name: "David Davis"; wealth: 17000; propensity: 0.5; preferredChannel: "any"; hasEmail: true; phoneConsent: true; daysSinceContact: 85 }
+            { id: "C089"; name: "Quinn Jones"; wealth: 237000; propensity: 0.8; preferredChannel: "email"; hasEmail: true; phoneConsent: false; daysSinceContact: 43 }
+            { id: "C090"; name: "Anna Davis"; wealth: 192000; propensity: 0.68; preferredChannel: "call"; hasEmail: true; phoneConsent: false; daysSinceContact: 19 }
+            { id: "C091"; name: "Mia Nash"; wealth: 425000; propensity: 0.2; preferredChannel: "any"; hasEmail: false; phoneConsent: true; daysSinceContact: 82 }
+            { id: "C092"; name: "Xavier Adams"; wealth: 186000; propensity: 0.81; preferredChannel: "any"; hasEmail: true; phoneConsent: true; daysSinceContact: 57 }
+            { id: "C093"; name: "Iris Lewis"; wealth: 762000; propensity: 0.4; preferredChannel: "email"; hasEmail: false; phoneConsent: true; daysSinceContact: 88 }
+            { id: "C094"; name: "Emma Reed"; wealth: 127000; propensity: 0.5; preferredChannel: "any"; hasEmail: true; phoneConsent: true; daysSinceContact: 112 }
+            { id: "C095"; name: "Leo Walker"; wealth: 688000; propensity: 0.87; preferredChannel: "sms"; hasEmail: true; phoneConsent: true; daysSinceContact: 11 }
+            { id: "C096"; name: "Leo Parker"; wealth: 239000; propensity: 0.71; preferredChannel: "email"; hasEmail: true; phoneConsent: true; daysSinceContact: 3 }
+            { id: "C097"; name: "Wendy Green"; wealth: 28000; propensity: 0.48; preferredChannel: "sms"; hasEmail: true; phoneConsent: true; daysSinceContact: 37 }
+            { id: "C098"; name: "Kate Nash"; wealth: 4890000; propensity: 0.85; preferredChannel: "call"; hasEmail: true; phoneConsent: false; daysSinceContact: 54 }
+            { id: "C099"; name: "Carl Walker"; wealth: 47000; propensity: 0.58; preferredChannel: "email"; hasEmail: true; phoneConsent: true; daysSinceContact: 111 }
+            { id: "C100"; name: "David Young"; wealth: 37000; propensity: 0.21; preferredChannel: "any"; hasEmail: true; phoneConsent: true; daysSinceContact: 113 }
+        ]
+        @FunctionNode(name: "Contact plan")
+        outreach: contactPlan(clients: clients, team: team)
+    }
+}

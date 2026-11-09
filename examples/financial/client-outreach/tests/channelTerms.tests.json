@@ -1,0 +1,75 @@
+{
+  "rows": [
+    {
+      "path": "channel",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "minutes",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "lift",
+      "section": "assertions",
+      "order": 1,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "channelTerms-1",
+      "name": "Call",
+      "order": 0,
+      "inputs": {
+        "channel": "call"
+      },
+      "assertions": {
+        "minutes": "30",
+        "lift": "0.25"
+      }
+    },
+    {
+      "id": "channelTerms-2",
+      "name": "Email",
+      "order": 1,
+      "inputs": {
+        "channel": "email"
+      },
+      "assertions": {
+        "minutes": "15",
+        "lift": "0.15"
+      }
+    },
+    {
+      "id": "channelTerms-3",
+      "name": "SMS",
+      "order": 2,
+      "inputs": {
+        "channel": "sms"
+      },
+      "assertions": {
+        "minutes": "5",
+        "lift": "0.08"
+      }
+    },
+    {
+      "id": "channelTerms-4",
+      "name": "Unknown channel",
+      "order": 3,
+      "inputs": {
+        "channel": "fax"
+      },
+      "assertions": {
+        "minutes": "0",
+        "lift": "0"
+      }
+    }
+  ]
+}

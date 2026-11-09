@@ -1,0 +1,523 @@
+{
+  "rows": [
+    {
+      "path": "team.workers",
+      "section": "inputs",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "team.dayHours",
+      "section": "inputs",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "clients[0].id",
+      "section": "inputs",
+      "order": 2,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "clients[0].name",
+      "section": "inputs",
+      "order": 3,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "clients[0].wealth",
+      "section": "inputs",
+      "order": 4,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "clients[0].propensity",
+      "section": "inputs",
+      "order": 5,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "clients[0].preferredChannel",
+      "section": "inputs",
+      "order": 6,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "clients[0].hasEmail",
+      "section": "inputs",
+      "order": 7,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "clients[0].phoneConsent",
+      "section": "inputs",
+      "order": 8,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "clients[0].daysSinceContact",
+      "section": "inputs",
+      "order": 9,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "clients[1].id",
+      "section": "inputs",
+      "order": 10,
+      "type": "string",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[1].name",
+      "section": "inputs",
+      "order": 11,
+      "type": "string",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[1].wealth",
+      "section": "inputs",
+      "order": 12,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[1].propensity",
+      "section": "inputs",
+      "order": 13,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[1].preferredChannel",
+      "section": "inputs",
+      "order": 14,
+      "type": "string",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[1].hasEmail",
+      "section": "inputs",
+      "order": 15,
+      "type": "boolean",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[1].phoneConsent",
+      "section": "inputs",
+      "order": 16,
+      "type": "boolean",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[1].daysSinceContact",
+      "section": "inputs",
+      "order": 17,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[2].id",
+      "section": "inputs",
+      "order": 18,
+      "type": "string",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[2].name",
+      "section": "inputs",
+      "order": 19,
+      "type": "string",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[2].wealth",
+      "section": "inputs",
+      "order": 20,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[2].propensity",
+      "section": "inputs",
+      "order": 21,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[2].preferredChannel",
+      "section": "inputs",
+      "order": 22,
+      "type": "string",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[2].hasEmail",
+      "section": "inputs",
+      "order": 23,
+      "type": "boolean",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[2].phoneConsent",
+      "section": "inputs",
+      "order": 24,
+      "type": "boolean",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[2].daysSinceContact",
+      "section": "inputs",
+      "order": 25,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[3].id",
+      "section": "inputs",
+      "order": 26,
+      "type": "string",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[3].name",
+      "section": "inputs",
+      "order": 27,
+      "type": "string",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[3].wealth",
+      "section": "inputs",
+      "order": 28,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[3].propensity",
+      "section": "inputs",
+      "order": 29,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[3].preferredChannel",
+      "section": "inputs",
+      "order": 30,
+      "type": "string",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[3].hasEmail",
+      "section": "inputs",
+      "order": 31,
+      "type": "boolean",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[3].phoneConsent",
+      "section": "inputs",
+      "order": 32,
+      "type": "boolean",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "clients[3].daysSinceContact",
+      "section": "inputs",
+      "order": 33,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "summary.status",
+      "section": "assertions",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "summary.contacted",
+      "section": "assertions",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "summary.minutesUsed",
+      "section": "assertions",
+      "order": 2,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "summary.expectedRevenue",
+      "section": "assertions",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "plan[0].action",
+      "section": "assertions",
+      "order": 4,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "plan[0].startsAt",
+      "section": "assertions",
+      "order": 5,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "plan[1].action",
+      "section": "assertions",
+      "order": 6,
+      "type": "string",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "plan[1].startsAt",
+      "section": "assertions",
+      "order": 7,
+      "type": "string",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "plan[2].action",
+      "section": "assertions",
+      "order": 8,
+      "type": "string",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "plan[2].startsAt",
+      "section": "assertions",
+      "order": 9,
+      "type": "string",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "plan[3].action",
+      "section": "assertions",
+      "order": 10,
+      "type": "string",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "plan[3].reason",
+      "section": "assertions",
+      "order": 11,
+      "type": "string",
+      "present": true,
+      "custom": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "contactPlan-1",
+      "name": "One worker, one hour: a call, an email and an SMS",
+      "order": 0,
+      "inputs": {
+        "team.workers": "1",
+        "team.dayHours": "1",
+        "clients[0].id": "T1",
+        "clients[0].name": "Ann Private",
+        "clients[0].wealth": "2000000",
+        "clients[0].propensity": "0.6",
+        "clients[0].preferredChannel": "call",
+        "clients[0].hasEmail": "true",
+        "clients[0].phoneConsent": "true",
+        "clients[0].daysSinceContact": "40",
+        "clients[1].id": "T2",
+        "clients[1].name": "Bo Affluent",
+        "clients[1].wealth": "120000",
+        "clients[1].propensity": "0.5",
+        "clients[1].preferredChannel": "any",
+        "clients[1].hasEmail": "true",
+        "clients[1].phoneConsent": "true",
+        "clients[1].daysSinceContact": "40",
+        "clients[2].id": "T3",
+        "clients[2].name": "Cy Mass",
+        "clients[2].wealth": "30000",
+        "clients[2].propensity": "0.8",
+        "clients[2].preferredChannel": "sms",
+        "clients[2].hasEmail": "false",
+        "clients[2].phoneConsent": "true",
+        "clients[2].daysSinceContact": "60",
+        "clients[3].id": "T4",
+        "clients[3].name": "Di Premium",
+        "clients[3].wealth": "400000",
+        "clients[3].propensity": "0.7",
+        "clients[3].preferredChannel": "email",
+        "clients[3].hasEmail": "true",
+        "clients[3].phoneConsent": "true",
+        "clients[3].daysSinceContact": "5"
+      },
+      "assertions": {
+        "summary.status": "optimal",
+        "summary.contacted": "3",
+        "summary.minutesUsed": "50",
+        "summary.expectedRevenue": "1022.76",
+        "plan[0].action": "call",
+        "plan[0].startsAt": "09:00",
+        "plan[1].action": "email",
+        "plan[1].startsAt": "09:30",
+        "plan[2].action": "sms",
+        "plan[2].startsAt": "09:45",
+        "plan[3].action": "none",
+        "plan[3].reason": "Not contactable: COOLING_OFF"
+      }
+    },
+    {
+      "id": "contactPlan-2",
+      "name": "One worker, two hours: everybody gets a call",
+      "order": 1,
+      "inputs": {
+        "team.workers": "1",
+        "team.dayHours": "2",
+        "clients[0].id": "T1",
+        "clients[0].name": "Ann Private",
+        "clients[0].wealth": "2000000",
+        "clients[0].propensity": "0.6",
+        "clients[0].preferredChannel": "call",
+        "clients[0].hasEmail": "true",
+        "clients[0].phoneConsent": "true",
+        "clients[0].daysSinceContact": "40",
+        "clients[1].id": "T2",
+        "clients[1].name": "Bo Affluent",
+        "clients[1].wealth": "120000",
+        "clients[1].propensity": "0.5",
+        "clients[1].preferredChannel": "any",
+        "clients[1].hasEmail": "true",
+        "clients[1].phoneConsent": "true",
+        "clients[1].daysSinceContact": "40",
+        "clients[2].id": "T3",
+        "clients[2].name": "Cy Mass",
+        "clients[2].wealth": "30000",
+        "clients[2].propensity": "0.8",
+        "clients[2].preferredChannel": "sms",
+        "clients[2].hasEmail": "false",
+        "clients[2].phoneConsent": "true",
+        "clients[2].daysSinceContact": "60",
+        "clients[3].id": "T4",
+        "clients[3].name": "Di Premium",
+        "clients[3].wealth": "400000",
+        "clients[3].propensity": "0.7",
+        "clients[3].preferredChannel": "email",
+        "clients[3].hasEmail": "true",
+        "clients[3].phoneConsent": "true",
+        "clients[3].daysSinceContact": "5"
+      },
+      "assertions": {
+        "summary.status": "optimal",
+        "summary.contacted": "3",
+        "summary.minutesUsed": "90",
+        "summary.expectedRevenue": "1060.9",
+        "plan[0].action": "call",
+        "plan[0].startsAt": "09:00",
+        "plan[1].action": "call",
+        "plan[1].startsAt": "09:30",
+        "plan[2].action": "call",
+        "plan[2].startsAt": "10:00",
+        "plan[3].action": "none",
+        "plan[3].reason": "Not contactable: COOLING_OFF"
+      }
+    },
+    {
+      "id": "contactPlan-3",
+      "name": "No phone consent: the private client gets an email",
+      "order": 2,
+      "inputs": {
+        "team.workers": "1",
+        "team.dayHours": "1",
+        "clients[0].id": "T1",
+        "clients[0].name": "Ann Private",
+        "clients[0].wealth": "2000000",
+        "clients[0].propensity": "0.6",
+        "clients[0].preferredChannel": "call",
+        "clients[0].hasEmail": "true",
+        "clients[0].phoneConsent": "false",
+        "clients[0].daysSinceContact": "40",
+        "clients[1].id": "T2",
+        "clients[1].name": "Bo Affluent",
+        "clients[1].wealth": "120000",
+        "clients[1].propensity": "0.5",
+        "clients[1].preferredChannel": "any",
+        "clients[1].hasEmail": "true",
+        "clients[1].phoneConsent": "true",
+        "clients[1].daysSinceContact": "40",
+        "clients[2].id": "T3",
+        "clients[2].name": "Cy Mass",
+        "clients[2].wealth": "30000",
+        "clients[2].propensity": "0.8",
+        "clients[2].preferredChannel": "sms",
+        "clients[2].hasEmail": "false",
+        "clients[2].phoneConsent": "true",
+        "clients[2].daysSinceContact": "60",
+        "clients[3].id": "T4",
+        "clients[3].name": "Di Premium",
+        "clients[3].wealth": "400000",
+        "clients[3].propensity": "0.7",
+        "clients[3].preferredChannel": "email",
+        "clients[3].hasEmail": "true",
+        "clients[3].phoneConsent": "true",
+        "clients[3].daysSinceContact": "5"
+      },
+      "assertions": {
+        "summary.status": "optimal",
+        "summary.contacted": "3",
+        "summary.minutesUsed": "50",
+        "summary.expectedRevenue": "358.76",
+        "plan[0].action": "email",
+        "plan[0].startsAt": "09:30",
+        "plan[1].action": "call",
+        "plan[1].startsAt": "09:00",
+        "plan[2].action": "sms",
+        "plan[2].startsAt": "09:45",
+        "plan[3].action": "none",
+        "plan[3].reason": "Not contactable: COOLING_OFF"
+      }
+    }
+  ]
+}
