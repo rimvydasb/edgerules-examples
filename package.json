@@ -1,0 +1,21 @@
+{
+  "name": "edgerules-examples",
+  "private": true,
+  "type": "module",
+  "description": "EdgeRules example projects as plain files, with the index library.json",
+  "license": "MIT",
+  "scripts": {
+    "validate": "tooling/validate.sh",
+    "build-index": "tooling/build-index.sh",
+    "format": "prettier --write \"**/*.{json,md,mjs}\"",
+    "format:check": "prettier --check \"**/*.{json,md,mjs}\"",
+    "test": "node --test tooling/__tests__"
+  },
+  "devDependencies": {
+    "@edgerules/node": "0.2.7-alpha.202611081915",
+    "ajv": "^8.17.1",
+    "edgerules-react": "github:rimvydasb/edgerules-react#develop",
+    "highs": "^1.15.4",
+    "prettier": "^3.9.10"
+  }
+}

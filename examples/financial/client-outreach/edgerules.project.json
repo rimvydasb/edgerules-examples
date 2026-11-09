@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../node_modules/edgerules-react/schemas/example.schema.json",
   "kind": "EdgeRulesProject",
   "formatVersion": 3,
   "name": "Client outreach",
