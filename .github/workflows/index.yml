@@ -1,0 +1,36 @@
+name: Build index
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - library.json
+
+permissions:
+  contents: write
+
+jobs:
+  index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: tooling/build-index.sh
+      - name: Commit library.json
+        id: commit
+        run: |
+          if git diff --quiet -- library.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add library.json
+            git commit -m "Update library.json [skip ci]"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Purge the jsDelivr copy of the index
+        if: steps.commit.outputs.changed == 'true'
+        run:
+          curl --fail --silent --show-error "https://purge.jsdelivr.net/gh/${{ github.repository }}@main/library.json"
