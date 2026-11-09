@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "generatedFrom": "b1c7ed0e99e4620d7d6250be9b39901b4b3b82a3",
+  "industries": [
+    {
+      "description": "Credit, pricing, repayment and sales planning",
+      "icon": "bank",
+      "id": "financial",
+      "title": "Financial"
+    }
+  ],
+  "featured": [
+    "loan-repayment",
+    "loan-origination",
+    "client-outreach"
+  ],
+  "examples": [
+    {
+      "description": "Decides whom to call, email or text in one working day for the largest expected revenue",
+      "engine": ">=0.2.7-alpha",
+      "features": [
+        "optimise",
+        "decision-table",
+        "loop",
+        "function",
+        "service",
+        "workbook"
+      ],
+      "id": "client-outreach",
+      "industry": "financial",
+      "level": "advanced",
+      "name": "Client outreach",
+      "path": "examples/financial/client-outreach",
+      "requires": [
+        "milp-solver"
+      ],
+      "stats": {
+        "lines": 265,
+        "tests": 22
+      },
+      "tags": [
+        "sales",
+        "outreach",
+        "optimisation",
+        "decision-table",
+        "workbook"
+      ],
+      "versions": [
+        {
+          "ref": "b1c7ed0e99e4620d7d6250be9b39901b4b3b82a3",
+          "released": "2026-11-09",
+          "version": "1.0.0"
+        }
+      ]
+    },
+    {
+      "description": "Scores, checks, prices and decides a joint mortgage application",
+      "engine": ">=0.2.7-alpha",
+      "features": [
+        "facts",
+        "decision-table",
+        "decision",
+        "function",
+        "service",
+        "workbook",
+        "chart"
+      ],
+      "id": "loan-origination",
+      "industry": "financial",
+      "level": "intermediate",
+      "name": "Loan origination",
+      "path": "examples/financial/loan-origination",
+      "requires": [],
+      "stats": {
+        "lines": 222,
+        "tests": 38
+      },
+      "tags": [
+        "finance",
+        "loan",
+        "origination",
+        "scorecard",
+        "decision-table",
+        "workbook"
+      ],
+      "versions": [
+        {
+          "ref": "b1c7ed0e99e4620d7d6250be9b39901b4b3b82a3",
+          "released": "2026-11-09",
+          "version": "2.0.0"
+        }
+      ]
+    },
+    {
+      "description": "Prices a loan request and returns its monthly repayment schedule",
+      "engine": ">=0.2.7-alpha",
+      "features": [
+        "decision-table",
+        "function",
+        "service",
+        "workbook",
+        "chart"
+      ],
+      "id": "loan-repayment",
+      "industry": "financial",
+      "level": "beginner",
+      "name": "Loan repayment",
+      "path": "examples/financial/loan-repayment",
+      "requires": [],
+      "stats": {
+        "lines": 78,
+        "tests": 13
+      },
+      "tags": [
+        "finance",
+        "loan",
+        "decision-table",
+        "workbook"
+      ],
+      "versions": [
+        {
+          "ref": "b1c7ed0e99e4620d7d6250be9b39901b4b3b82a3",
+          "released": "2026-11-09",
+          "version": "1.2.0"
+        }
+      ]
+    }
+  ]
+}

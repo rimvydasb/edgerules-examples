@@ -1,0 +1,119 @@
+{
+  "rows": [
+    {
+      "path": "age",
+      "section": "inputs",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "termYears",
+      "section": "inputs",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "employment",
+      "section": "inputs",
+      "order": 2,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "bureauScore",
+      "section": "inputs",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "delinquencies",
+      "section": "inputs",
+      "order": 4,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "allPassed",
+      "section": "assertions",
+      "order": 0,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "failed",
+      "section": "assertions",
+      "order": 1,
+      "type": "array",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "policyRules-1",
+      "name": "Every rule passes",
+      "order": 0,
+      "inputs": {
+        "age": "38",
+        "termYears": "25",
+        "employment": "permanent",
+        "bureauScore": "765",
+        "delinquencies": "0"
+      },
+      "assertions": {
+        "allPassed": "true",
+        "failed": "[]"
+      }
+    },
+    {
+      "id": "policyRules-2",
+      "name": "Under 18",
+      "order": 1,
+      "inputs": {
+        "age": "17",
+        "termYears": "20",
+        "employment": "contract",
+        "bureauScore": "700",
+        "delinquencies": "0"
+      },
+      "assertions": {
+        "allPassed": "false",
+        "failed": "[\"AGE_MIN\"]"
+      }
+    },
+    {
+      "id": "policyRules-3",
+      "name": "Older than 75 at maturity",
+      "order": 2,
+      "inputs": {
+        "age": "56",
+        "termYears": "30",
+        "employment": "permanent",
+        "bureauScore": "765",
+        "delinquencies": "0"
+      },
+      "assertions": {
+        "allPassed": "false",
+        "failed": "[\"AGE_AT_MATURITY\"]"
+      }
+    },
+    {
+      "id": "policyRules-4",
+      "name": "Unemployed with a poor history",
+      "order": 3,
+      "inputs": {
+        "age": "30",
+        "termYears": "25",
+        "employment": "unemployed",
+        "bureauScore": "520",
+        "delinquencies": "3"
+      },
+      "assertions": {
+        "allPassed": "false",
+        "failed": "[\"EMPLOYED\",\"BUREAU_MIN\",\"DELINQUENCIES\"]"
+      }
+    }
+  ]
+}

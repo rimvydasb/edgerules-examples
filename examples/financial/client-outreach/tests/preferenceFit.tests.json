@@ -1,0 +1,63 @@
+{
+  "rows": [
+    {
+      "path": "preferred",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "channel",
+      "section": "inputs",
+      "order": 1,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "factor",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "preferenceFit-1",
+      "name": "Preferred channel",
+      "order": 0,
+      "inputs": {
+        "preferred": "call",
+        "channel": "call"
+      },
+      "assertions": {
+        "factor": "1.5"
+      }
+    },
+    {
+      "id": "preferenceFit-2",
+      "name": "No preference",
+      "order": 1,
+      "inputs": {
+        "preferred": "any",
+        "channel": "sms"
+      },
+      "assertions": {
+        "factor": "1"
+      }
+    },
+    {
+      "id": "preferenceFit-3",
+      "name": "Other channel",
+      "order": 2,
+      "inputs": {
+        "preferred": "email",
+        "channel": "call"
+      },
+      "assertions": {
+        "factor": "0.7"
+      }
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "rows": [
+    {
+      "path": "knockouts",
+      "section": "inputs",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "grade",
+      "section": "inputs",
+      "order": 1,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "ltv",
+      "section": "inputs",
+      "order": 2,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "dsti",
+      "section": "inputs",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "outcome",
+      "section": "assertions",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "reason",
+      "section": "assertions",
+      "order": 1,
+      "type": "string",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "decisionMatrix-1",
+      "name": "Within the policy",
+      "order": 0,
+      "inputs": {
+        "knockouts": "0",
+        "grade": "A",
+        "ltv": "0.75",
+        "dsti": "0.32"
+      },
+      "assertions": {
+        "outcome": "APPROVE",
+        "reason": "Within the credit policy"
+      }
+    },
+    {
+      "id": "decisionMatrix-2",
+      "name": "Knockout",
+      "order": 1,
+      "inputs": {
+        "knockouts": "1",
+        "grade": "A",
+        "ltv": "0.75",
+        "dsti": "0.3"
+      },
+      "assertions": {
+        "outcome": "DECLINE",
+        "reason": "A policy rule failed"
+      }
+    },
+    {
+      "id": "decisionMatrix-3",
+      "name": "Grade E",
+      "order": 2,
+      "inputs": {
+        "knockouts": "0",
+        "grade": "E",
+        "ltv": "0.5",
+        "dsti": "0.3"
+      },
+      "assertions": {
+        "outcome": "DECLINE",
+        "reason": "Risk grade E"
+      }
+    },
+    {
+      "id": "decisionMatrix-4",
+      "name": "DSTI above 50%",
+      "order": 3,
+      "inputs": {
+        "knockouts": "0",
+        "grade": "B",
+        "ltv": "0.7",
+        "dsti": "0.55"
+      },
+      "assertions": {
+        "outcome": "DECLINE",
+        "reason": "Debt service above 50% of income"
+      }
+    },
+    {
+      "id": "decisionMatrix-5",
+      "name": "LTV above 95%",
+      "order": 4,
+      "inputs": {
+        "knockouts": "0",
+        "grade": "B",
+        "ltv": "0.97",
+        "dsti": "0.3"
+      },
+      "assertions": {
+        "outcome": "DECLINE",
+        "reason": "Loan-to-value above 95%"
+      }
+    },
+    {
+      "id": "decisionMatrix-6",
+      "name": "Grade D",
+      "order": 5,
+      "inputs": {
+        "knockouts": "0",
+        "grade": "D",
+        "ltv": "0.5",
+        "dsti": "0.3"
+      },
+      "assertions": {
+        "outcome": "REFER",
+        "reason": "Risk grade D needs an underwriter"
+      }
+    },
+    {
+      "id": "decisionMatrix-7",
+      "name": "DSTI above 45%",
+      "order": 6,
+      "inputs": {
+        "knockouts": "0",
+        "grade": "B",
+        "ltv": "0.7",
+        "dsti": "0.47"
+      },
+      "assertions": {
+        "outcome": "REFER",
+        "reason": "Debt service above 45% of income"
+      }
+    },
+    {
+      "id": "decisionMatrix-8",
+      "name": "LTV above 80%",
+      "order": 7,
+      "inputs": {
+        "knockouts": "0",
+        "grade": "C",
+        "ltv": "0.9",
+        "dsti": "0.39"
+      },
+      "assertions": {
+        "outcome": "REFER",
+        "reason": "Loan-to-value above 80%"
+      }
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "kind": "EdgeRulesProject",
+  "formatVersion": 3,
+  "name": "Client outreach",
+  "description": "Decides whom to call, email or text in one working day for the largest expected revenue",
+  "tags": ["sales", "outreach", "optimisation", "decision-table", "workbook"],
+  "model": {
+    "format": "dsl",
+    "source": "model/main.edge",
+    "name": "Client Outreach Planner",
+    "version": "1.0.0"
+  },
+  "documentation": "docs/descriptions.json",
+  "tests": [
+    "tests/channelOffer.tests.json",
+    "tests/channelTerms.tests.json",
+    "tests/contactBlocks.tests.json",
+    "tests/contactPlan.tests.json",
+    "tests/preferenceFit.tests.json",
+    "tests/wealthTier.tests.json"
+  ],
+  "flow": "flow/layout.json",
+  "example": {
+    "industry": "financial",
+    "level": "advanced",
+    "features": ["optimise", "decision-table", "loop", "function", "service", "workbook"],
+    "engine": ">=0.2.7-alpha",
+    "authors": ["edgerules"],
+    "requires": ["milp-solver"]
+  }
+}

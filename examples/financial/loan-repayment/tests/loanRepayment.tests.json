@@ -1,0 +1,171 @@
+{
+  "rows": [
+    {
+      "path": "request.amount",
+      "section": "inputs",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "request.years",
+      "section": "inputs",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "request.creditScore",
+      "section": "inputs",
+      "order": 2,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "pricing.tier",
+      "section": "assertions",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "pricing.approved",
+      "section": "assertions",
+      "order": 1,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "rate",
+      "section": "assertions",
+      "order": 2,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "payment",
+      "section": "assertions",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "cost.totalInterest",
+      "section": "assertions",
+      "order": 4,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "cost.totalPaid",
+      "section": "assertions",
+      "order": 5,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "schedule[0].interest",
+      "section": "assertions",
+      "order": 6,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "loanRepayment-1",
+      "name": "Prime mortgage",
+      "order": 0,
+      "inputs": {
+        "request.amount": "250000",
+        "request.years": "25",
+        "request.creditScore": "780"
+      },
+      "assertions": {
+        "pricing.tier": "prime",
+        "pricing.approved": "true",
+        "rate": "0.0425",
+        "payment": "1354.35",
+        "cost.totalInterest": "156302.48",
+        "cost.totalPaid": "406302.48",
+        "schedule[0].interest": "885.42"
+      }
+    },
+    {
+      "id": "loanRepayment-2",
+      "name": "Prime short mortgage",
+      "order": 1,
+      "inputs": {
+        "request.amount": "200000",
+        "request.years": "15",
+        "request.creditScore": "800"
+      },
+      "assertions": {
+        "pricing.tier": "prime",
+        "pricing.approved": "true",
+        "rate": "0.04",
+        "payment": "1479.38",
+        "cost.totalInterest": "66287.45",
+        "cost.totalPaid": "266287.45",
+        "schedule[0].interest": "666.67"
+      }
+    },
+    {
+      "id": "loanRepayment-3",
+      "name": "Standard car loan",
+      "order": 2,
+      "inputs": {
+        "request.amount": "20000",
+        "request.years": "5",
+        "request.creditScore": "700"
+      },
+      "assertions": {
+        "pricing.tier": "standard",
+        "pricing.approved": "true",
+        "rate": "0.05",
+        "payment": "377.42",
+        "cost.totalInterest": "2645.52",
+        "cost.totalPaid": "22645.52",
+        "schedule[0].interest": "83.33"
+      }
+    },
+    {
+      "id": "loanRepayment-4",
+      "name": "Near-prime personal loan",
+      "order": 3,
+      "inputs": {
+        "request.amount": "15000",
+        "request.years": "8",
+        "request.creditScore": "640"
+      },
+      "assertions": {
+        "pricing.tier": "near-prime",
+        "pricing.approved": "true",
+        "rate": "0.065",
+        "payment": "200.79",
+        "cost.totalInterest": "4276.23",
+        "cost.totalPaid": "19276.23",
+        "schedule[0].interest": "81.25"
+      }
+    },
+    {
+      "id": "loanRepayment-5",
+      "name": "Declined application",
+      "order": 4,
+      "inputs": {
+        "request.amount": "20000",
+        "request.years": "5",
+        "request.creditScore": "550"
+      },
+      "assertions": {
+        "pricing.tier": "declined",
+        "pricing.approved": "false",
+        "rate": "0.035",
+        "payment": "0",
+        "cost.totalInterest": "0",
+        "cost.totalPaid": "0",
+        "schedule[0].interest": ""
+      }
+    }
+  ]
+}

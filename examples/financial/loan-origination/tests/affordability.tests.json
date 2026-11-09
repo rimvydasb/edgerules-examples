@@ -1,0 +1,133 @@
+{
+  "rows": [
+    {
+      "path": "householdIncome",
+      "section": "inputs",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "householdDebtPayments",
+      "section": "inputs",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "loanAmount",
+      "section": "inputs",
+      "order": 2,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "rate",
+      "section": "inputs",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "termYears",
+      "section": "inputs",
+      "order": 4,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "payment",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "stressedPayment",
+      "section": "assertions",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "dsti",
+      "section": "assertions",
+      "order": 2,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "maxPayment",
+      "section": "assertions",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "maxLoan",
+      "section": "assertions",
+      "order": 4,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "affordability-1",
+      "name": "Joint household",
+      "order": 0,
+      "inputs": {
+        "householdIncome": "6800",
+        "householdDebtPayments": "250",
+        "loanAmount": "240000",
+        "rate": "0.055",
+        "termYears": "25"
+      },
+      "assertions": {
+        "payment": "1473.81",
+        "stressedPayment": "1932.55",
+        "dsti": "0.321",
+        "maxPayment": "2810",
+        "maxLoan": "348970"
+      }
+    },
+    {
+      "id": "affordability-2",
+      "name": "Indebted single household",
+      "order": 1,
+      "inputs": {
+        "householdIncome": "3800",
+        "householdDebtPayments": "600",
+        "loanAmount": "300000",
+        "rate": "0.0425",
+        "termYears": "20"
+      },
+      "assertions": {
+        "payment": "1857.7",
+        "stressedPayment": "2371.13",
+        "dsti": "0.7819",
+        "maxPayment": "1110",
+        "maxLoan": "140439"
+      }
+    },
+    {
+      "id": "affordability-3",
+      "name": "Debts above the DSTI limit",
+      "order": 2,
+      "inputs": {
+        "householdIncome": "2000",
+        "householdDebtPayments": "1200",
+        "loanAmount": "100000",
+        "rate": "0.05",
+        "termYears": "10"
+      },
+      "assertions": {
+        "payment": "1060.66",
+        "stressedPayment": "1213.28",
+        "dsti": "1.2066",
+        "maxPayment": "0",
+        "maxLoan": "0"
+      }
+    }
+  ]
+}

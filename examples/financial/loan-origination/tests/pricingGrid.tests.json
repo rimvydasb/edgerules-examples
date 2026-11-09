@@ -1,0 +1,111 @@
+{
+  "rows": [
+    {
+      "path": "grade",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "ltv",
+      "section": "inputs",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "margin",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "pricingGrid-1",
+      "name": "Grade A, low LTV",
+      "order": 0,
+      "inputs": {
+        "grade": "A",
+        "ltv": "0.5"
+      },
+      "assertions": {
+        "margin": "0.01"
+      }
+    },
+    {
+      "id": "pricingGrid-2",
+      "name": "Grade A, 75% LTV",
+      "order": 1,
+      "inputs": {
+        "grade": "A",
+        "ltv": "0.75"
+      },
+      "assertions": {
+        "margin": "0.0125"
+      }
+    },
+    {
+      "id": "pricingGrid-3",
+      "name": "Grade A, high LTV",
+      "order": 2,
+      "inputs": {
+        "grade": "A",
+        "ltv": "0.9"
+      },
+      "assertions": {
+        "margin": "0.0175"
+      }
+    },
+    {
+      "id": "pricingGrid-4",
+      "name": "Grade B, 80% LTV",
+      "order": 3,
+      "inputs": {
+        "grade": "B",
+        "ltv": "0.8"
+      },
+      "assertions": {
+        "margin": "0.0175"
+      }
+    },
+    {
+      "id": "pricingGrid-5",
+      "name": "Grade C, 75% LTV",
+      "order": 4,
+      "inputs": {
+        "grade": "C",
+        "ltv": "0.75"
+      },
+      "assertions": {
+        "margin": "0.025"
+      }
+    },
+    {
+      "id": "pricingGrid-6",
+      "name": "Grade D",
+      "order": 5,
+      "inputs": {
+        "grade": "D",
+        "ltv": "0.4"
+      },
+      "assertions": {
+        "margin": "0.035"
+      }
+    },
+    {
+      "id": "pricingGrid-7",
+      "name": "Grade E",
+      "order": 6,
+      "inputs": {
+        "grade": "E",
+        "ltv": "0.5"
+      },
+      "assertions": {
+        "margin": "0.05"
+      }
+    }
+  ]
+}

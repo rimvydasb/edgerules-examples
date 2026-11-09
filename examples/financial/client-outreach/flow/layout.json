@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 2,
+  "layouts": {
+    "outreachBook": {
+      "positions": {},
+      "outputs": [
+        {
+          "id": "output",
+          "label": "Summary",
+          "source": {
+            "node": "outreachBook.outreach",
+            "handle": "out:summary"
+          }
+        },
+        {
+          "id": "output2",
+          "label": "Plan by client",
+          "source": {
+            "node": "outreachBook.outreach",
+            "handle": "out:plan"
+          }
+        },
+        {
+          "id": "output3",
+          "label": "Schedule",
+          "source": {
+            "node": "outreachBook.outreach",
+            "handle": "out:schedule"
+          }
+        }
+      ],
+      "charts": [
+        {
+          "id": "chart",
+          "label": "Expected revenue by channel",
+          "source": {
+            "node": "outreachBook.outreach",
+            "handle": "out:byChannel"
+          },
+          "config": {
+            "kind": "bar",
+            "x": "channel",
+            "series": ["expectedValue"]
+          },
+          "size": {
+            "width": 480,
+            "height": 300
+          }
+        },
+        {
+          "id": "chart2",
+          "label": "Channels by wealth tier",
+          "source": {
+            "node": "outreachBook.outreach",
+            "handle": "out:byTier"
+          },
+          "config": {
+            "kind": "bar",
+            "x": "tier",
+            "series": ["calls", "emails", "sms", "none"]
+          },
+          "size": {
+            "width": 520,
+            "height": 320
+          }
+        }
+      ]
+    }
+  }
+}

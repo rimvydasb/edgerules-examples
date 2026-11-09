@@ -1,0 +1,125 @@
+{
+  "rows": [
+    {
+      "path": "creditScore",
+      "section": "inputs",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "years",
+      "section": "inputs",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "tier",
+      "section": "assertions",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "premium",
+      "section": "assertions",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "approved",
+      "section": "assertions",
+      "order": 2,
+      "type": "boolean",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "pricingTier-1",
+      "name": "Excellent score, short term",
+      "order": 0,
+      "inputs": {
+        "creditScore": "800",
+        "years": "10"
+      },
+      "assertions": {
+        "tier": "prime",
+        "premium": "0.005",
+        "approved": "true"
+      }
+    },
+    {
+      "id": "pricingTier-2",
+      "name": "Excellent score, long term",
+      "order": 1,
+      "inputs": {
+        "creditScore": "800",
+        "years": "30"
+      },
+      "assertions": {
+        "tier": "prime",
+        "premium": "0.0075",
+        "approved": "true"
+      }
+    },
+    {
+      "id": "pricingTier-3",
+      "name": "Good score",
+      "order": 2,
+      "inputs": {
+        "creditScore": "720",
+        "years": "30"
+      },
+      "assertions": {
+        "tier": "standard",
+        "premium": "0.015",
+        "approved": "true"
+      }
+    },
+    {
+      "id": "pricingTier-4",
+      "name": "Fair score, short term",
+      "order": 3,
+      "inputs": {
+        "creditScore": "650",
+        "years": "5"
+      },
+      "assertions": {
+        "tier": "near-prime",
+        "premium": "0.03",
+        "approved": "true"
+      }
+    },
+    {
+      "id": "pricingTier-5",
+      "name": "Fair score, long term",
+      "order": 4,
+      "inputs": {
+        "creditScore": "650",
+        "years": "20"
+      },
+      "assertions": {
+        "tier": "declined",
+        "premium": "0",
+        "approved": "false"
+      }
+    },
+    {
+      "id": "pricingTier-6",
+      "name": "Poor score",
+      "order": 5,
+      "inputs": {
+        "creditScore": "520",
+        "years": "5"
+      },
+      "assertions": {
+        "tier": "declined",
+        "premium": "0",
+        "approved": "false"
+      }
+    }
+  ]
+}

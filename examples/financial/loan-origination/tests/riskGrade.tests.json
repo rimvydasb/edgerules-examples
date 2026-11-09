@@ -1,0 +1,99 @@
+{
+  "rows": [
+    {
+      "path": "score",
+      "section": "inputs",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "grade",
+      "section": "assertions",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "probabilityOfDefault",
+      "section": "assertions",
+      "order": 1,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "riskGrade-1",
+      "name": "Top score",
+      "order": 0,
+      "inputs": {
+        "score": "205"
+      },
+      "assertions": {
+        "grade": "A",
+        "probabilityOfDefault": "0.005"
+      }
+    },
+    {
+      "id": "riskGrade-2",
+      "name": "Lowest A",
+      "order": 1,
+      "inputs": {
+        "score": "170"
+      },
+      "assertions": {
+        "grade": "A",
+        "probabilityOfDefault": "0.005"
+      }
+    },
+    {
+      "id": "riskGrade-3",
+      "name": "Highest B",
+      "order": 2,
+      "inputs": {
+        "score": "169"
+      },
+      "assertions": {
+        "grade": "B",
+        "probabilityOfDefault": "0.012"
+      }
+    },
+    {
+      "id": "riskGrade-4",
+      "name": "Middle C",
+      "order": 3,
+      "inputs": {
+        "score": "115"
+      },
+      "assertions": {
+        "grade": "C",
+        "probabilityOfDefault": "0.03"
+      }
+    },
+    {
+      "id": "riskGrade-5",
+      "name": "Lowest D",
+      "order": 4,
+      "inputs": {
+        "score": "80"
+      },
+      "assertions": {
+        "grade": "D",
+        "probabilityOfDefault": "0.07"
+      }
+    },
+    {
+      "id": "riskGrade-6",
+      "name": "Below every band",
+      "order": 5,
+      "inputs": {
+        "score": "79"
+      },
+      "assertions": {
+        "grade": "E",
+        "probabilityOfDefault": "0.15"
+      }
+    }
+  ]
+}

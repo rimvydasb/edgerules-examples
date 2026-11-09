@@ -1,0 +1,498 @@
+{
+  "rows": [
+    {
+      "path": "application.applicationDate",
+      "section": "inputs",
+      "order": 0,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "application.loanAmount",
+      "section": "inputs",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "application.propertyValue",
+      "section": "inputs",
+      "order": 2,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "application.termYears",
+      "section": "inputs",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "application.applicants[0].name",
+      "section": "inputs",
+      "order": 4,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "application.applicants[0].birthDate",
+      "section": "inputs",
+      "order": 5,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "application.applicants[0].employment",
+      "section": "inputs",
+      "order": 6,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "application.applicants[0].yearsEmployed",
+      "section": "inputs",
+      "order": 7,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "application.applicants[0].monthlyIncome",
+      "section": "inputs",
+      "order": 8,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "application.applicants[0].monthlyExpenses",
+      "section": "inputs",
+      "order": 9,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "application.applicants[0].monthlyDebtPayments",
+      "section": "inputs",
+      "order": 10,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "application.applicants[0].bureauScore",
+      "section": "inputs",
+      "order": 11,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "application.applicants[0].delinquencies",
+      "section": "inputs",
+      "order": 12,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "application.applicants[1].name",
+      "section": "inputs",
+      "order": 13,
+      "type": "string",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "application.applicants[1].birthDate",
+      "section": "inputs",
+      "order": 14,
+      "type": "date",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "application.applicants[1].employment",
+      "section": "inputs",
+      "order": 15,
+      "type": "string",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "application.applicants[1].yearsEmployed",
+      "section": "inputs",
+      "order": 16,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "application.applicants[1].monthlyIncome",
+      "section": "inputs",
+      "order": 17,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "application.applicants[1].monthlyExpenses",
+      "section": "inputs",
+      "order": 18,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "application.applicants[1].monthlyDebtPayments",
+      "section": "inputs",
+      "order": 19,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "application.applicants[1].bureauScore",
+      "section": "inputs",
+      "order": 20,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "application.applicants[1].delinquencies",
+      "section": "inputs",
+      "order": 21,
+      "type": "number",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "ltv",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "householdScore",
+      "section": "assertions",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "grade.grade",
+      "section": "assertions",
+      "order": 2,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "rate",
+      "section": "assertions",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "affordability.dsti",
+      "section": "assertions",
+      "order": 4,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "knockouts",
+      "section": "assertions",
+      "order": 5,
+      "type": "array",
+      "present": true
+    },
+    {
+      "path": "decision.outcome",
+      "section": "assertions",
+      "order": 6,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "decision.reason",
+      "section": "assertions",
+      "order": 7,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "offer.amount",
+      "section": "assertions",
+      "order": 8,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "offer.monthlyPayment",
+      "section": "assertions",
+      "order": 9,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "offer.counterOfferAmount",
+      "section": "assertions",
+      "order": 10,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "loanOriginationDecision-1",
+      "name": "Joint mortgage within the policy",
+      "order": 0,
+      "inputs": {
+        "application.applicationDate": "2026-10-01",
+        "application.loanAmount": "240000",
+        "application.propertyValue": "320000",
+        "application.termYears": "25",
+        "application.applicants[0].name": "Jonas Petraitis",
+        "application.applicants[0].birthDate": "1988-04-12",
+        "application.applicants[0].employment": "permanent",
+        "application.applicants[0].yearsEmployed": "8",
+        "application.applicants[0].monthlyIncome": "4200",
+        "application.applicants[0].monthlyExpenses": "1300",
+        "application.applicants[0].monthlyDebtPayments": "250",
+        "application.applicants[0].bureauScore": "765",
+        "application.applicants[0].delinquencies": "0",
+        "application.applicants[1].name": "Ieva Petraitiene",
+        "application.applicants[1].birthDate": "1990-09-30",
+        "application.applicants[1].employment": "contract",
+        "application.applicants[1].yearsEmployed": "3",
+        "application.applicants[1].monthlyIncome": "2600",
+        "application.applicants[1].monthlyExpenses": "900",
+        "application.applicants[1].monthlyDebtPayments": "0",
+        "application.applicants[1].bureauScore": "702",
+        "application.applicants[1].delinquencies": "1"
+      },
+      "assertions": {
+        "ltv": "0.75",
+        "householdScore": "115",
+        "grade.grade": "C",
+        "rate": "0.055",
+        "affordability.dsti": "0.321",
+        "knockouts": "[]",
+        "decision.outcome": "APPROVE",
+        "decision.reason": "Within the credit policy",
+        "offer.amount": "240000",
+        "offer.monthlyPayment": "1473.81",
+        "offer.counterOfferAmount": "0"
+      }
+    },
+    {
+      "id": "loanOriginationDecision-2",
+      "name": "High loan-to-value",
+      "order": 1,
+      "inputs": {
+        "application.applicationDate": "2026-10-01",
+        "application.loanAmount": "290000",
+        "application.propertyValue": "320000",
+        "application.termYears": "25",
+        "application.applicants[0].name": "Jonas Petraitis",
+        "application.applicants[0].birthDate": "1988-04-12",
+        "application.applicants[0].employment": "permanent",
+        "application.applicants[0].yearsEmployed": "8",
+        "application.applicants[0].monthlyIncome": "4200",
+        "application.applicants[0].monthlyExpenses": "1300",
+        "application.applicants[0].monthlyDebtPayments": "250",
+        "application.applicants[0].bureauScore": "765",
+        "application.applicants[0].delinquencies": "0",
+        "application.applicants[1].name": "Ieva Petraitiene",
+        "application.applicants[1].birthDate": "1990-09-30",
+        "application.applicants[1].employment": "contract",
+        "application.applicants[1].yearsEmployed": "3",
+        "application.applicants[1].monthlyIncome": "2600",
+        "application.applicants[1].monthlyExpenses": "900",
+        "application.applicants[1].monthlyDebtPayments": "0",
+        "application.applicants[1].bureauScore": "702",
+        "application.applicants[1].delinquencies": "1"
+      },
+      "assertions": {
+        "ltv": "0.9062",
+        "householdScore": "115",
+        "grade.grade": "C",
+        "rate": "0.06",
+        "affordability.dsti": "0.3947",
+        "knockouts": "[]",
+        "decision.outcome": "REFER",
+        "decision.reason": "Loan-to-value above 80%",
+        "offer.amount": "0",
+        "offer.monthlyPayment": "0",
+        "offer.counterOfferAmount": "256000"
+      }
+    },
+    {
+      "id": "loanOriginationDecision-3",
+      "name": "Co-applicant with three delinquencies",
+      "order": 2,
+      "inputs": {
+        "application.applicationDate": "2026-10-01",
+        "application.loanAmount": "240000",
+        "application.propertyValue": "320000",
+        "application.termYears": "25",
+        "application.applicants[0].name": "Jonas Petraitis",
+        "application.applicants[0].birthDate": "1988-04-12",
+        "application.applicants[0].employment": "permanent",
+        "application.applicants[0].yearsEmployed": "8",
+        "application.applicants[0].monthlyIncome": "4200",
+        "application.applicants[0].monthlyExpenses": "1300",
+        "application.applicants[0].monthlyDebtPayments": "250",
+        "application.applicants[0].bureauScore": "765",
+        "application.applicants[0].delinquencies": "0",
+        "application.applicants[1].name": "Ieva Petraitiene",
+        "application.applicants[1].birthDate": "1990-09-30",
+        "application.applicants[1].employment": "contract",
+        "application.applicants[1].yearsEmployed": "3",
+        "application.applicants[1].monthlyIncome": "2600",
+        "application.applicants[1].monthlyExpenses": "900",
+        "application.applicants[1].monthlyDebtPayments": "0",
+        "application.applicants[1].bureauScore": "702",
+        "application.applicants[1].delinquencies": "3"
+      },
+      "assertions": {
+        "ltv": "0.75",
+        "householdScore": "105",
+        "grade.grade": "D",
+        "rate": "0.065",
+        "affordability.dsti": "0.3451",
+        "knockouts": "[\"Ieva Petraitiene: DELINQUENCIES\"]",
+        "decision.outcome": "DECLINE",
+        "decision.reason": "A policy rule failed",
+        "offer.amount": "0",
+        "offer.monthlyPayment": "0",
+        "offer.counterOfferAmount": "0"
+      }
+    },
+    {
+      "id": "loanOriginationDecision-4",
+      "name": "Single applicant, payment too high",
+      "order": 3,
+      "inputs": {
+        "application.applicationDate": "2026-10-01",
+        "application.loanAmount": "300000",
+        "application.propertyValue": "420000",
+        "application.termYears": "20",
+        "application.applicants[0].name": "Jonas Petraitis",
+        "application.applicants[0].birthDate": "1988-04-12",
+        "application.applicants[0].employment": "permanent",
+        "application.applicants[0].yearsEmployed": "8",
+        "application.applicants[0].monthlyIncome": "3800",
+        "application.applicants[0].monthlyExpenses": "1300",
+        "application.applicants[0].monthlyDebtPayments": "600",
+        "application.applicants[0].bureauScore": "765",
+        "application.applicants[0].delinquencies": "0",
+        "application.applicants[1].name": "",
+        "application.applicants[1].birthDate": "",
+        "application.applicants[1].employment": "",
+        "application.applicants[1].yearsEmployed": "",
+        "application.applicants[1].monthlyIncome": "",
+        "application.applicants[1].monthlyExpenses": "",
+        "application.applicants[1].monthlyDebtPayments": "",
+        "application.applicants[1].bureauScore": "",
+        "application.applicants[1].delinquencies": ""
+      },
+      "assertions": {
+        "ltv": "0.7143",
+        "householdScore": "175",
+        "grade.grade": "A",
+        "rate": "0.0425",
+        "affordability.dsti": "0.7819",
+        "knockouts": "[]",
+        "decision.outcome": "DECLINE",
+        "decision.reason": "Debt service above 50% of income",
+        "offer.amount": "0",
+        "offer.monthlyPayment": "0",
+        "offer.counterOfferAmount": "140439"
+      }
+    },
+    {
+      "id": "loanOriginationDecision-5",
+      "name": "Young self-employed applicant",
+      "order": 4,
+      "inputs": {
+        "application.applicationDate": "2026-10-01",
+        "application.loanAmount": "150000",
+        "application.propertyValue": "320000",
+        "application.termYears": "25",
+        "application.applicants[0].name": "Tomas Kazlauskas",
+        "application.applicants[0].birthDate": "2003-02-01",
+        "application.applicants[0].employment": "self-employed",
+        "application.applicants[0].yearsEmployed": "1",
+        "application.applicants[0].monthlyIncome": "5200",
+        "application.applicants[0].monthlyExpenses": "1500",
+        "application.applicants[0].monthlyDebtPayments": "0",
+        "application.applicants[0].bureauScore": "690",
+        "application.applicants[0].delinquencies": "1",
+        "application.applicants[1].name": "",
+        "application.applicants[1].birthDate": "",
+        "application.applicants[1].employment": "",
+        "application.applicants[1].yearsEmployed": "",
+        "application.applicants[1].monthlyIncome": "",
+        "application.applicants[1].monthlyExpenses": "",
+        "application.applicants[1].monthlyDebtPayments": "",
+        "application.applicants[1].bureauScore": "",
+        "application.applicants[1].delinquencies": ""
+      },
+      "assertions": {
+        "ltv": "0.4688",
+        "householdScore": "85",
+        "grade.grade": "D",
+        "rate": "0.065",
+        "affordability.dsti": "0.252",
+        "knockouts": "[]",
+        "decision.outcome": "REFER",
+        "decision.reason": "Risk grade D needs an underwriter",
+        "offer.amount": "0",
+        "offer.monthlyPayment": "0",
+        "offer.counterOfferAmount": "0"
+      }
+    },
+    {
+      "id": "loanOriginationDecision-6",
+      "name": "Loan ends after the age of 75",
+      "order": 5,
+      "inputs": {
+        "application.applicationDate": "2026-10-01",
+        "application.loanAmount": "240000",
+        "application.propertyValue": "320000",
+        "application.termYears": "30",
+        "application.applicants[0].name": "Jonas Petraitis",
+        "application.applicants[0].birthDate": "1970-01-15",
+        "application.applicants[0].employment": "permanent",
+        "application.applicants[0].yearsEmployed": "8",
+        "application.applicants[0].monthlyIncome": "4200",
+        "application.applicants[0].monthlyExpenses": "1300",
+        "application.applicants[0].monthlyDebtPayments": "250",
+        "application.applicants[0].bureauScore": "765",
+        "application.applicants[0].delinquencies": "0",
+        "application.applicants[1].name": "",
+        "application.applicants[1].birthDate": "",
+        "application.applicants[1].employment": "",
+        "application.applicants[1].yearsEmployed": "",
+        "application.applicants[1].monthlyIncome": "",
+        "application.applicants[1].monthlyExpenses": "",
+        "application.applicants[1].monthlyDebtPayments": "",
+        "application.applicants[1].bureauScore": "",
+        "application.applicants[1].delinquencies": ""
+      },
+      "assertions": {
+        "ltv": "0.75",
+        "householdScore": "185",
+        "grade.grade": "A",
+        "rate": "0.0425",
+        "affordability.dsti": "0.4493",
+        "knockouts": "[\"Jonas Petraitis: AGE_AT_MATURITY\"]",
+        "decision.outcome": "DECLINE",
+        "decision.reason": "A policy rule failed",
+        "offer.amount": "0",
+        "offer.monthlyPayment": "0",
+        "offer.counterOfferAmount": "0"
+      }
+    }
+  ]
+}
