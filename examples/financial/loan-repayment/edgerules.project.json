@@ -2,13 +2,13 @@
   "$schema": "../../../node_modules/edgerules-react/schemas/example.schema.json",
   "kind": "EdgeRulesProject",
   "formatVersion": 3,
-  "name": "Loan repayment",
+  "name": "Loan Repayment",
   "description": "Prices a loan request and returns its monthly repayment schedule",
   "tags": ["finance", "loan", "decision-table", "workbook"],
   "model": {
     "format": "dsl",
     "source": "model/main.edge",
-    "name": "Loan Repayment Planner",
+    "name": "Loan Repayment",
     "version": "1.2.0"
   },
   "documentation": "docs/descriptions.json",

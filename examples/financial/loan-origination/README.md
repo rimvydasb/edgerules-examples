@@ -1,4 +1,4 @@
-# Mortgage Origination
+# Loan Origination
 
 Scores, checks, prices and decides a joint mortgage application. Every applicant gets a scorecard grade and a policy
 check; the household is graded by its weaker applicant, the loan is priced by grade and loan-to-value, the payment is

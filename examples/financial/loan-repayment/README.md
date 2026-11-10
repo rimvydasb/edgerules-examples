@@ -1,4 +1,4 @@
-# Loan Repayment Planner
+# Loan Repayment
 
 Prices consumer loans and mortgages by credit score and term, and plans their monthly repayment: the payment, the
 amortization schedule, the total cost and the yearly split of interest and principal.

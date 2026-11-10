@@ -1,4 +1,4 @@
-# Client Outreach Planner
+# Client Outreach
 
 Decides whom to call, email or text in one working day for the largest expected revenue. A sales team of two workers has
 seven hours each to reach 100 prospects. A call takes 30 minutes, an email 15 and an SMS 5, and each convinces a
