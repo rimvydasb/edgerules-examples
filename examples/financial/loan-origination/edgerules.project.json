@@ -2,13 +2,13 @@
   "$schema": "../../../node_modules/edgerules-react/schemas/example.schema.json",
   "kind": "EdgeRulesProject",
   "formatVersion": 3,
-  "name": "Loan origination",
+  "name": "Loan Origination",
   "description": "Scores, checks, prices and decides a joint mortgage application",
   "tags": ["finance", "loan", "origination", "scorecard", "decision-table", "workbook"],
   "model": {
     "format": "dsl",
     "source": "model/main.edge",
-    "name": "Mortgage Origination",
+    "name": "Loan Origination",
     "version": "2.0.0"
   },
   "documentation": "docs/descriptions.json",

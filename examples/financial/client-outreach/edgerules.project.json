@@ -2,13 +2,13 @@
   "$schema": "../../../node_modules/edgerules-react/schemas/example.schema.json",
   "kind": "EdgeRulesProject",
   "formatVersion": 3,
-  "name": "Client outreach",
+  "name": "Client Outreach",
   "description": "Decides whom to call, email or text in one working day for the largest expected revenue",
   "tags": ["sales", "outreach", "optimisation", "decision-table", "workbook"],
   "model": {
     "format": "dsl",
     "source": "model/main.edge",
-    "name": "Client Outreach Planner",
+    "name": "Client Outreach",
     "version": "1.0.0"
   },
   "documentation": "docs/descriptions.json",

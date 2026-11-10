@@ -29,7 +29,7 @@
       "id": "client-outreach",
       "industry": "financial",
       "level": "advanced",
-      "name": "Client outreach",
+      "name": "Client Outreach",
       "path": "examples/financial/client-outreach",
       "requires": [
         "milp-solver"
@@ -68,7 +68,7 @@
       "id": "loan-origination",
       "industry": "financial",
       "level": "intermediate",
-      "name": "Loan origination",
+      "name": "Loan Origination",
       "path": "examples/financial/loan-origination",
       "requires": [],
       "stats": {
@@ -104,7 +104,7 @@
       "id": "loan-repayment",
       "industry": "financial",
       "level": "beginner",
-      "name": "Loan repayment",
+      "name": "Loan Repayment",
       "path": "examples/financial/loan-repayment",
       "requires": [],
       "stats": {
