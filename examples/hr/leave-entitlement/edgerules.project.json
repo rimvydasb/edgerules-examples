@@ -1,0 +1,24 @@
+{
+  "$schema": "../../../node_modules/edgerules-react/schemas/example.schema.json",
+  "kind": "EdgeRulesProject",
+  "formatVersion": 3,
+  "name": "Leave Entitlement",
+  "description": "Annual leave days of every employee by age and service, pro rata for part-time and new hires, with a capped carry-over",
+  "tags": ["hr", "leave", "vacation-days", "dmn-benchmark", "decision-table", "workbook"],
+  "model": {
+    "format": "dsl",
+    "source": "model/main.edge",
+    "name": "Leave Entitlement",
+    "version": "1.0.0"
+  },
+  "documentation": "docs/descriptions.json",
+  "tests": ["tests/leaveEntitlements.tests.json", "tests/vacationDays.tests.json"],
+  "flow": "flow/layout.json",
+  "example": {
+    "industry": "hr",
+    "level": "beginner",
+    "features": ["type", "facts", "decision-table", "decision", "function", "service", "workbook", "chart"],
+    "engine": ">=0.2.7-alpha",
+    "authors": ["edgerules"]
+  }
+}

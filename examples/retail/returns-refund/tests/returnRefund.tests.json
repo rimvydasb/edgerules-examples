@@ -1,0 +1,375 @@
+{
+  "rows": [
+    {
+      "path": "request.requestId",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "request.requestDate",
+      "section": "inputs",
+      "order": 1,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "request.orderDate",
+      "section": "inputs",
+      "order": 2,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "request.deliveryDate",
+      "section": "inputs",
+      "order": 3,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "request.customerTier",
+      "section": "inputs",
+      "order": 4,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "request.items[0].sku",
+      "section": "inputs",
+      "order": 5,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "request.items[0].category",
+      "section": "inputs",
+      "order": 6,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "request.items[0].pricePaid",
+      "section": "inputs",
+      "order": 7,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "request.items[0].quantity",
+      "section": "inputs",
+      "order": 8,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "request.items[0].condition",
+      "section": "inputs",
+      "order": 9,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "request.items[0].reason",
+      "section": "inputs",
+      "order": 10,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "request.items[0].finalSale",
+      "section": "inputs",
+      "order": 11,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "outcome",
+      "section": "assertions",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "items[0].daysSinceDelivery",
+      "section": "assertions",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "items[0].verdict",
+      "section": "assertions",
+      "order": 2,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "items[0].restockingFee",
+      "section": "assertions",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "returnLabelFee",
+      "section": "assertions",
+      "order": 4,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "totalRefund",
+      "section": "assertions",
+      "order": 5,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "returnRefund-1",
+      "name": "Last day of the return window",
+      "order": 0,
+      "inputs": {
+        "request.requestId": "R-1",
+        "request.requestDate": "2026-12-01",
+        "request.orderDate": "2026-10-28",
+        "request.deliveryDate": "2026-11-01",
+        "request.customerTier": "standard",
+        "request.items[0].sku": "SKU-1",
+        "request.items[0].category": "apparel",
+        "request.items[0].pricePaid": "50",
+        "request.items[0].quantity": "1",
+        "request.items[0].condition": "unopened",
+        "request.items[0].reason": "changed-mind",
+        "request.items[0].finalSale": "false"
+      },
+      "assertions": {
+        "outcome": "ACCEPT",
+        "items[0].daysSinceDelivery": "30",
+        "items[0].verdict": "ACCEPT",
+        "items[0].restockingFee": "",
+        "returnLabelFee": "4.95",
+        "totalRefund": "45.05"
+      }
+    },
+    {
+      "id": "returnRefund-2",
+      "name": "One day after the return window",
+      "order": 1,
+      "inputs": {
+        "request.requestId": "R-1",
+        "request.requestDate": "2026-12-02",
+        "request.orderDate": "2026-10-28",
+        "request.deliveryDate": "2026-11-01",
+        "request.customerTier": "standard",
+        "request.items[0].sku": "SKU-1",
+        "request.items[0].category": "apparel",
+        "request.items[0].pricePaid": "50",
+        "request.items[0].quantity": "1",
+        "request.items[0].condition": "unopened",
+        "request.items[0].reason": "changed-mind",
+        "request.items[0].finalSale": "false"
+      },
+      "assertions": {
+        "outcome": "REJECT",
+        "items[0].daysSinceDelivery": "31",
+        "items[0].verdict": "REJECT",
+        "items[0].restockingFee": "",
+        "returnLabelFee": "0",
+        "totalRefund": "0"
+      }
+    },
+    {
+      "id": "returnRefund-3",
+      "name": "Opened electronics within 14 days",
+      "order": 2,
+      "inputs": {
+        "request.requestId": "R-1",
+        "request.requestDate": "2026-11-11",
+        "request.orderDate": "2026-10-28",
+        "request.deliveryDate": "2026-11-01",
+        "request.customerTier": "standard",
+        "request.items[0].sku": "SKU-1",
+        "request.items[0].category": "electronics",
+        "request.items[0].pricePaid": "200",
+        "request.items[0].quantity": "1",
+        "request.items[0].condition": "opened",
+        "request.items[0].reason": "changed-mind",
+        "request.items[0].finalSale": "false"
+      },
+      "assertions": {
+        "outcome": "PARTIAL",
+        "items[0].daysSinceDelivery": "",
+        "items[0].verdict": "PARTIAL",
+        "items[0].restockingFee": "30",
+        "returnLabelFee": "4.95",
+        "totalRefund": "165.05"
+      }
+    },
+    {
+      "id": "returnRefund-4",
+      "name": "Defective after the window, within the warranty",
+      "order": 3,
+      "inputs": {
+        "request.requestId": "R-1",
+        "request.requestDate": "2027-05-20",
+        "request.orderDate": "2026-10-28",
+        "request.deliveryDate": "2026-11-01",
+        "request.customerTier": "standard",
+        "request.items[0].sku": "SKU-1",
+        "request.items[0].category": "apparel",
+        "request.items[0].pricePaid": "50",
+        "request.items[0].quantity": "1",
+        "request.items[0].condition": "opened",
+        "request.items[0].reason": "defective",
+        "request.items[0].finalSale": "false"
+      },
+      "assertions": {
+        "outcome": "ACCEPT",
+        "items[0].daysSinceDelivery": "200",
+        "items[0].verdict": "ACCEPT",
+        "items[0].restockingFee": "",
+        "returnLabelFee": "0",
+        "totalRefund": "50"
+      }
+    },
+    {
+      "id": "returnRefund-5",
+      "name": "Final sale, changed mind",
+      "order": 4,
+      "inputs": {
+        "request.requestId": "R-1",
+        "request.requestDate": "2026-11-11",
+        "request.orderDate": "2026-10-28",
+        "request.deliveryDate": "2026-11-01",
+        "request.customerTier": "standard",
+        "request.items[0].sku": "SKU-1",
+        "request.items[0].category": "apparel",
+        "request.items[0].pricePaid": "50",
+        "request.items[0].quantity": "1",
+        "request.items[0].condition": "unopened",
+        "request.items[0].reason": "changed-mind",
+        "request.items[0].finalSale": "true"
+      },
+      "assertions": {
+        "outcome": "REJECT",
+        "items[0].daysSinceDelivery": "",
+        "items[0].verdict": "REJECT",
+        "items[0].restockingFee": "",
+        "returnLabelFee": "",
+        "totalRefund": "0"
+      }
+    },
+    {
+      "id": "returnRefund-6",
+      "name": "Final sale, wrong item sent",
+      "order": 5,
+      "inputs": {
+        "request.requestId": "R-1",
+        "request.requestDate": "2026-11-11",
+        "request.orderDate": "2026-10-28",
+        "request.deliveryDate": "2026-11-01",
+        "request.customerTier": "standard",
+        "request.items[0].sku": "SKU-1",
+        "request.items[0].category": "apparel",
+        "request.items[0].pricePaid": "50",
+        "request.items[0].quantity": "1",
+        "request.items[0].condition": "opened",
+        "request.items[0].reason": "wrong-item",
+        "request.items[0].finalSale": "true"
+      },
+      "assertions": {
+        "outcome": "ACCEPT",
+        "items[0].daysSinceDelivery": "",
+        "items[0].verdict": "ACCEPT",
+        "items[0].restockingFee": "0",
+        "returnLabelFee": "0",
+        "totalRefund": "50"
+      }
+    },
+    {
+      "id": "returnRefund-7",
+      "name": "Gold customer after 50 days",
+      "order": 6,
+      "inputs": {
+        "request.requestId": "R-1",
+        "request.requestDate": "2026-12-21",
+        "request.orderDate": "2026-10-28",
+        "request.deliveryDate": "2026-11-01",
+        "request.customerTier": "gold",
+        "request.items[0].sku": "SKU-1",
+        "request.items[0].category": "apparel",
+        "request.items[0].pricePaid": "50",
+        "request.items[0].quantity": "1",
+        "request.items[0].condition": "unopened",
+        "request.items[0].reason": "changed-mind",
+        "request.items[0].finalSale": "false"
+      },
+      "assertions": {
+        "outcome": "ACCEPT",
+        "items[0].daysSinceDelivery": "50",
+        "items[0].verdict": "",
+        "items[0].restockingFee": "",
+        "returnLabelFee": "0",
+        "totalRefund": "50"
+      }
+    },
+    {
+      "id": "returnRefund-8",
+      "name": "Damaged by the customer, two pieces",
+      "order": 7,
+      "inputs": {
+        "request.requestId": "R-1",
+        "request.requestDate": "2026-11-11",
+        "request.orderDate": "2026-10-28",
+        "request.deliveryDate": "2026-11-01",
+        "request.customerTier": "standard",
+        "request.items[0].sku": "SKU-1",
+        "request.items[0].category": "home",
+        "request.items[0].pricePaid": "40",
+        "request.items[0].quantity": "2",
+        "request.items[0].condition": "damaged",
+        "request.items[0].reason": "changed-mind",
+        "request.items[0].finalSale": "false"
+      },
+      "assertions": {
+        "outcome": "PARTIAL",
+        "items[0].daysSinceDelivery": "",
+        "items[0].verdict": "",
+        "items[0].restockingFee": "40",
+        "returnLabelFee": "4.95",
+        "totalRefund": "35.05"
+      }
+    },
+    {
+      "id": "returnRefund-9",
+      "name": "Unknown delivery date",
+      "order": 8,
+      "inputs": {
+        "request.requestId": "R-1",
+        "request.requestDate": "2026-11-11",
+        "request.orderDate": "2026-10-28",
+        "request.deliveryDate": "",
+        "request.customerTier": "standard",
+        "request.items[0].sku": "SKU-1",
+        "request.items[0].category": "apparel",
+        "request.items[0].pricePaid": "50",
+        "request.items[0].quantity": "1",
+        "request.items[0].condition": "unopened",
+        "request.items[0].reason": "changed-mind",
+        "request.items[0].finalSale": "false"
+      },
+      "assertions": {
+        "outcome": "REVIEW",
+        "items[0].daysSinceDelivery": "",
+        "items[0].verdict": "REVIEW",
+        "items[0].restockingFee": "",
+        "returnLabelFee": "",
+        "totalRefund": "0"
+      }
+    }
+  ]
+}

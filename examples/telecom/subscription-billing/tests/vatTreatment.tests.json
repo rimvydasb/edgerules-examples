@@ -1,0 +1,111 @@
+{
+  "rows": [
+    {
+      "path": "country",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "customerType",
+      "section": "inputs",
+      "order": 1,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "hasVatId",
+      "section": "inputs",
+      "order": 2,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "rate",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "note",
+      "section": "assertions",
+      "order": 1,
+      "type": "string",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "vatTreatment-1",
+      "name": "Customer in the US",
+      "order": 0,
+      "inputs": {
+        "country": "US",
+        "customerType": "consumer",
+        "hasVatId": "false"
+      },
+      "assertions": {
+        "rate": "0",
+        "note": ""
+      }
+    },
+    {
+      "id": "vatTreatment-2",
+      "name": "German business with a VAT ID",
+      "order": 1,
+      "inputs": {
+        "country": "DE",
+        "customerType": "business",
+        "hasVatId": "true"
+      },
+      "assertions": {
+        "rate": "0",
+        "note": "EU business customer: reverse charge"
+      }
+    },
+    {
+      "id": "vatTreatment-3",
+      "name": "German consumer",
+      "order": 2,
+      "inputs": {
+        "country": "DE",
+        "customerType": "consumer",
+        "hasVatId": "false"
+      },
+      "assertions": {
+        "rate": "0.19",
+        "note": ""
+      }
+    },
+    {
+      "id": "vatTreatment-4",
+      "name": "Lithuanian business with a VAT ID",
+      "order": 3,
+      "inputs": {
+        "country": "LT",
+        "customerType": "business",
+        "hasVatId": "true"
+      },
+      "assertions": {
+        "rate": "0.21",
+        "note": ""
+      }
+    },
+    {
+      "id": "vatTreatment-5",
+      "name": "French business without a VAT ID",
+      "order": 4,
+      "inputs": {
+        "country": "FR",
+        "customerType": "business",
+        "hasVatId": "false"
+      },
+      "assertions": {
+        "rate": "0.2",
+        "note": ""
+      }
+    }
+  ]
+}

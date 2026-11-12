@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 2,
+  "layouts": {
+    "bakeryBook": {
+      "positions": {},
+      "outputs": [
+        {
+          "id": "output",
+          "label": "Outcome",
+          "source": {
+            "node": "bakeryBook.decision",
+            "handle": "out:outcome"
+          }
+        },
+        {
+          "id": "output2",
+          "label": "Requests",
+          "source": {
+            "node": "bakeryBook.decision",
+            "handle": "out:requests"
+          }
+        },
+        {
+          "id": "output3",
+          "label": "Owners",
+          "source": {
+            "node": "bakeryBook.decision",
+            "handle": "out:owners"
+          }
+        }
+      ]
+    },
+    "fintechBook": {
+      "positions": {},
+      "outputs": [
+        {
+          "id": "output",
+          "label": "Outcome",
+          "source": {
+            "node": "fintechBook.decision",
+            "handle": "out:outcome"
+          }
+        },
+        {
+          "id": "output2",
+          "label": "Due diligence",
+          "source": {
+            "node": "fintechBook.decision",
+            "handle": "out:dueDiligence"
+          }
+        },
+        {
+          "id": "output3",
+          "label": "Owners",
+          "source": {
+            "node": "fintechBook.decision",
+            "handle": "out:owners"
+          }
+        },
+        {
+          "id": "output4",
+          "label": "Next review",
+          "source": {
+            "node": "fintechBook.decision",
+            "handle": "out:nextReview"
+          }
+        }
+      ],
+      "charts": [
+        {
+          "id": "chart",
+          "label": "Risk score",
+          "source": {
+            "node": "fintechBook.decision",
+            "handle": "out:riskBreakdown"
+          },
+          "config": {
+            "kind": "bar",
+            "x": "factor",
+            "series": ["points"]
+          },
+          "size": {
+            "width": 560,
+            "height": 320
+          }
+        }
+      ]
+    }
+  }
+}

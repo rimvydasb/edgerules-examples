@@ -1,0 +1,25 @@
+{
+  "$schema": "../../../node_modules/edgerules-react/schemas/example.schema.json",
+  "kind": "EdgeRulesProject",
+  "formatVersion": 3,
+  "name": "Last-Mile Delivery Assignment",
+  "description": "Assigns the parcels of a delivery shift to couriers: rules decide who may carry what, and an optimisation picks the best plan",
+  "tags": ["logistics", "last-mile", "dispatch", "optimisation", "milp", "decision-table"],
+  "model": {
+    "format": "dsl",
+    "source": "model/main.edge",
+    "name": "Last-Mile Delivery Assignment",
+    "version": "1.0.0"
+  },
+  "documentation": "docs/descriptions.json",
+  "tests": ["tests/courierFit.tests.json", "tests/planShift.tests.json", "tests/stopMinutes.tests.json"],
+  "flow": "flow/layout.json",
+  "example": {
+    "industry": "logistics",
+    "level": "advanced",
+    "features": ["type", "facts", "decision-table", "decision", "function", "optimise", "service", "workbook", "chart"],
+    "engine": ">=0.2.8-alpha",
+    "authors": ["edgerules"],
+    "requires": ["milp-solver"]
+  }
+}

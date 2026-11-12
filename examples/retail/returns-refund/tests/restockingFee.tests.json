@@ -1,0 +1,125 @@
+{
+  "rows": [
+    {
+      "path": "category",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "condition",
+      "section": "inputs",
+      "order": 1,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "sellerFault",
+      "section": "inputs",
+      "order": 2,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "rate",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "note",
+      "section": "assertions",
+      "order": 1,
+      "type": "string",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "restockingFee-1",
+      "name": "Seller at fault, damaged item",
+      "order": 0,
+      "inputs": {
+        "category": "home",
+        "condition": "damaged",
+        "sellerFault": "true"
+      },
+      "assertions": {
+        "rate": "0",
+        "note": ""
+      }
+    },
+    {
+      "id": "restockingFee-2",
+      "name": "Unopened electronics",
+      "order": 1,
+      "inputs": {
+        "category": "electronics",
+        "condition": "unopened",
+        "sellerFault": "false"
+      },
+      "assertions": {
+        "rate": "0",
+        "note": ""
+      }
+    },
+    {
+      "id": "restockingFee-3",
+      "name": "Opened electronics",
+      "order": 2,
+      "inputs": {
+        "category": "electronics",
+        "condition": "opened",
+        "sellerFault": "false"
+      },
+      "assertions": {
+        "rate": "0.15",
+        "note": ""
+      }
+    },
+    {
+      "id": "restockingFee-4",
+      "name": "Opened beauty product",
+      "order": 3,
+      "inputs": {
+        "category": "beauty",
+        "condition": "opened",
+        "sellerFault": "false"
+      },
+      "assertions": {
+        "rate": "1",
+        "note": "No refund: opened beauty product"
+      }
+    },
+    {
+      "id": "restockingFee-5",
+      "name": "Opened apparel",
+      "order": 4,
+      "inputs": {
+        "category": "apparel",
+        "condition": "opened",
+        "sellerFault": "false"
+      },
+      "assertions": {
+        "rate": "0.1",
+        "note": ""
+      }
+    },
+    {
+      "id": "restockingFee-6",
+      "name": "Damaged by the customer",
+      "order": 5,
+      "inputs": {
+        "category": "apparel",
+        "condition": "damaged",
+        "sellerFault": "false"
+      },
+      "assertions": {
+        "rate": "0.5",
+        "note": ""
+      }
+    }
+  ]
+}

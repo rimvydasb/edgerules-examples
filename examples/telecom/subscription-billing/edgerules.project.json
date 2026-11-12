@@ -1,0 +1,24 @@
+{
+  "$schema": "../../../node_modules/edgerules-react/schemas/example.schema.json",
+  "kind": "EdgeRulesProject",
+  "formatVersion": 3,
+  "name": "Subscription Billing",
+  "description": "Bills a mobile plan for one cycle: pro rata plan changes, graduated data overage, promotions, data rollover and VAT",
+  "tags": ["telecom", "billing", "subscription", "proration", "vat", "loop"],
+  "model": {
+    "format": "dsl",
+    "source": "model/main.edge",
+    "name": "Subscription Billing",
+    "version": "1.0.0"
+  },
+  "documentation": "docs/descriptions.json",
+  "tests": ["tests/billCycle.tests.json", "tests/graduatedCharge.tests.json", "tests/vatTreatment.tests.json"],
+  "flow": "flow/layout.json",
+  "example": {
+    "industry": "telecom",
+    "level": "intermediate",
+    "features": ["type", "facts", "decision-table", "decision", "function", "loop", "service", "workbook", "chart"],
+    "engine": ">=0.2.8-alpha",
+    "authors": ["edgerules"]
+  }
+}

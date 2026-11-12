@@ -1,0 +1,86 @@
+{
+  "rows": [
+    {
+      "path": "age",
+      "section": "inputs",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "factor",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "driverAgeFactor-1",
+      "name": "20 years old",
+      "order": 0,
+      "inputs": {
+        "age": "20"
+      },
+      "assertions": {
+        "factor": "1.9"
+      }
+    },
+    {
+      "id": "driverAgeFactor-2",
+      "name": "21 years old",
+      "order": 1,
+      "inputs": {
+        "age": "21"
+      },
+      "assertions": {
+        "factor": "1.45"
+      }
+    },
+    {
+      "id": "driverAgeFactor-3",
+      "name": "29 years old",
+      "order": 2,
+      "inputs": {
+        "age": "29"
+      },
+      "assertions": {
+        "factor": "1.15"
+      }
+    },
+    {
+      "id": "driverAgeFactor-4",
+      "name": "30 years old",
+      "order": 3,
+      "inputs": {
+        "age": "30"
+      },
+      "assertions": {
+        "factor": "1"
+      }
+    },
+    {
+      "id": "driverAgeFactor-5",
+      "name": "74 years old",
+      "order": 4,
+      "inputs": {
+        "age": "74"
+      },
+      "assertions": {
+        "factor": "1.05"
+      }
+    },
+    {
+      "id": "driverAgeFactor-6",
+      "name": "75 years old",
+      "order": 5,
+      "inputs": {
+        "age": "75"
+      },
+      "assertions": {
+        "factor": "1.25"
+      }
+    }
+  ]
+}

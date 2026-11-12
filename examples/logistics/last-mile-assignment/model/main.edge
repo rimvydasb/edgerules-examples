@@ -1,0 +1,178 @@
+{
+    // Structure layer: the delivery shift, its parcels and its couriers
+    @Name("Delivery shift")
+    type Shift: { shiftId: <string>; shiftDate: <date>; parcels: <Parcel[]>; couriers: <Courier[]> }
+    @Name("Parcel")
+    type Parcel: { owner shift: <Shift>; parcelId: <string>; zone: <string, enum: ["center", "north", "south", "east", "west"]>; weightKg: <number, min: 0>; priority: <string, enum: ["standard", "express"]>; coldChain: <boolean, default: false> }
+    @Name("Courier")
+    type Courier: { owner shift: <Shift>; courierId: <string>; name: <string>; vehicle: <string, enum: ["bike", "van", "cold-van"]>; capacityKg: <number, min: 0>; shiftMinutes: <number, min: 0>; zones: <string[]> }
+    type Pair: { parcelId: <string>; courierId: <string>; eligible: <boolean>; reason: <string>; weightKg: <number>; minutes: <number>; cost: <number>; value: <number> }
+
+    // Facts layer: the terms of each parcel and courier
+    facts ParcelFacts(parcel: Parcel): {
+        express: parcel.priority = "express"
+        deliveryValue: if express then dispatchPolicy().expressValue else dispatchPolicy().standardValue
+    }
+    facts ShiftFacts(shift: Shift): {
+        parcelCount: count(shift.parcels)
+        courierCount: count(shift.couriers)
+        expressCount: count(shift.parcels[express = true])
+        totalWeightKg: sum(for p in shift.parcels return p.weightKg)
+    }
+
+    // Knowledge layer: the dispatch policy, the fit rules, the stop times and the optimisation
+    func dispatchPolicy(): {
+        expressValue: 100
+        standardValue: 25
+        bikeMaxParcelKg: 5
+        costPerMinute: 0.4
+    }
+    ruleset courierFit(vehicle: string, zoneServed: boolean, coldChain: boolean, weightKg: number): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { zoneServed: false }, then: { eligible: false, reason: "The courier does not serve the zone" } }
+            { when: { coldChain: true, vehicle: not("cold-van") }, then: { eligible: false, reason: "The parcel needs a cold-chain van" } }
+            { when: { vehicle: "bike", weightKg: > 5 }, then: { eligible: false, reason: "The parcel is too heavy for a bike" } }
+        ]
+        default: { eligible: true, reason: "" }
+    }
+    ruleset stopMinutes(vehicle: string, zone: string): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { vehicle: "bike", zone: "center" }, then: { minutes: 8 } }
+            { when: { vehicle: "bike" }, then: { minutes: 15 } }
+            { when: { zone: "center" }, then: { minutes: 14 } }
+        ]
+        default: { minutes: 10 }
+    }
+    ruleset stopCost(vehicle: string): {
+        hitPolicy: "unique-match"
+        rules: [
+            { when: { vehicle: "bike" }, then: { perStop: 2 } }
+            { when: { vehicle: "van" }, then: { perStop: 4 } }
+            { when: { vehicle: "cold-van" }, then: { perStop: 6 } }
+        ]
+    }
+    func candidatePair(parcel: Parcel, courier: Courier): {
+        fit: courierFit(courier.vehicle, contains(courier.zones, parcel.zone), parcel.coldChain, parcel.weightKg)
+        stopTime: stopMinutes(courier.vehicle, parcel.zone).minutes
+        stopPrice: stopCost(courier.vehicle).perStop + stopTime * dispatchPolicy().costPerMinute
+        result: { parcelId: parcel.parcelId, courierId: courier.courierId, eligible: fit.eligible, reason: fit.reason, weightKg: parcel.weightKg, minutes: stopTime, cost: stopPrice, value: parcel.deliveryValue - stopPrice } as Pair
+    }
+    optimise dispatchPlan(pairs: Pair[], value: number[], parcelOf: number[], courierOf: number[], weightKg: number[], minutes: number[], mustDeliver: number[], capacityKg: number[], shiftMinutes: number[]): {
+        variables: {
+            assign: <number[], integer: true, min: 0, max: 1, over: pairs>
+        }
+        maximise: sum(for i in 0..(count(pairs) - 1) return value[i] * assign[i])
+        constraints: {
+            oncePerParcel: for p in 0..(count(mustDeliver) - 1) return sum(for i in 0..(count(pairs) - 1) return if parcelOf[i] = p then assign[i] else 0) <= 1
+            expressDelivered: for p in 0..(count(mustDeliver) - 1) return sum(for i in 0..(count(pairs) - 1) return if parcelOf[i] = p then assign[i] else 0) >= mustDeliver[p]
+            vehicleCapacity: for c in 0..(count(capacityKg) - 1) return sum(for i in 0..(count(pairs) - 1) return if courierOf[i] = c then weightKg[i] * assign[i] else 0) <= capacityKg[c]
+            shiftTime: for c in 0..(count(shiftMinutes) - 1) return sum(for i in 0..(count(pairs) - 1) return if courierOf[i] = c then minutes[i] * assign[i] else 0) <= shiftMinutes[c]
+        }
+        timeLimit: 5000
+    }
+
+    // Decisions layer: the candidate pairs, then the dispatch plan
+    decision Candidates(shift: Shift): {
+        all: for k in 0..(shift.parcelCount * shift.courierCount - 1) return candidatePair(shift.parcels[floor(k / shift.courierCount)], shift.couriers[modulo(k, shift.courierCount)]).result
+        eligible: all[eligible = true]
+    }
+    decision Dispatch(shift: Shift): {
+        pairs: shift.Candidates.eligible
+        parcelIds: for p in shift.parcels return p.parcelId
+        courierIds: for c in shift.couriers return c.courierId
+        plan: dispatchPlan(pairs: pairs, value: for x in pairs return x.value, parcelOf: for x in pairs return find(parcelIds, x.parcelId), courierOf: for x in pairs return find(courierIds, x.courierId), weightKg: for x in pairs return x.weightKg, minutes: for x in pairs return x.minutes, mustDeliver: for p in shift.parcels return if p.express and count(pairs[parcelId = p.parcelId]) > 0 then 1 else 0, capacityKg: for c in shift.couriers return c.capacityKg, shiftMinutes: for c in shift.couriers return c.shiftMinutes)
+        solved: contains(["optimal", "feasible"], plan.status)
+        diagnosis: if solved then "" else explain(plan.objective).origin
+        picks: for i in 0..(count(pairs) - 1) return { pair: pairs[i], assigned: solved and plan.assign[i] > 0.5 }
+        chosen: for pick in picks[assigned = true] return pick.pair
+        routes: for c in shift.couriers return {
+            courierId: c.courierId
+            name: c.name
+            vehicle: c.vehicle
+            parcels: for x in chosen[courierId = c.courierId] return x.parcelId
+            stops: count(chosen[courierId = c.courierId])
+            loadKg: sum(for x in chosen[courierId = c.courierId] return x.weightKg)
+            capacityKg: c.capacityKg
+            minutes: sum(for x in chosen[courierId = c.courierId] return x.minutes)
+            shiftMinutes: c.shiftMinutes
+            cost: round(sum(for x in chosen[courierId = c.courierId] return x.cost), 2)
+        }
+        unassigned: for p in shift.parcels return if count(chosen[parcelId = p.parcelId]) > 0 then { parcelId: "", reason: "" } else { parcelId: p.parcelId, reason: if count(pairs[parcelId = p.parcelId]) = 0 then "No courier can carry it: " + join(distinctValues(for x in shift.Candidates.all[parcelId = p.parcelId] return x.reason), "; ") else if solved then "No capacity or time left in the shift" else "Not planned: the shift has no feasible plan" }
+    }
+
+    // Service layer: the external contract
+    service planShift(shift: Shift): {
+        @ReturnNode(name: "Dispatch plan")
+        return: {
+            shiftId: shift.shiftId
+            status: shift.Dispatch.plan.status
+            diagnosis: shift.Dispatch.diagnosis
+            routes: shift.Dispatch.routes
+            unassigned: shift.Dispatch.unassigned[parcelId != ""]
+            summary: {
+                parcels: shift.parcelCount
+                express: shift.expressCount
+                assigned: count(shift.Dispatch.chosen)
+                totalCost: round(sum(for x in shift.Dispatch.chosen return x.cost), 2)
+                objective: if shift.Dispatch.solved then round(shift.Dispatch.plan.objective, 2) else 0
+            }
+        }
+    }
+
+    // Example execution
+    @Name("Tuesday morning shift")
+    workbook morningBook: {
+        @InputNode(name: "Delivery shift")
+        shift: {
+            shiftId: "SH-2026-11-17-AM"
+            shiftDate: date("2026-11-17")
+            couriers: [
+                { courierId: "C1"; name: "Mia (bike)"; vehicle: "bike"; capacityKg: 25; shiftMinutes: 30; zones: ["center"] }
+                { courierId: "C2"; name: "Jonas (van)"; vehicle: "van"; capacityKg: 400; shiftMinutes: 45; zones: ["center", "north", "east"] }
+                { courierId: "C3"; name: "Ruta (cold van)"; vehicle: "cold-van"; capacityKg: 250; shiftMinutes: 40; zones: ["center", "north", "south", "east"] }
+            ]
+            parcels: [
+                { parcelId: "P01"; zone: "center"; weightKg: 1.2; priority: "express" }
+                { parcelId: "P02"; zone: "center"; weightKg: 3.5; priority: "standard" }
+                { parcelId: "P03"; zone: "center"; weightKg: 12; priority: "standard" }
+                { parcelId: "P04"; zone: "north"; weightKg: 4; priority: "express" }
+                { parcelId: "P05"; zone: "north"; weightKg: 22; priority: "standard" }
+                { parcelId: "P06"; zone: "east"; weightKg: 8; priority: "standard" }
+                { parcelId: "P07"; zone: "east"; weightKg: 2; priority: "express"; coldChain: true }
+                { parcelId: "P08"; zone: "south"; weightKg: 6; priority: "standard" }
+                { parcelId: "P09"; zone: "south"; weightKg: 3; priority: "express" }
+                { parcelId: "P10"; zone: "west"; weightKg: 15; priority: "standard" }
+                { parcelId: "P11"; zone: "center"; weightKg: 0.8; priority: "standard" }
+                { parcelId: "P12"; zone: "center"; weightKg: 2.4; priority: "express" }
+                { parcelId: "P13"; zone: "north"; weightKg: 5.5; priority: "standard" }
+                { parcelId: "P14"; zone: "west"; weightKg: 1; priority: "standard"; coldChain: true }
+            ]
+        }
+        @FunctionNode(name: "Dispatch plan")
+        plan: planShift(shift: shift)
+    }
+
+    @Name("Peak express day")
+    workbook peakBook: {
+        @InputNode(name: "Delivery shift")
+        shift: {
+            shiftId: "SH-2026-12-21-PM"
+            shiftDate: date("2026-12-21")
+            couriers: [
+                { courierId: "C1"; name: "Mia (bike)"; vehicle: "bike"; capacityKg: 25; shiftMinutes: 30; zones: ["center"] }
+                { courierId: "C3"; name: "Ruta (cold van)"; vehicle: "cold-van"; capacityKg: 250; shiftMinutes: 25; zones: ["center", "north", "south", "east"] }
+            ]
+            parcels: [
+                { parcelId: "X01"; zone: "south"; weightKg: 2; priority: "express" }
+                { parcelId: "X02"; zone: "south"; weightKg: 4; priority: "express"; coldChain: true }
+                { parcelId: "X03"; zone: "east"; weightKg: 1; priority: "express" }
+                { parcelId: "X04"; zone: "center"; weightKg: 1.5; priority: "express" }
+                { parcelId: "X05"; zone: "center"; weightKg: 3; priority: "standard" }
+            ]
+        }
+        @FunctionNode(name: "Dispatch plan")
+        plan: planShift(shift: shift)
+    }
+}

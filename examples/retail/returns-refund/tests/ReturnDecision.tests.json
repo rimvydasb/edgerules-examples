@@ -1,0 +1,175 @@
+{
+  "rows": [
+    {
+      "path": "request.requestId",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "request.requestDate",
+      "section": "inputs",
+      "order": 1,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "request.orderDate",
+      "section": "inputs",
+      "order": 2,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "request.deliveryDate",
+      "section": "inputs",
+      "order": 3,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "request.customerTier",
+      "section": "inputs",
+      "order": 4,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "request.holidays",
+      "section": "inputs",
+      "order": 5,
+      "type": "date[]",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "request.items",
+      "section": "inputs",
+      "order": 6,
+      "type": "ReturnItem[]",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "verdicts",
+      "section": "assertions",
+      "order": 0,
+      "type": "string[]",
+      "present": true
+    },
+    {
+      "path": "outcome",
+      "section": "assertions",
+      "order": 1,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "sellerPaysShipping",
+      "section": "assertions",
+      "order": 2,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "itemsRefund",
+      "section": "assertions",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "returnLabelFee",
+      "section": "assertions",
+      "order": 4,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "totalRefund",
+      "section": "assertions",
+      "order": 5,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "refundBy",
+      "section": "assertions",
+      "order": 6,
+      "type": "date",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "ReturnDecision-1",
+      "name": "Five items, one defective",
+      "order": 0,
+      "inputs": {
+        "request.requestId": "R-1001",
+        "request.requestDate": "2026-11-20",
+        "request.orderDate": "2026-10-28",
+        "request.deliveryDate": "2026-10-31",
+        "request.customerTier": "silver",
+        "request.holidays": "[\"2026-11-26\"]",
+        "request.items": "[{\"sku\":\"JKT-220\",\"category\":\"apparel\",\"pricePaid\":120,\"quantity\":1,\"condition\":\"unopened\",\"reason\":\"changed-mind\"},{\"sku\":\"HDP-901\",\"category\":\"electronics\",\"pricePaid\":249,\"quantity\":1,\"condition\":\"opened\",\"reason\":\"changed-mind\"},{\"sku\":\"LMP-310\",\"category\":\"home\",\"pricePaid\":45,\"quantity\":2,\"condition\":\"opened\",\"reason\":\"changed-mind\"},{\"sku\":\"SRM-050\",\"category\":\"beauty\",\"pricePaid\":32,\"quantity\":1,\"condition\":\"opened\",\"reason\":\"changed-mind\"},{\"sku\":\"KTL-777\",\"category\":\"home\",\"pricePaid\":60,\"quantity\":1,\"condition\":\"opened\",\"reason\":\"defective\",\"finalSale\":true}]"
+      },
+      "assertions": {
+        "verdicts": "[\"ACCEPT\",\"REJECT\",\"PARTIAL\",\"REJECT\",\"ACCEPT\"]",
+        "outcome": "PARTIAL",
+        "sellerPaysShipping": "true",
+        "itemsRefund": "261",
+        "returnLabelFee": "0",
+        "totalRefund": "261",
+        "refundBy": "2026-11-30"
+      }
+    },
+    {
+      "id": "ReturnDecision-2",
+      "name": "Changed mind only: the customer pays the label",
+      "order": 1,
+      "inputs": {
+        "request.requestId": "R-1002",
+        "request.requestDate": "2026-11-20",
+        "request.orderDate": "2026-10-28",
+        "request.deliveryDate": "2026-10-31",
+        "request.customerTier": "silver",
+        "request.holidays": "[]",
+        "request.items": "[{\"sku\":\"JKT-220\",\"category\":\"apparel\",\"pricePaid\":120,\"quantity\":1,\"condition\":\"unopened\",\"reason\":\"changed-mind\"},{\"sku\":\"HDP-901\",\"category\":\"electronics\",\"pricePaid\":249,\"quantity\":1,\"condition\":\"opened\",\"reason\":\"changed-mind\"},{\"sku\":\"LMP-310\",\"category\":\"home\",\"pricePaid\":45,\"quantity\":2,\"condition\":\"opened\",\"reason\":\"changed-mind\"},{\"sku\":\"SRM-050\",\"category\":\"beauty\",\"pricePaid\":32,\"quantity\":1,\"condition\":\"opened\",\"reason\":\"changed-mind\"}]"
+      },
+      "assertions": {
+        "verdicts": "[\"ACCEPT\",\"REJECT\",\"PARTIAL\",\"REJECT\"]",
+        "outcome": "PARTIAL",
+        "sellerPaysShipping": "false",
+        "itemsRefund": "201",
+        "returnLabelFee": "4.95",
+        "totalRefund": "196.05",
+        "refundBy": "2026-11-27"
+      }
+    },
+    {
+      "id": "ReturnDecision-3",
+      "name": "Every item rejected",
+      "order": 2,
+      "inputs": {
+        "request.requestId": "R-1003",
+        "request.requestDate": "2026-11-20",
+        "request.orderDate": "2026-10-28",
+        "request.deliveryDate": "2026-10-31",
+        "request.customerTier": "standard",
+        "request.holidays": "[]",
+        "request.items": "[{\"sku\":\"HDP-901\",\"category\":\"electronics\",\"pricePaid\":249,\"quantity\":1,\"condition\":\"opened\",\"reason\":\"changed-mind\"},{\"sku\":\"SRM-050\",\"category\":\"beauty\",\"pricePaid\":32,\"quantity\":1,\"condition\":\"opened\",\"reason\":\"changed-mind\"}]"
+      },
+      "assertions": {
+        "verdicts": "[\"REJECT\",\"REJECT\"]",
+        "outcome": "REJECT",
+        "sellerPaysShipping": "",
+        "itemsRefund": "0",
+        "returnLabelFee": "0",
+        "totalRefund": "0",
+        "refundBy": ""
+      }
+    }
+  ]
+}

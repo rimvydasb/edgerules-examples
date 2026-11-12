@@ -1,0 +1,236 @@
+{
+    // Structure layer: the policy, its vehicle and its drivers
+    @Name("Policy quote")
+    type Policy: { policyId: <string>; quoteDate: <date>; coverage: <string, enum: ["liability", "standard", "comprehensive"]>; deductible: <number, enum: [250, 500, 1000]>; territory: <string, enum: ["urban", "suburban", "rural"]>; customerSince: <date>; otherPolicies: <number, default: 0>; paperless: <boolean, default: false>; vehicle: <Vehicle>; drivers: <Driver[]> }
+    @Name("Insured vehicle")
+    type Vehicle: { owner policy: <Policy>; make: <string>; modelYear: <number>; value: <number, min: 0>; safetyFeatures: <string[], default: []> }
+    @Name("Listed driver")
+    type Driver: { owner policy: <Policy>; name: <string>; birthDate: <date>; licenseDate: <date>; atFaultClaims: <number, default: 0>; minorViolations: <number, default: 0>; majorViolations: <number, default: 0> }
+
+    // Facts layer: the rating terms of each object
+    facts DriverFacts(driver: Driver): {
+        age: age(driver.birthDate, driver.policy.quoteDate)
+        licenseYears: age(driver.licenseDate, driver.policy.quoteDate)
+        claimFree: driver.atFaultClaims = 0 and driver.majorViolations = 0
+    }
+    facts VehicleFacts(vehicle: Vehicle): {
+        ageYears: max([0, vehicle.policy.quoteDate.year - vehicle.modelYear])
+        safetyFeatureCount: count(vehicle.safetyFeatures)
+    }
+    facts PolicyFacts(policy: Policy): {
+        tenureYears: age(policy.customerSince, policy.quoteDate)
+        driverCount: count(policy.drivers)
+    }
+
+    // Knowledge layer: the rate tables, the discounts and the underwriting rules
+    func ratingPolicy(): {
+        maxDiscount: 0.3
+        installmentCharge: 0.03
+    }
+    ruleset rateVersion(quoteDate: date): {
+        hitPolicy: "unique-match"
+        rules: [
+            { when: { quoteDate: < date("2027-01-01") }, then: { version: "2026-01" } }
+            { when: { quoteDate: >= date("2027-01-01") }, then: { version: "2027-01" } }
+        ]
+    }
+    ruleset baseRate(coverage: string, version: string): {
+        hitPolicy: "unique-match"
+        rules: [
+            { when: { version: "2026-01", coverage: "liability" }, then: { rate: 420 } }
+            { when: { version: "2026-01", coverage: "standard" }, then: { rate: 610 } }
+            { when: { version: "2026-01", coverage: "comprehensive" }, then: { rate: 780 } }
+            { when: { version: "2027-01", coverage: "liability" }, then: { rate: 445 } }
+            { when: { version: "2027-01", coverage: "standard" }, then: { rate: 650 } }
+            { when: { version: "2027-01", coverage: "comprehensive" }, then: { rate: 835 } }
+        ]
+    }
+    ruleset driverAgeFactor(age: number): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { age: < 21 }, then: { factor: 1.9 } }
+            { when: { age: 21..24 }, then: { factor: 1.45 } }
+            { when: { age: 25..29 }, then: { factor: 1.15 } }
+            { when: { age: 30..64 }, then: { factor: 1 } }
+            { when: { age: 65..74 }, then: { factor: 1.05 } }
+        ]
+        default: { factor: 1.25 }
+    }
+    ruleset experienceFactor(licenseYears: number): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { licenseYears: < 1 }, then: { factor: 1.4 } }
+            { when: { licenseYears: 1..2 }, then: { factor: 1.2 } }
+            { when: { licenseYears: 3..4 }, then: { factor: 1.1 } }
+        ]
+        default: { factor: 1 }
+    }
+    ruleset drivingRecordFactor(atFaultClaims: number, minorViolations: number): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { atFaultClaims: >= 2 }, then: { factor: 1.6 } }
+            { when: { atFaultClaims: 1, minorViolations: >= 1 }, then: { factor: 1.45 } }
+            { when: { atFaultClaims: 1 }, then: { factor: 1.3 } }
+            { when: { minorViolations: >= 2 }, then: { factor: 1.25 } }
+            { when: { minorViolations: 1 }, then: { factor: 1.1 } }
+        ]
+        default: { factor: 1 }
+    }
+    ruleset vehicleFactor(coverage: string, ageYears: number, value: number): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { coverage: "liability" }, then: { factor: 1 } }
+            { when: { value: > 80000 }, then: { factor: 1.5 } }
+            { when: { value: > 40000, ageYears: <= 3 }, then: { factor: 1.3 } }
+            { when: { value: > 40000 }, then: { factor: 1.2 } }
+            { when: { value: > 15000 }, then: { factor: 1 } }
+            { when: { ageYears: > 10 }, then: { factor: 0.8 } }
+        ]
+        default: { factor: 0.9 }
+    }
+    ruleset territoryFactor(territory: string): {
+        hitPolicy: "unique-match"
+        rules: [
+            { when: { territory: "urban" }, then: { factor: 1.25 } }
+            { when: { territory: "suburban" }, then: { factor: 1 } }
+            { when: { territory: "rural" }, then: { factor: 0.85 } }
+        ]
+    }
+    ruleset deductibleFactor(coverage: string, deductible: number): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { coverage: "liability" }, then: { factor: 1 } }
+            { when: { deductible: 250 }, then: { factor: 1.12 } }
+            { when: { deductible: 1000 }, then: { factor: 0.88 } }
+        ]
+        default: { factor: 1 }
+    }
+    ruleset discounts(otherPolicies: number, tenureYears: number, safetyFeatureCount: number, allClaimFree: boolean, paperless: boolean): {
+        hitPolicy: "collect-matches"
+        rules: [
+            { when: { otherPolicies: >= 1 }, then: { discount: "Multi-policy", rate: 0.1 } }
+            { when: { tenureYears: 3..4 }, then: { discount: "Loyalty 3 years", rate: 0.05 } }
+            { when: { tenureYears: >= 5 }, then: { discount: "Loyalty 5 years", rate: 0.08 } }
+            { when: { safetyFeatureCount: >= 2 }, then: { discount: "Safety features", rate: 0.05 } }
+            { when: { allClaimFree: true }, then: { discount: "Claim-free drivers", rate: 0.1 } }
+            { when: { paperless: true }, then: { discount: "Paperless", rate: 0.02 } }
+        ]
+    }
+    ruleset driverUnderwriting(age: number, licenseYears: number, atFaultClaims: number, majorViolations: number): {
+        hitPolicy: "collect-matches"
+        rules: [
+            { when: { age: < 18 }, then: { action: "DECLINE", reason: "The driver is under 18" } }
+            { when: { atFaultClaims: >= 3 }, then: { action: "DECLINE", reason: "Three or more at-fault claims" } }
+            { when: { majorViolations: >= 1 }, then: { action: "REFER", reason: "A major violation, such as driving under influence" } }
+            { when: { age: >= 18, licenseYears: < 1 }, then: { action: "REFER", reason: "Less than one year of driving experience" } }
+        ]
+    }
+
+    // Decisions layer: rating, discounts, underwriting and the premium
+    decision DriverRating(driver: Driver): {
+        ageFactor: driverAgeFactor(driver.age).factor
+        experience: experienceFactor(driver.licenseYears).factor
+        record: drivingRecordFactor(driver.atFaultClaims, driver.minorViolations).factor
+        factor: round(ageFactor * experience * record, 4)
+        findings: for finding in driverUnderwriting(driver.age, driver.licenseYears, driver.atFaultClaims, driver.majorViolations) return { driver: driver.name, action: finding.action, reason: finding.reason }
+    }
+    decision PolicyRating(policy: Policy): {
+        rateVersion: rateVersion(policy.quoteDate).version
+        base: baseRate(policy.coverage, rateVersion).rate
+        driverFactors: for d in policy.drivers return { driver: d.name, factor: d.DriverRating.factor }
+        ratedDriver: driverFactors[factor = max(for d in driverFactors return d.factor)][0]
+        breakdown: [
+            { factor: "Rated driver", value: ratedDriver.factor }
+            { factor: "Vehicle", value: vehicleFactor(policy.coverage, policy.vehicle.ageYears, policy.vehicle.value).factor }
+            { factor: "Territory", value: territoryFactor(policy.territory).factor }
+            { factor: "Deductible", value: deductibleFactor(policy.coverage, policy.deductible).factor }
+        ]
+        premium: roundHalfUp(base * product(for line in breakdown return line.value), 2)
+    }
+    decision PolicyDiscounts(policy: Policy): {
+        applied: discounts(policy.otherPolicies, policy.tenureYears, policy.vehicle.safetyFeatureCount, all(for driver in policy.drivers return driver.claimFree), policy.paperless)
+        earned: sum(for d in applied return d.rate)
+        rate: min([earned, ratingPolicy().maxDiscount])
+        capped: earned > rate
+        amount: roundHalfUp(policy.PolicyRating.premium * rate, 2)
+    }
+    decision Underwriting(policy: Policy): {
+        findings: flatten(for driver in policy.drivers return driver.DriverRating.findings)
+        actions: for finding in findings return finding.action
+        outcome: if contains(actions, "DECLINE") then "DECLINE" else if contains(actions, "REFER") then "REFER" else "ACCEPT"
+    }
+    decision PolicyPremium(policy: Policy): {
+        quoted: policy.Underwriting.outcome != "DECLINE"
+        annual: if quoted then policy.PolicyRating.premium - policy.PolicyDiscounts.amount else 0
+        monthly: roundHalfUp(annual * (1 + ratingPolicy().installmentCharge) / 12, 2)
+    }
+
+    // Service layer: the external contract
+    service autoQuote(policy: Policy): {
+        @ReturnNode(name: "Auto quote")
+        return: {
+            policyId: policy.policyId
+            outcome: policy.Underwriting.outcome
+            findings: policy.Underwriting.findings
+            rateVersion: policy.PolicyRating.rateVersion
+            baseRate: policy.PolicyRating.base
+            drivers: for driver in policy.drivers return {
+                name: driver.name
+                age: driver.age
+                licenseYears: driver.licenseYears
+                ageFactor: driver.DriverRating.ageFactor
+                experienceFactor: driver.DriverRating.experience
+                recordFactor: driver.DriverRating.record
+                factor: driver.DriverRating.factor
+            }
+            ratedDriver: policy.PolicyRating.ratedDriver.driver
+            breakdown: policy.PolicyRating.breakdown
+            premiumBeforeDiscounts: policy.PolicyRating.premium
+            discounts: policy.PolicyDiscounts.applied
+            discountRate: policy.PolicyDiscounts.rate
+            discountCapped: policy.PolicyDiscounts.capped
+            annualPremium: policy.PolicyPremium.annual
+            monthlyPremium: policy.PolicyPremium.monthly
+        }
+    }
+
+    // Example execution
+    func requoteOn(policy: Policy, quoteDate: date): {
+        result: autoQuote(policy: {
+            policyId: policy.policyId
+            quoteDate: quoteDate
+            coverage: policy.coverage
+            deductible: policy.deductible
+            territory: policy.territory
+            customerSince: policy.customerSince
+            otherPolicies: policy.otherPolicies
+            paperless: policy.paperless
+            vehicle: { make: policy.vehicle.make; modelYear: policy.vehicle.modelYear; value: policy.vehicle.value; safetyFeatures: policy.vehicle.safetyFeatures }
+            drivers: for d in policy.drivers return { name: d.name; birthDate: d.birthDate; licenseDate: d.licenseDate; atFaultClaims: d.atFaultClaims; minorViolations: d.minorViolations; majorViolations: d.majorViolations }
+        } as Policy)
+    }
+    @Name("Family car quote")
+    workbook familyBook: {
+        @InputNode(name: "Policy quote")
+        policy: {
+            policyId: "Q-2026-0417"
+            quoteDate: date("2026-11-12")
+            coverage: "comprehensive"
+            deductible: 500
+            territory: "suburban"
+            customerSince: date("2019-03-01")
+            otherPolicies: 1
+            paperless: true
+            vehicle: { make: "Volvo XC60"; modelYear: 2024; value: 46000; safetyFeatures: ["automatic-emergency-braking", "lane-keeping", "blind-spot"] }
+            drivers: [
+                { name: "Ingrid Larsen"; birthDate: date("1979-02-11"); licenseDate: date("1997-06-20") }
+                { name: "Erik Larsen"; birthDate: date("1977-08-03"); licenseDate: date("1995-04-02"); minorViolations: 1 }
+                { name: "Maja Larsen"; birthDate: date("2007-05-30"); licenseDate: date("2025-09-15") }
+            ]
+        }
+        @FunctionNode(name: "Quote")
+        quote: autoQuote(policy: policy)
+        @FunctionNode(name: "Requote after the rate change")
+        requote: requoteOn(policy: policy, quoteDate: date("2027-01-04"))
+    }
+}

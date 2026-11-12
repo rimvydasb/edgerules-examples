@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 2,
+  "layouts": {
+    "attackBook": {
+      "positions": {},
+      "outputs": [
+        {
+          "id": "output",
+          "label": "Action",
+          "source": {
+            "node": "attackBook.screening",
+            "handle": "out:action"
+          }
+        },
+        {
+          "id": "output2",
+          "label": "Challenger",
+          "source": {
+            "node": "attackBook.screening",
+            "handle": "out:challenger"
+          }
+        },
+        {
+          "id": "output3",
+          "label": "History profile",
+          "source": {
+            "node": "attackBook.screening",
+            "handle": "out:profile"
+          }
+        }
+      ],
+      "charts": [
+        {
+          "id": "chart",
+          "label": "Fired signals",
+          "source": {
+            "node": "attackBook.screening",
+            "handle": "out:signals"
+          },
+          "config": {
+            "kind": "bar",
+            "x": "code",
+            "series": ["weight"]
+          },
+          "size": {
+            "width": 520,
+            "height": 300
+          }
+        }
+      ]
+    },
+    "comparisonBook": {
+      "positions": {},
+      "outputs": [
+        {
+          "id": "output",
+          "label": "Actions",
+          "source": {
+            "node": "comparisonBook.comparison",
+            "handle": "out:result"
+          }
+        }
+      ],
+      "charts": [
+        {
+          "id": "chart",
+          "label": "Champion and challenger scores",
+          "source": {
+            "node": "comparisonBook.comparison",
+            "handle": "out:result"
+          },
+          "config": {
+            "kind": "bar",
+            "x": "transactionId",
+            "series": ["champion", "challenger"]
+          },
+          "size": {
+            "width": 560,
+            "height": 320
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "rows": [
+    {
+      "path": "score",
+      "section": "inputs",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "hardBlock",
+      "section": "inputs",
+      "order": 1,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "action",
+      "section": "assertions",
+      "order": 0,
+      "type": "string",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "challengerAction-1",
+      "name": "Low score",
+      "order": 0,
+      "inputs": {
+        "score": "34",
+        "hardBlock": "false"
+      },
+      "assertions": {
+        "action": "ALLOW"
+      }
+    },
+    {
+      "id": "challengerAction-2",
+      "name": "Review threshold",
+      "order": 1,
+      "inputs": {
+        "score": "35",
+        "hardBlock": "false"
+      },
+      "assertions": {
+        "action": "REVIEW"
+      }
+    },
+    {
+      "id": "challengerAction-3",
+      "name": "Block threshold",
+      "order": 2,
+      "inputs": {
+        "score": "60",
+        "hardBlock": "false"
+      },
+      "assertions": {
+        "action": "BLOCK"
+      }
+    }
+  ]
+}

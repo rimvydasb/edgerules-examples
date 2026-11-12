@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "byPath": {
+    "*": "Decides the monthly food assistance of a household: counted income, deductions, the gross, net and asset tests, the benefit, and the documents still missing",
+    "AssetTest": "The asset limit and the asset test",
+    "Benefit": "The maximum benefit minus 30% of the net income, with a minimum for small households",
+    "Eligibility": "The missing documents, the outcome of every test and the status ELIGIBLE, INELIGIBLE or PENDING",
+    "Household": "A household application: the application date, the housing costs, the assets and the members",
+    "HouseholdFacts": "The size, the counted gross and earned income, the elderly or disabled flag and the housing costs of the household",
+    "IncomeTest": "The gross income test, the deductions, the net income and the net income test",
+    "Member": "One household member: name, birth date, disability, student status and monthly income",
+    "MemberFacts": "The age of the member, whether the member is elderly or a student child, and the income that counts",
+    "assessHousehold": "Assesses a household application: status, monthly benefit, tests, missing documents and the income calculation",
+    "familyBook": "A family of four with one working parent, one parent with a pension and a working student child",
+    "familyBook.assessment": "The assessment of the application",
+    "familyBook.household": "The household application",
+    "incompleteBook": "An elderly couple whose application has no assets and no birth date for one member",
+    "incompleteBook.assessment": "The assessment of the application",
+    "incompleteBook.household": "The household application",
+    "maximumBenefit": "The maximum monthly benefit by household size",
+    "povertyLine": "The monthly poverty line by household size",
+    "programRules": "The parameters of the program: limits, deduction rates, the shelter cap and the minimum benefit",
+    "standardDeduction": "The standard deduction by household size",
+    "testOutcome": "PASSED, FAILED, or UNKNOWN when the evidence for a test is missing"
+  }
+}

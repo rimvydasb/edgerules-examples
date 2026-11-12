@@ -1,0 +1,385 @@
+{
+  "rows": [
+    {
+      "path": "leaveYear.calculationDate",
+      "section": "inputs",
+      "order": 0,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "leaveYear.employees[0].id",
+      "section": "inputs",
+      "order": 1,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "leaveYear.employees[0].name",
+      "section": "inputs",
+      "order": 2,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "leaveYear.employees[0].birthDate",
+      "section": "inputs",
+      "order": 3,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "leaveYear.employees[0].hireDate",
+      "section": "inputs",
+      "order": 4,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "leaveYear.employees[0].contract",
+      "section": "inputs",
+      "order": 5,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "leaveYear.employees[0].fte",
+      "section": "inputs",
+      "order": 6,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "leaveYear.employees[0].carriedOverDays",
+      "section": "inputs",
+      "order": 7,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "leaveYear.employees[0].takenDays",
+      "section": "inputs",
+      "order": 8,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "employees[0].age",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "employees[0].serviceYears",
+      "section": "assertions",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "employees[0].statutoryDays",
+      "section": "assertions",
+      "order": 2,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "employees[0].entitlement",
+      "section": "assertions",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "employees[0].carriedOver",
+      "section": "assertions",
+      "order": 4,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "employees[0].forfeited",
+      "section": "assertions",
+      "order": 5,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "employees[0].remaining",
+      "section": "assertions",
+      "order": 6,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "employees[0].overdrawn",
+      "section": "assertions",
+      "order": 7,
+      "type": "boolean",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "leaveEntitlements-1",
+      "name": "17 years old: 5 extra days",
+      "order": 0,
+      "inputs": {
+        "leaveYear.calculationDate": "2026-12-31",
+        "leaveYear.employees[0].id": "E01",
+        "leaveYear.employees[0].name": "Test Employee",
+        "leaveYear.employees[0].birthDate": "2009-01-01",
+        "leaveYear.employees[0].hireDate": "2024-09-01",
+        "leaveYear.employees[0].contract": "full-time",
+        "leaveYear.employees[0].fte": "",
+        "leaveYear.employees[0].carriedOverDays": "0",
+        "leaveYear.employees[0].takenDays": "0"
+      },
+      "assertions": {
+        "employees[0].age": "17",
+        "employees[0].serviceYears": "2",
+        "employees[0].statutoryDays": "27",
+        "employees[0].entitlement": "27",
+        "employees[0].carriedOver": "",
+        "employees[0].forfeited": "",
+        "employees[0].remaining": "27",
+        "employees[0].overdrawn": ""
+      }
+    },
+    {
+      "id": "leaveEntitlements-2",
+      "name": "Turns 18 on the calculation date: base days only",
+      "order": 1,
+      "inputs": {
+        "leaveYear.calculationDate": "2026-12-31",
+        "leaveYear.employees[0].id": "E01",
+        "leaveYear.employees[0].name": "Test Employee",
+        "leaveYear.employees[0].birthDate": "2008-12-31",
+        "leaveYear.employees[0].hireDate": "2024-09-01",
+        "leaveYear.employees[0].contract": "full-time",
+        "leaveYear.employees[0].fte": "",
+        "leaveYear.employees[0].carriedOverDays": "0",
+        "leaveYear.employees[0].takenDays": "0"
+      },
+      "assertions": {
+        "employees[0].age": "18",
+        "employees[0].serviceYears": "",
+        "employees[0].statutoryDays": "22",
+        "employees[0].entitlement": "22",
+        "employees[0].carriedOver": "",
+        "employees[0].forfeited": "",
+        "employees[0].remaining": "",
+        "employees[0].overdrawn": ""
+      }
+    },
+    {
+      "id": "leaveEntitlements-3",
+      "name": "59 years old: 2 extra days",
+      "order": 2,
+      "inputs": {
+        "leaveYear.calculationDate": "2026-12-31",
+        "leaveYear.employees[0].id": "E01",
+        "leaveYear.employees[0].name": "Test Employee",
+        "leaveYear.employees[0].birthDate": "1967-01-01",
+        "leaveYear.employees[0].hireDate": "2016-03-01",
+        "leaveYear.employees[0].contract": "full-time",
+        "leaveYear.employees[0].fte": "",
+        "leaveYear.employees[0].carriedOverDays": "0",
+        "leaveYear.employees[0].takenDays": "0"
+      },
+      "assertions": {
+        "employees[0].age": "59",
+        "employees[0].serviceYears": "10",
+        "employees[0].statutoryDays": "24",
+        "employees[0].entitlement": "",
+        "employees[0].carriedOver": "",
+        "employees[0].forfeited": "",
+        "employees[0].remaining": "",
+        "employees[0].overdrawn": ""
+      }
+    },
+    {
+      "id": "leaveEntitlements-4",
+      "name": "Turns 60 on the calculation date: 5 and 3 extra days",
+      "order": 3,
+      "inputs": {
+        "leaveYear.calculationDate": "2026-12-31",
+        "leaveYear.employees[0].id": "E01",
+        "leaveYear.employees[0].name": "Test Employee",
+        "leaveYear.employees[0].birthDate": "1966-12-31",
+        "leaveYear.employees[0].hireDate": "2016-03-01",
+        "leaveYear.employees[0].contract": "full-time",
+        "leaveYear.employees[0].fte": "",
+        "leaveYear.employees[0].carriedOverDays": "0",
+        "leaveYear.employees[0].takenDays": "0"
+      },
+      "assertions": {
+        "employees[0].age": "60",
+        "employees[0].serviceYears": "",
+        "employees[0].statutoryDays": "30",
+        "employees[0].entitlement": "",
+        "employees[0].carriedOver": "",
+        "employees[0].forfeited": "",
+        "employees[0].remaining": "",
+        "employees[0].overdrawn": ""
+      }
+    },
+    {
+      "id": "leaveEntitlements-5",
+      "name": "Exactly 15 years of service",
+      "order": 4,
+      "inputs": {
+        "leaveYear.calculationDate": "2026-12-31",
+        "leaveYear.employees[0].id": "E01",
+        "leaveYear.employees[0].name": "Test Employee",
+        "leaveYear.employees[0].birthDate": "1991-06-01",
+        "leaveYear.employees[0].hireDate": "2011-12-31",
+        "leaveYear.employees[0].contract": "full-time",
+        "leaveYear.employees[0].fte": "",
+        "leaveYear.employees[0].carriedOverDays": "0",
+        "leaveYear.employees[0].takenDays": "0"
+      },
+      "assertions": {
+        "employees[0].age": "",
+        "employees[0].serviceYears": "15",
+        "employees[0].statutoryDays": "24",
+        "employees[0].entitlement": "",
+        "employees[0].carriedOver": "",
+        "employees[0].forfeited": "",
+        "employees[0].remaining": "",
+        "employees[0].overdrawn": ""
+      }
+    },
+    {
+      "id": "leaveEntitlements-6",
+      "name": "Exactly 30 years of service",
+      "order": 5,
+      "inputs": {
+        "leaveYear.calculationDate": "2026-12-31",
+        "leaveYear.employees[0].id": "E01",
+        "leaveYear.employees[0].name": "Test Employee",
+        "leaveYear.employees[0].birthDate": "1976-05-05",
+        "leaveYear.employees[0].hireDate": "1996-12-31",
+        "leaveYear.employees[0].contract": "full-time",
+        "leaveYear.employees[0].fte": "",
+        "leaveYear.employees[0].carriedOverDays": "0",
+        "leaveYear.employees[0].takenDays": "0"
+      },
+      "assertions": {
+        "employees[0].age": "",
+        "employees[0].serviceYears": "30",
+        "employees[0].statutoryDays": "30",
+        "employees[0].entitlement": "",
+        "employees[0].carriedOver": "",
+        "employees[0].forfeited": "",
+        "employees[0].remaining": "",
+        "employees[0].overdrawn": ""
+      }
+    },
+    {
+      "id": "leaveEntitlements-7",
+      "name": "Part-time 60%, hired in October",
+      "order": 6,
+      "inputs": {
+        "leaveYear.calculationDate": "2026-12-31",
+        "leaveYear.employees[0].id": "E01",
+        "leaveYear.employees[0].name": "Test Employee",
+        "leaveYear.employees[0].birthDate": "1996-06-01",
+        "leaveYear.employees[0].hireDate": "2026-10-01",
+        "leaveYear.employees[0].contract": "part-time",
+        "leaveYear.employees[0].fte": "0.6",
+        "leaveYear.employees[0].carriedOverDays": "0",
+        "leaveYear.employees[0].takenDays": "0"
+      },
+      "assertions": {
+        "employees[0].age": "",
+        "employees[0].serviceYears": "0",
+        "employees[0].statutoryDays": "22",
+        "employees[0].entitlement": "3.5",
+        "employees[0].carriedOver": "",
+        "employees[0].forfeited": "",
+        "employees[0].remaining": "3.5",
+        "employees[0].overdrawn": ""
+      }
+    },
+    {
+      "id": "leaveEntitlements-8",
+      "name": "FTE is ignored for a full-time contract",
+      "order": 7,
+      "inputs": {
+        "leaveYear.calculationDate": "2026-12-31",
+        "leaveYear.employees[0].id": "E01",
+        "leaveYear.employees[0].name": "Test Employee",
+        "leaveYear.employees[0].birthDate": "1996-06-01",
+        "leaveYear.employees[0].hireDate": "2021-06-01",
+        "leaveYear.employees[0].contract": "full-time",
+        "leaveYear.employees[0].fte": "0.5",
+        "leaveYear.employees[0].carriedOverDays": "0",
+        "leaveYear.employees[0].takenDays": "0"
+      },
+      "assertions": {
+        "employees[0].age": "",
+        "employees[0].serviceYears": "",
+        "employees[0].statutoryDays": "",
+        "employees[0].entitlement": "22",
+        "employees[0].carriedOver": "",
+        "employees[0].forfeited": "",
+        "employees[0].remaining": "",
+        "employees[0].overdrawn": ""
+      }
+    },
+    {
+      "id": "leaveEntitlements-9",
+      "name": "Carry-over capped at 5 days",
+      "order": 8,
+      "inputs": {
+        "leaveYear.calculationDate": "2026-12-31",
+        "leaveYear.employees[0].id": "E01",
+        "leaveYear.employees[0].name": "Test Employee",
+        "leaveYear.employees[0].birthDate": "1996-06-01",
+        "leaveYear.employees[0].hireDate": "2021-06-01",
+        "leaveYear.employees[0].contract": "full-time",
+        "leaveYear.employees[0].fte": "",
+        "leaveYear.employees[0].carriedOverDays": "9",
+        "leaveYear.employees[0].takenDays": "4"
+      },
+      "assertions": {
+        "employees[0].age": "",
+        "employees[0].serviceYears": "",
+        "employees[0].statutoryDays": "",
+        "employees[0].entitlement": "22",
+        "employees[0].carriedOver": "5",
+        "employees[0].forfeited": "4",
+        "employees[0].remaining": "23",
+        "employees[0].overdrawn": "false"
+      }
+    },
+    {
+      "id": "leaveEntitlements-10",
+      "name": "More days taken than available",
+      "order": 9,
+      "inputs": {
+        "leaveYear.calculationDate": "2026-12-31",
+        "leaveYear.employees[0].id": "E01",
+        "leaveYear.employees[0].name": "Test Employee",
+        "leaveYear.employees[0].birthDate": "1996-06-01",
+        "leaveYear.employees[0].hireDate": "2021-06-01",
+        "leaveYear.employees[0].contract": "full-time",
+        "leaveYear.employees[0].fte": "",
+        "leaveYear.employees[0].carriedOverDays": "1",
+        "leaveYear.employees[0].takenDays": "26"
+      },
+      "assertions": {
+        "employees[0].age": "",
+        "employees[0].serviceYears": "",
+        "employees[0].statutoryDays": "",
+        "employees[0].entitlement": "",
+        "employees[0].carriedOver": "1",
+        "employees[0].forfeited": "0",
+        "employees[0].remaining": "-3",
+        "employees[0].overdrawn": "true"
+      }
+    }
+  ]
+}

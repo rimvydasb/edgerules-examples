@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 2,
+  "layouts": {
+    "hazardousBook": {
+      "positions": {},
+      "outputs": [
+        {
+          "id": "output",
+          "label": "Status",
+          "source": {
+            "node": "hazardousBook.selection",
+            "handle": "out:status"
+          }
+        },
+        {
+          "id": "output2",
+          "label": "Selected carrier",
+          "source": {
+            "node": "hazardousBook.selection",
+            "handle": "out:carrier"
+          }
+        },
+        {
+          "id": "output3",
+          "label": "Excluded carriers",
+          "source": {
+            "node": "hazardousBook.selection",
+            "handle": "out:excluded"
+          }
+        }
+      ]
+    },
+    "homeDeliveryBook": {
+      "positions": {},
+      "outputs": [
+        {
+          "id": "output",
+          "label": "Selected carrier",
+          "source": {
+            "node": "homeDeliveryBook.selection",
+            "handle": "out:carrier"
+          }
+        },
+        {
+          "id": "output2",
+          "label": "Price",
+          "source": {
+            "node": "homeDeliveryBook.selection",
+            "handle": "out:price"
+          }
+        },
+        {
+          "id": "output3",
+          "label": "Excluded carriers",
+          "source": {
+            "node": "homeDeliveryBook.selection",
+            "handle": "out:excluded"
+          }
+        },
+        {
+          "id": "output4",
+          "label": "All quotes",
+          "source": {
+            "node": "homeDeliveryBook.quotes",
+            "handle": "out:quotes"
+          }
+        }
+      ],
+      "charts": [
+        {
+          "id": "chart",
+          "label": "Eligible carriers by price",
+          "source": {
+            "node": "homeDeliveryBook.selection",
+            "handle": "out:ranking"
+          },
+          "config": {
+            "kind": "bar",
+            "x": "carrier",
+            "series": ["price"]
+          },
+          "size": {
+            "width": 480,
+            "height": 300
+          }
+        }
+      ]
+    }
+  }
+}

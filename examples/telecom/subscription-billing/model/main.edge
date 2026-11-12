@@ -1,0 +1,149 @@
+{
+    // Structure layer: the billing cycle, its plan periods and its promotions
+    @Name("Billing cycle")
+    type BillingCycle: { accountId: <string>; periodStart: <date>; periodEnd: <date>; country: <string, enum: ["LT", "DE", "FR", "ES", "NL", "US"]>; customerType: <string, enum: ["consumer", "business"]>; vatId: <string, default: "">; carriedOverGb: <number, default: 0, min: 0>; usedGb: <number, default: 0, min: 0>; plans: <PlanPeriod[]>; promotions: <Promotion[], default: []> }
+    @Name("Plan period")
+    type PlanPeriod: { owner cycle: <BillingCycle>; plan: <string, enum: ["start", "plus", "max"]>; startDate: <date>; endDate: <date> }
+    @Name("Promotion")
+    type Promotion: { owner cycle: <BillingCycle>; code: <string>; percent: <number, min: 0, max: 100>; validUntil: <date> }
+    type Tier: { tier: <string>; upToGb: <number>; pricePerGb: <number> }
+    type TierLine: { tier: <string>; gb: <number>; pricePerGb: <number>; amount: <number> }
+
+    // Facts layer: the calendar of the cycle
+    facts BillingCycleFacts(cycle: BillingCycle): {
+        periodDays: (cycle.periodEnd - cycle.periodStart).days + 1
+        currentPlan: cycle.plans[count(cycle.plans) - 1].plan
+        hasVatId: cycle.vatId != ""
+    }
+    facts PlanPeriodFacts(period: PlanPeriod): {
+        days: (period.endDate - period.startDate).days + 1
+        share: days / period.cycle.periodDays
+    }
+    facts PromotionFacts(promotion: Promotion): {
+        lastDay: min([promotion.validUntil, promotion.cycle.periodEnd])
+        days: max([0, (lastDay - promotion.cycle.periodStart).days + 1])
+    }
+
+    // Knowledge layer: the plan catalogue, the overage tiers and the VAT rules
+    ruleset planCatalog(plan: string): {
+        hitPolicy: "unique-match"
+        rules: [
+            { when: { plan: "start" }, then: { name: "Start 5 GB", monthlyFee: 15, dataGb: 5, rolloverCapGb: 2 } }
+            { when: { plan: "plus" }, then: { name: "Plus 20 GB", monthlyFee: 25, dataGb: 20, rolloverCapGb: 5 } }
+            { when: { plan: "max" }, then: { name: "Max 100 GB", monthlyFee: 40, dataGb: 100, rolloverCapGb: 10 } }
+        ]
+    }
+    func overageTiers(): [
+        { tier: "First 5 GB"; upToGb: 5; pricePerGb: 2 }
+        { tier: "Next 15 GB"; upToGb: 20; pricePerGb: 1.5 }
+        { tier: "Above 20 GB"; upToGb: 1000000; pricePerGb: 1 }
+    ]
+    loop graduatedCharge(units: number, tiers: Tier[]): {
+        over: tiers
+        state: { remaining: units, from: 0, billed: 0, lines: <TierLine[], []> }
+        while: state.remaining > 0
+        do: {
+            billed: min([state.remaining, item.upToGb - state.from])
+            remaining: state.remaining - billed
+            from: item.upToGb
+            lines: append(state.lines, { tier: item.tier, gb: billed, pricePerGb: item.pricePerGb, amount: billed * item.pricePerGb })
+        }
+        return: { lines: state.lines, total: sum(for line in state.lines return line.amount) }
+    }
+    ruleset vatTreatment(country: string, customerType: string, hasVatId: boolean): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { country: "US" }, then: { rate: 0, note: "Outside the EU: no VAT" } }
+            { when: { country: not("LT"), customerType: "business", hasVatId: true }, then: { rate: 0, note: "EU business customer: reverse charge" } }
+            { when: { country: "LT" }, then: { rate: 0.21, note: "Lithuanian VAT 21%" } }
+            { when: { country: "DE" }, then: { rate: 0.19, note: "German VAT 19%" } }
+            { when: { country: "FR" }, then: { rate: 0.2, note: "French VAT 20%" } }
+            { when: { country: "ES" }, then: { rate: 0.21, note: "Spanish VAT 21%" } }
+            { when: { country: "NL" }, then: { rate: 0.21, note: "Dutch VAT 21%" } }
+        ]
+    }
+
+    // Decisions layer: recurring charges, usage, discounts and the invoice
+    decision RecurringCharges(cycle: BillingCycle): {
+        lines: for period in cycle.plans return {
+            description: planCatalog(period.plan).name + " for " + toString(period.days) + " of " + toString(cycle.periodDays) + " days"
+            amount: round(planCatalog(period.plan).monthlyFee * period.share, 2)
+        }
+        total: sum(for line in lines return line.amount)
+    }
+    decision DataUsage(cycle: BillingCycle): {
+        planGb: round(sum(for period in cycle.plans return planCatalog(period.plan).dataGb * period.share), 2)
+        includedGb: planGb + cycle.carriedOverGb
+        overageGb: ceiling(max([0, cycle.usedGb - includedGb]))
+        unusedGb: max([0, includedGb - cycle.usedGb])
+        rolloverGb: round(min([unusedGb, planCatalog(cycle.currentPlan).rolloverCapGb]), 2)
+        overage: graduatedCharge(overageGb, overageTiers())
+    }
+    decision Discounts(cycle: BillingCycle): {
+        lines: for promotion in cycle.promotions return {
+            description: "Promotion " + promotion.code + " for " + toString(promotion.days) + " days"
+            amount: 0 - round(cycle.RecurringCharges.total * promotion.percent / 100 * promotion.days / cycle.periodDays, 2)
+        }
+        total: sum(for line in lines return line.amount)
+    }
+    decision Invoice(cycle: BillingCycle): {
+        overageLines: for line in cycle.DataUsage.overage.lines return { description: "Extra data, " + line.tier + ": " + toString(line.gb) + " GB", amount: line.amount }
+        lines: flatten([cycle.RecurringCharges.lines, overageLines, cycle.Discounts.lines])
+        net: round(cycle.RecurringCharges.total + cycle.DataUsage.overage.total + cycle.Discounts.total, 2)
+        vat: vatTreatment(cycle.country, cycle.customerType, cycle.hasVatId)
+        vatAmount: round(net * vat.rate, 2)
+        total: net + vatAmount
+    }
+
+    // Service layer: the external contract
+    service billCycle(cycle: BillingCycle): {
+        @ReturnNode(name: "Invoice")
+        return: {
+            accountId: cycle.accountId
+            periodDays: cycle.periodDays
+            lines: cycle.Invoice.lines
+            net: cycle.Invoice.net
+            vatNote: cycle.Invoice.vat.note
+            vatAmount: cycle.Invoice.vatAmount
+            total: cycle.Invoice.total
+            usage: {
+                includedGb: cycle.DataUsage.includedGb
+                usedGb: cycle.usedGb
+                overageGb: cycle.DataUsage.overageGb
+                overageTiers: cycle.DataUsage.overage.lines
+                rolloverGb: cycle.DataUsage.rolloverGb
+            }
+        }
+    }
+
+    // Example execution
+    @Name("Upgrade in February")
+    workbook upgradeBook: {
+        @InputNode(name: "Billing cycle")
+        cycle: {
+            accountId: "ACC-30412"
+            periodStart: date("2027-02-01")
+            periodEnd: date("2027-02-28")
+            country: "LT"
+            customerType: "consumer"
+            carriedOverGb: 1.5
+            usedGb: 32.4
+            plans: [
+                { plan: "start"; startDate: date("2027-02-01"); endDate: date("2027-02-14") }
+                { plan: "plus"; startDate: date("2027-02-15"); endDate: date("2027-02-28") }
+            ]
+            promotions: [
+                { code: "WELCOME20"; percent: 20; validUntil: date("2027-02-10") }
+            ]
+        }
+        @FunctionNode(name: "Invoice")
+        invoice: billCycle(cycle: cycle)
+    }
+    @Name("Overage tiers")
+    workbook tiersBook: {
+        @InputNode(name: "Extra data in GB")
+        extraGb: 27
+        @FunctionNode(name: "Graduated charge")
+        charge: graduatedCharge(units: extraGb, tiers: overageTiers())
+    }
+}

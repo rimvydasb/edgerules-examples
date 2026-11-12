@@ -1,0 +1,133 @@
+{
+  "rows": [
+    {
+      "path": "shipment.shipmentId",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "shipment.destinationZone",
+      "section": "inputs",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "shipment.serviceLevel",
+      "section": "inputs",
+      "order": 2,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "shipment.residential",
+      "section": "inputs",
+      "order": 3,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "shipment.declaredValue",
+      "section": "inputs",
+      "order": 4,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "shipment.hazardous",
+      "section": "inputs",
+      "order": 5,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "shipment.packages",
+      "section": "inputs",
+      "order": 6,
+      "type": "Package[]",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "lowestPrice",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "found",
+      "section": "assertions",
+      "order": 1,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "status",
+      "section": "assertions",
+      "order": 2,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "reason",
+      "section": "assertions",
+      "order": 3,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "ranking",
+      "section": "assertions",
+      "order": 4,
+      "type": "array",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "CarrierSelection-1",
+      "name": "Three carriers ranked by price",
+      "order": 0,
+      "inputs": {
+        "shipment.shipmentId": "S-1",
+        "shipment.destinationZone": "5",
+        "shipment.serviceLevel": "standard",
+        "shipment.residential": "true",
+        "shipment.declaredValue": "600",
+        "shipment.hazardous": "false",
+        "shipment.packages": "[{\"lengthCm\":40,\"widthCm\":30,\"heightCm\":30,\"weightKg\":6},{\"lengthCm\":60,\"widthCm\":40,\"heightCm\":40,\"weightKg\":9}]"
+      },
+      "assertions": {
+        "lowestPrice": "43.11",
+        "found": "true",
+        "status": "SELECTED",
+        "reason": "ParcelGo is the cheapest eligible carrier",
+        "ranking": "[{\"carrier\":\"ParcelGo\",\"price\":43.11,\"days\":3},{\"carrier\":\"SwiftAir\",\"price\":51.72,\"days\":2},{\"carrier\":\"RoadLine\",\"price\":58.92,\"days\":3}]"
+      }
+    },
+    {
+      "id": "CarrierSelection-2",
+      "name": "Every carrier excluded",
+      "order": 1,
+      "inputs": {
+        "shipment.shipmentId": "S-1",
+        "shipment.destinationZone": "3",
+        "shipment.serviceLevel": "express",
+        "shipment.residential": "false",
+        "shipment.declaredValue": "0",
+        "shipment.hazardous": "true",
+        "shipment.packages": "[{\"lengthCm\":200,\"widthCm\":50,\"heightCm\":50,\"weightKg\":40}]"
+      },
+      "assertions": {
+        "lowestPrice": "Invalid('min of an empty list')",
+        "found": "false",
+        "status": "NO_CARRIER",
+        "reason": "No carrier can take the shipment: 4 carriers have a restriction",
+        "ranking": "[]"
+      }
+    }
+  ]
+}

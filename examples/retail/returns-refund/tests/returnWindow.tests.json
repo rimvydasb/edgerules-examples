@@ -1,0 +1,87 @@
+{
+  "rows": [
+    {
+      "path": "category",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "tier",
+      "section": "inputs",
+      "order": 1,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "days",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "returnWindow-1",
+      "name": "Electronics, gold customer",
+      "order": 0,
+      "inputs": {
+        "category": "electronics",
+        "tier": "gold"
+      },
+      "assertions": {
+        "days": "30"
+      }
+    },
+    {
+      "id": "returnWindow-2",
+      "name": "Electronics, standard customer",
+      "order": 1,
+      "inputs": {
+        "category": "electronics",
+        "tier": "standard"
+      },
+      "assertions": {
+        "days": "14"
+      }
+    },
+    {
+      "id": "returnWindow-3",
+      "name": "Home, gold customer",
+      "order": 2,
+      "inputs": {
+        "category": "home",
+        "tier": "gold"
+      },
+      "assertions": {
+        "days": "60"
+      }
+    },
+    {
+      "id": "returnWindow-4",
+      "name": "Apparel, silver customer",
+      "order": 3,
+      "inputs": {
+        "category": "apparel",
+        "tier": "silver"
+      },
+      "assertions": {
+        "days": "45"
+      }
+    },
+    {
+      "id": "returnWindow-5",
+      "name": "Beauty, standard customer",
+      "order": 4,
+      "inputs": {
+        "category": "beauty",
+        "tier": "standard"
+      },
+      "assertions": {
+        "days": "30"
+      }
+    }
+  ]
+}

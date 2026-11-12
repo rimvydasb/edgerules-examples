@@ -1,0 +1,28 @@
+{
+  "$schema": "../../../node_modules/edgerules-react/schemas/example.schema.json",
+  "kind": "EdgeRulesProject",
+  "formatVersion": 3,
+  "name": "Real-Time Fraud Detection",
+  "description": "Scores a card payment against the recent history of the card, with a champion and a challenger strategy on the same signals",
+  "tags": ["finance", "fraud", "cards", "velocity", "champion-challenger", "loop"],
+  "model": {
+    "format": "dsl",
+    "source": "model/main.edge",
+    "name": "Real-Time Fraud Detection",
+    "version": "1.0.0"
+  },
+  "documentation": "docs/descriptions.json",
+  "tests": [
+    "tests/challengerAction.tests.json",
+    "tests/championAction.tests.json",
+    "tests/screenTransaction.tests.json"
+  ],
+  "flow": "flow/layout.json",
+  "example": {
+    "industry": "financial",
+    "level": "advanced",
+    "features": ["type", "facts", "decision-table", "decision", "loop", "service", "workbook", "chart"],
+    "engine": ">=0.2.7-alpha",
+    "authors": ["edgerules"]
+  }
+}

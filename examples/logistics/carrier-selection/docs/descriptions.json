@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "byPath": {
+    "*": "Selects the cheapest carrier that can take a shipment: quotes every carrier with its rate card and dimensional weight, and excludes carriers by their limits",
+    "Carrier": "The profile of a carrier: services, dimensional weight divisor, limits and surcharges",
+    "CarrierQuotes": "The quote of every carrier, the eligible quotes and the excluded carriers with their reasons",
+    "CarrierSelection": "The cheapest eligible carrier, the fastest among equal prices, and the ranking of the eligible carriers",
+    "Package": "One package: length, width and height in centimetres, and weight in kilograms",
+    "PackageFacts": "The volume, the longest side and the length plus girth of one package",
+    "Shipment": "A shipment: the destination zone, the service level, the residential flag, the declared value, the hazardous flag and the packages",
+    "ShipmentFacts": "The number of packages, the actual weight, the heaviest package and the largest package of the shipment",
+    "billableKg": "The billable weight of one package: the actual or the dimensional weight, whichever is larger, rounded up",
+    "carrierQuote": "The quote of one carrier: the exclusions, the billable weight, the transport, fuel, residential and insurance charges, the price and the days",
+    "carrierRestrictions": "Every limit of a carrier that the shipment breaks, with the reason",
+    "carriers": "The profiles of the four carriers",
+    "hazardousBook": "Hazardous goods by express: only one carrier can take them",
+    "hazardousBook.selection": "The selected carrier",
+    "hazardousBook.shipment": "The shipment",
+    "homeDeliveryBook": "Two boxes to a home address: three carriers can take them, the post cannot",
+    "homeDeliveryBook.quotes": "The quote of every carrier",
+    "homeDeliveryBook.selection": "The selected carrier",
+    "homeDeliveryBook.shipment": "The shipment",
+    "selectCarrier": "Selects the carrier of a shipment and returns the price, the ranking and the excluded carriers",
+    "shippingPolicy": "The parameters of the shipping policy: the declared value that is insured for free",
+    "zoneRate": "The rate card: the base price, the price per kilogram and the transit days by carrier, service and zone"
+  }
+}

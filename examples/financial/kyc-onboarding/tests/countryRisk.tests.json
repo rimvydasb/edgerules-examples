@@ -1,0 +1,75 @@
+{
+  "rows": [
+    {
+      "path": "country",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "level",
+      "section": "assertions",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "points",
+      "section": "assertions",
+      "order": 1,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "countryRisk-1",
+      "name": "Prohibited country",
+      "order": 0,
+      "inputs": {
+        "country": "KP"
+      },
+      "assertions": {
+        "level": "PROHIBITED",
+        "points": "100"
+      }
+    },
+    {
+      "id": "countryRisk-2",
+      "name": "High-risk country",
+      "order": 1,
+      "inputs": {
+        "country": "SY"
+      },
+      "assertions": {
+        "level": "HIGH",
+        "points": "30"
+      }
+    },
+    {
+      "id": "countryRisk-3",
+      "name": "Low-risk country",
+      "order": 2,
+      "inputs": {
+        "country": "LT"
+      },
+      "assertions": {
+        "level": "LOW",
+        "points": "0"
+      }
+    },
+    {
+      "id": "countryRisk-4",
+      "name": "Any other country",
+      "order": 3,
+      "inputs": {
+        "country": "US"
+      },
+      "assertions": {
+        "level": "MEDIUM",
+        "points": "15"
+      }
+    }
+  ]
+}

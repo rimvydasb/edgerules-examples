@@ -1,0 +1,247 @@
+{
+    // Structure layer: the card transaction, the cardholder and the recent history
+    @Name("Card transaction")
+    type Transaction: { transactionId: <string>; timestamp: <datetime>; amount: <number, min: 0>; merchantCategory: <string>; country: <string>; deviceId: <string>; channel: <string, enum: ["card-present", "online"]>; cardholder: <Cardholder>; history: <PastTransaction[], default: []> }
+    @Name("Cardholder")
+    type Cardholder: { owner transaction: <Transaction>; homeCountry: <string>; accountOpened: <date>; knownDevices: <string[], default: []> }
+    @Name("Past transaction")
+    type PastTransaction: { owner transaction: <Transaction>; timestamp: <datetime>; amount: <number>; country: <string>; declined: <boolean, default: false> }
+    type HistoryStats: { count1h: <number>; count24h: <number>; amount24h: <number>; declined24h: <number>; count30d: <number>; amount30d: <number>; lastMinutesBefore: <number>; lastCountry: <string> }
+
+    // Facts layer: what we know about the transaction and its history
+    facts PastTransactionFacts(past: PastTransaction): {
+        minutesBefore: (past.transaction.timestamp - past.timestamp).totalMinutes
+    }
+    facts TransactionFacts(transaction: Transaction): {
+        stats: historyStats(transaction.history)
+        averageAmount30d: if stats.count30d > 0 then round(stats.amount30d / stats.count30d, 2) else 0
+        amountRatio: if averageAmount30d > 0 then round(transaction.amount / averageAmount30d, 2) else 0
+        newDevice: not(contains(transaction.cardholder.knownDevices, transaction.deviceId))
+        foreignCountry: transaction.country != transaction.cardholder.homeCountry
+        countryHop: stats.count30d > 0 and stats.lastCountry != transaction.country
+        accountAgeDays: (transaction.timestamp.date - transaction.cardholder.accountOpened).days
+        hour: transaction.timestamp.hour
+    }
+
+    // Knowledge layer: the history fold, the fraud signals and the two scoring strategies
+    loop historyStats(history: PastTransaction[]): {
+        over: history
+        state: { count1h: 0, count24h: 0, amount24h: 0, declined24h: 0, count30d: 0, amount30d: 0, lastMinutesBefore: 1000000, lastCountry: "" }
+        do: {
+            count1h: state.count1h + (if item.minutesBefore <= 60 then 1 else 0)
+            count24h: state.count24h + (if item.minutesBefore <= 1440 then 1 else 0)
+            amount24h: state.amount24h + (if item.minutesBefore <= 1440 then item.amount else 0)
+            declined24h: state.declined24h + (if item.minutesBefore <= 1440 and item.declined then 1 else 0)
+            count30d: state.count30d + (if item.minutesBefore <= 43200 then 1 else 0)
+            amount30d: state.amount30d + (if item.minutesBefore <= 43200 then item.amount else 0)
+            lastMinutesBefore: if item.minutesBefore < state.lastMinutesBefore then item.minutesBefore else state.lastMinutesBefore
+            lastCountry: if item.minutesBefore < state.lastMinutesBefore then item.country else state.lastCountry
+        }
+    }
+    ruleset fraudSignals(t: Transaction): {
+        hitPolicy: "collect-matches"
+        rules: [
+            { when: t.stats.count1h >= 3, then: { code: "VELOCITY_1H", signal: "Three or more transactions in the last hour" } }
+            { when: t.stats.amount24h + t.amount > 2000, then: { code: "SPEND_24H", signal: "More than 2 000 spent in 24 hours" } }
+            { when: t.amountRatio >= 5, then: { code: "AMOUNT_SPIKE", signal: "Five times the 30-day average amount" } }
+            { when: t.newDevice and t.channel = "online", then: { code: "NEW_DEVICE", signal: "Online payment from an unknown device" } }
+            { when: t.foreignCountry, then: { code: "FOREIGN", signal: "Outside the home country" } }
+            { when: t.countryHop and t.stats.lastMinutesBefore < 120, then: { code: "IMPOSSIBLE_TRAVEL", signal: "Another country less than 2 hours ago" } }
+            { when: t.hour < 6, then: { code: "NIGHT", signal: "Between midnight and 6 a.m." } }
+            { when: contains(["4829", "6051", "7995"], t.merchantCategory), then: { code: "HIGH_RISK_MERCHANT", signal: "Money transfer, quasi-cash or gambling merchant" } }
+            { when: t.accountAgeDays < 30, then: { code: "NEW_ACCOUNT", signal: "Account opened less than 30 days ago" } }
+            { when: t.stats.declined24h >= 2, then: { code: "RECENT_DECLINES", signal: "Two or more declines in 24 hours" } }
+        ]
+    }
+    ruleset championWeights(code: string): {
+        hitPolicy: "unique-match"
+        rules: [
+            { when: { code: "VELOCITY_1H" }, then: { weight: 25, hardBlock: false } }
+            { when: { code: "SPEND_24H" }, then: { weight: 15, hardBlock: false } }
+            { when: { code: "AMOUNT_SPIKE" }, then: { weight: 20, hardBlock: false } }
+            { when: { code: "NEW_DEVICE" }, then: { weight: 15, hardBlock: false } }
+            { when: { code: "FOREIGN" }, then: { weight: 10, hardBlock: false } }
+            { when: { code: "IMPOSSIBLE_TRAVEL" }, then: { weight: 40, hardBlock: true } }
+            { when: { code: "NIGHT" }, then: { weight: 5, hardBlock: false } }
+            { when: { code: "HIGH_RISK_MERCHANT" }, then: { weight: 15, hardBlock: false } }
+            { when: { code: "NEW_ACCOUNT" }, then: { weight: 10, hardBlock: false } }
+            { when: { code: "RECENT_DECLINES" }, then: { weight: 20, hardBlock: false } }
+        ]
+    }
+    ruleset challengerWeights(code: string): {
+        hitPolicy: "unique-match"
+        rules: [
+            { when: { code: "VELOCITY_1H" }, then: { weight: 30, hardBlock: false } }
+            { when: { code: "SPEND_24H" }, then: { weight: 10, hardBlock: false } }
+            { when: { code: "AMOUNT_SPIKE" }, then: { weight: 25, hardBlock: false } }
+            { when: { code: "NEW_DEVICE" }, then: { weight: 20, hardBlock: false } }
+            { when: { code: "FOREIGN" }, then: { weight: 5, hardBlock: false } }
+            { when: { code: "IMPOSSIBLE_TRAVEL" }, then: { weight: 40, hardBlock: true } }
+            { when: { code: "NIGHT" }, then: { weight: 10, hardBlock: false } }
+            { when: { code: "HIGH_RISK_MERCHANT" }, then: { weight: 20, hardBlock: false } }
+            { when: { code: "NEW_ACCOUNT" }, then: { weight: 15, hardBlock: false } }
+            { when: { code: "RECENT_DECLINES" }, then: { weight: 30, hardBlock: true } }
+        ]
+    }
+    ruleset championAction(score: number, hardBlock: boolean): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { hardBlock: true }, then: { action: "BLOCK" } }
+            { when: { score: >= 70 }, then: { action: "BLOCK" } }
+            { when: { score: >= 40 }, then: { action: "REVIEW" } }
+        ]
+        default: { action: "ALLOW" }
+    }
+    ruleset challengerAction(score: number, hardBlock: boolean): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { hardBlock: true }, then: { action: "BLOCK" } }
+            { when: { score: >= 60 }, then: { action: "BLOCK" } }
+            { when: { score: >= 35 }, then: { action: "REVIEW" } }
+        ]
+        default: { action: "ALLOW" }
+    }
+
+    // Decisions layer: the signals, the champion strategy and the challenger strategy
+    decision FraudSignals(transaction: Transaction): {
+        fired: fraudSignals(transaction)
+        codes: for s in fired return s.code
+    }
+    decision FraudScore(transaction: Transaction): {
+        lines: for s in transaction.FraudSignals.fired return { code: s.code, signal: s.signal, weight: championWeights(s.code).weight, hardBlock: championWeights(s.code).hardBlock }
+        score: sum(for line in lines return line.weight)
+        hardBlock: any(for line in lines return line.hardBlock)
+        action: championAction(score, hardBlock).action
+    }
+    decision FraudScoreChallenger(transaction: Transaction): {
+        lines: for s in transaction.FraudSignals.fired return { code: s.code, signal: s.signal, weight: challengerWeights(s.code).weight, hardBlock: challengerWeights(s.code).hardBlock }
+        score: sum(for line in lines return line.weight)
+        hardBlock: any(for line in lines return line.hardBlock)
+        action: challengerAction(score, hardBlock).action
+    }
+
+    // Service layer: the external contract
+    service screenTransaction(transaction: Transaction): {
+        @ReturnNode(name: "Screening")
+        return: {
+            transactionId: transaction.transactionId
+            action: transaction.FraudScore.action
+            score: transaction.FraudScore.score
+            signalCodes: transaction.FraudSignals.codes
+            signals: transaction.FraudScore.lines
+            challenger: {
+                action: transaction.FraudScoreChallenger.action
+                score: transaction.FraudScoreChallenger.score
+                agrees: transaction.FraudScoreChallenger.action = transaction.FraudScore.action
+            }
+            profile: {
+                count1h: transaction.stats.count1h
+                amount24h: transaction.stats.amount24h
+                averageAmount30d: transaction.averageAmount30d
+                amountRatio: transaction.amountRatio
+                lastMinutesBefore: transaction.stats.lastMinutesBefore
+                lastCountry: transaction.stats.lastCountry
+            }
+        }
+    }
+
+    service compareStrategies(transactions: Transaction[]): {
+        result: for t in transactions return {
+            transactionId: t.transactionId
+            champion: t.FraudScore.score
+            challenger: t.FraudScoreChallenger.score
+            championAction: t.FraudScore.action
+            challengerAction: t.FraudScoreChallenger.action
+        }
+    }
+
+    // Example execution
+    @Name("Card testing attack")
+    workbook attackBook: {
+        @InputNode(name: "Card transaction")
+        transaction: {
+            transactionId: "T-90017"
+            timestamp: datetime("2026-11-12T03:42:00Z")
+            amount: 480
+            merchantCategory: "5732"
+            country: "LT"
+            deviceId: "dev-unknown-77"
+            channel: "online"
+            cardholder: { homeCountry: "LT"; accountOpened: date("2021-04-01"); knownDevices: ["dev-phone-01", "dev-laptop-02"] }
+            history: [
+                { timestamp: datetime("2026-11-12T03:39:00Z"); amount: 1; country: "LT"; declined: true }
+                { timestamp: datetime("2026-11-12T03:36:00Z"); amount: 1; country: "LT"; declined: true }
+                { timestamp: datetime("2026-11-12T03:30:00Z"); amount: 2; country: "LT" }
+                { timestamp: datetime("2026-11-10T18:12:00Z"); amount: 64.2; country: "LT" }
+                { timestamp: datetime("2026-11-07T12:01:00Z"); amount: 38.9; country: "LT" }
+                { timestamp: datetime("2026-10-29T09:15:00Z"); amount: 120; country: "LT" }
+            ]
+        }
+        @FunctionNode(name: "Screening")
+        screening: screenTransaction(transaction: transaction)
+    }
+    @Name("Champion and challenger")
+    workbook comparisonBook: {
+        @InputNode(name: "Transactions")
+        transactions: [
+            {
+                transactionId: "T-1 groceries"
+                timestamp: datetime("2026-11-12T17:20:00Z")
+                amount: 54.3
+                merchantCategory: "5411"
+                country: "LT"
+                deviceId: "card"
+                channel: "card-present"
+                cardholder: { homeCountry: "LT"; accountOpened: date("2019-02-11") }
+                history: [
+                    { timestamp: datetime("2026-11-10T17:05:00Z"); amount: 61.1; country: "LT" }
+                    { timestamp: datetime("2026-11-03T16:40:00Z"); amount: 48; country: "LT" }
+                ]
+            }
+            {
+                transactionId: "T-2 night casino"
+                timestamp: datetime("2026-11-12T02:10:00Z")
+                amount: 300
+                merchantCategory: "7995"
+                country: "LT"
+                deviceId: "dev-phone-01"
+                channel: "online"
+                cardholder: { homeCountry: "LT"; accountOpened: date("2026-10-25"); knownDevices: ["dev-phone-01"] }
+                history: [
+                    { timestamp: datetime("2026-11-05T20:00:00Z"); amount: 40; country: "LT" }
+                ]
+            }
+            {
+                transactionId: "T-3 two countries"
+                timestamp: datetime("2026-11-12T12:30:00Z")
+                amount: 220
+                merchantCategory: "5812"
+                country: "ES"
+                deviceId: "card"
+                channel: "card-present"
+                cardholder: { homeCountry: "LT"; accountOpened: date("2018-06-30") }
+                history: [
+                    { timestamp: datetime("2026-11-12T11:45:00Z"); amount: 35; country: "LT" }
+                    { timestamp: datetime("2026-11-09T10:00:00Z"); amount: 80; country: "LT" }
+                ]
+            }
+            {
+                transactionId: "T-4 big online"
+                timestamp: datetime("2026-11-12T21:10:00Z")
+                amount: 1450
+                merchantCategory: "5732"
+                country: "LT"
+                deviceId: "dev-tablet-09"
+                channel: "online"
+                cardholder: { homeCountry: "LT"; accountOpened: date("2020-01-15"); knownDevices: ["dev-phone-01"] }
+                history: [
+                    { timestamp: datetime("2026-11-12T20:15:00Z"); amount: 600; country: "LT" }
+                    { timestamp: datetime("2026-11-01T13:00:00Z"); amount: 75; country: "LT" }
+                    { timestamp: datetime("2026-10-24T09:30:00Z"); amount: 45; country: "LT" }
+                ]
+            }
+        ]
+        @FunctionNode(name: "Strategy comparison")
+        comparison: compareStrategies(transactions: transactions)
+    }
+}

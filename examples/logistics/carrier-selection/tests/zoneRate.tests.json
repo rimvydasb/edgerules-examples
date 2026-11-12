@@ -1,0 +1,123 @@
+{
+  "rows": [
+    {
+      "path": "carrier",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "service",
+      "section": "inputs",
+      "order": 1,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "zone",
+      "section": "inputs",
+      "order": 2,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "base",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "perKg",
+      "section": "assertions",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "days",
+      "section": "assertions",
+      "order": 2,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "zoneRate-1",
+      "name": "ParcelGo economy, near zone",
+      "order": 0,
+      "inputs": {
+        "carrier": "ParcelGo",
+        "service": "economy",
+        "zone": "3"
+      },
+      "assertions": {
+        "base": "5.9",
+        "perKg": "0.45",
+        "days": "4"
+      }
+    },
+    {
+      "id": "zoneRate-2",
+      "name": "ParcelGo economy, far zone",
+      "order": 1,
+      "inputs": {
+        "carrier": "ParcelGo",
+        "service": "economy",
+        "zone": "4"
+      },
+      "assertions": {
+        "base": "7.9",
+        "perKg": "0.6",
+        "days": "6"
+      }
+    },
+    {
+      "id": "zoneRate-3",
+      "name": "RoadLine economy, zone 6",
+      "order": 2,
+      "inputs": {
+        "carrier": "RoadLine",
+        "service": "economy",
+        "zone": "6"
+      },
+      "assertions": {
+        "base": "22",
+        "perKg": "0.35",
+        "days": "6"
+      }
+    },
+    {
+      "id": "zoneRate-4",
+      "name": "RoadLine economy, zone 5",
+      "order": 3,
+      "inputs": {
+        "carrier": "RoadLine",
+        "service": "economy",
+        "zone": "5"
+      },
+      "assertions": {
+        "base": "18",
+        "perKg": "0.3",
+        "days": "5"
+      }
+    },
+    {
+      "id": "zoneRate-5",
+      "name": "CityPost express",
+      "order": 4,
+      "inputs": {
+        "carrier": "CityPost",
+        "service": "express",
+        "zone": "8"
+      },
+      "assertions": {
+        "base": "12",
+        "perKg": "1.4",
+        "days": "1"
+      }
+    }
+  ]
+}

@@ -1,0 +1,488 @@
+{
+  "rows": [
+    {
+      "path": "policy.policyId",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "policy.quoteDate",
+      "section": "inputs",
+      "order": 1,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "policy.coverage",
+      "section": "inputs",
+      "order": 2,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "policy.deductible",
+      "section": "inputs",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "policy.territory",
+      "section": "inputs",
+      "order": 4,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "policy.customerSince",
+      "section": "inputs",
+      "order": 5,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "policy.otherPolicies",
+      "section": "inputs",
+      "order": 6,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "policy.paperless",
+      "section": "inputs",
+      "order": 7,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "policy.vehicle.make",
+      "section": "inputs",
+      "order": 8,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "policy.vehicle.modelYear",
+      "section": "inputs",
+      "order": 9,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "policy.vehicle.value",
+      "section": "inputs",
+      "order": 10,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "policy.vehicle.safetyFeatures",
+      "section": "inputs",
+      "order": 11,
+      "type": "string[]",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "policy.drivers[0].name",
+      "section": "inputs",
+      "order": 12,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "policy.drivers[0].birthDate",
+      "section": "inputs",
+      "order": 13,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "policy.drivers[0].licenseDate",
+      "section": "inputs",
+      "order": 14,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "policy.drivers[0].atFaultClaims",
+      "section": "inputs",
+      "order": 15,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "policy.drivers[0].minorViolations",
+      "section": "inputs",
+      "order": 16,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "policy.drivers[0].majorViolations",
+      "section": "inputs",
+      "order": 17,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "outcome",
+      "section": "assertions",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "rateVersion",
+      "section": "assertions",
+      "order": 1,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "premiumBeforeDiscounts",
+      "section": "assertions",
+      "order": 2,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "discountRate",
+      "section": "assertions",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "discountCapped",
+      "section": "assertions",
+      "order": 4,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "annualPremium",
+      "section": "assertions",
+      "order": 5,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "monthlyPremium",
+      "section": "assertions",
+      "order": 6,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "autoQuote-1",
+      "name": "Experienced driver, claim-free",
+      "order": 0,
+      "inputs": {
+        "policy.policyId": "Q-1",
+        "policy.quoteDate": "2026-11-12",
+        "policy.coverage": "standard",
+        "policy.deductible": "500",
+        "policy.territory": "suburban",
+        "policy.customerSince": "2024-06-01",
+        "policy.otherPolicies": "0",
+        "policy.paperless": "false",
+        "policy.vehicle.make": "Skoda Octavia",
+        "policy.vehicle.modelYear": "2020",
+        "policy.vehicle.value": "20000",
+        "policy.vehicle.safetyFeatures": "[]",
+        "policy.drivers[0].name": "Alex Morgan",
+        "policy.drivers[0].birthDate": "1986-05-01",
+        "policy.drivers[0].licenseDate": "2005-01-01",
+        "policy.drivers[0].atFaultClaims": "0",
+        "policy.drivers[0].minorViolations": "0",
+        "policy.drivers[0].majorViolations": "0"
+      },
+      "assertions": {
+        "outcome": "ACCEPT",
+        "rateVersion": "2026-01",
+        "premiumBeforeDiscounts": "610",
+        "discountRate": "0.1",
+        "discountCapped": "",
+        "annualPremium": "549",
+        "monthlyPremium": "47.12"
+      }
+    },
+    {
+      "id": "autoQuote-2",
+      "name": "Same driver on the day of the rate change",
+      "order": 1,
+      "inputs": {
+        "policy.policyId": "Q-1",
+        "policy.quoteDate": "2027-01-01",
+        "policy.coverage": "standard",
+        "policy.deductible": "500",
+        "policy.territory": "suburban",
+        "policy.customerSince": "2024-06-01",
+        "policy.otherPolicies": "0",
+        "policy.paperless": "false",
+        "policy.vehicle.make": "Skoda Octavia",
+        "policy.vehicle.modelYear": "2020",
+        "policy.vehicle.value": "20000",
+        "policy.vehicle.safetyFeatures": "[]",
+        "policy.drivers[0].name": "Alex Morgan",
+        "policy.drivers[0].birthDate": "1986-05-01",
+        "policy.drivers[0].licenseDate": "2005-01-01",
+        "policy.drivers[0].atFaultClaims": "0",
+        "policy.drivers[0].minorViolations": "0",
+        "policy.drivers[0].majorViolations": "0"
+      },
+      "assertions": {
+        "outcome": "ACCEPT",
+        "rateVersion": "2027-01",
+        "premiumBeforeDiscounts": "650",
+        "discountRate": "",
+        "discountCapped": "",
+        "annualPremium": "585",
+        "monthlyPremium": "50.21"
+      }
+    },
+    {
+      "id": "autoQuote-3",
+      "name": "New 18-year-old driver is referred",
+      "order": 2,
+      "inputs": {
+        "policy.policyId": "Q-1",
+        "policy.quoteDate": "2026-11-12",
+        "policy.coverage": "standard",
+        "policy.deductible": "500",
+        "policy.territory": "suburban",
+        "policy.customerSince": "2024-06-01",
+        "policy.otherPolicies": "0",
+        "policy.paperless": "false",
+        "policy.vehicle.make": "Skoda Octavia",
+        "policy.vehicle.modelYear": "2020",
+        "policy.vehicle.value": "20000",
+        "policy.vehicle.safetyFeatures": "[]",
+        "policy.drivers[0].name": "Alex Morgan",
+        "policy.drivers[0].birthDate": "2008-01-01",
+        "policy.drivers[0].licenseDate": "2026-02-01",
+        "policy.drivers[0].atFaultClaims": "0",
+        "policy.drivers[0].minorViolations": "0",
+        "policy.drivers[0].majorViolations": "0"
+      },
+      "assertions": {
+        "outcome": "REFER",
+        "rateVersion": "",
+        "premiumBeforeDiscounts": "1622.6",
+        "discountRate": "",
+        "discountCapped": "",
+        "annualPremium": "1460.34",
+        "monthlyPremium": "125.35"
+      }
+    },
+    {
+      "id": "autoQuote-4",
+      "name": "Driver under 18 is declined",
+      "order": 3,
+      "inputs": {
+        "policy.policyId": "Q-1",
+        "policy.quoteDate": "2026-11-12",
+        "policy.coverage": "standard",
+        "policy.deductible": "500",
+        "policy.territory": "suburban",
+        "policy.customerSince": "2024-06-01",
+        "policy.otherPolicies": "0",
+        "policy.paperless": "false",
+        "policy.vehicle.make": "Skoda Octavia",
+        "policy.vehicle.modelYear": "2020",
+        "policy.vehicle.value": "20000",
+        "policy.vehicle.safetyFeatures": "[]",
+        "policy.drivers[0].name": "Alex Morgan",
+        "policy.drivers[0].birthDate": "2009-12-01",
+        "policy.drivers[0].licenseDate": "2026-02-01",
+        "policy.drivers[0].atFaultClaims": "0",
+        "policy.drivers[0].minorViolations": "0",
+        "policy.drivers[0].majorViolations": "0"
+      },
+      "assertions": {
+        "outcome": "DECLINE",
+        "rateVersion": "",
+        "premiumBeforeDiscounts": "",
+        "discountRate": "",
+        "discountCapped": "",
+        "annualPremium": "0",
+        "monthlyPremium": "0"
+      }
+    },
+    {
+      "id": "autoQuote-5",
+      "name": "Major violation: referred, no claim-free discount",
+      "order": 4,
+      "inputs": {
+        "policy.policyId": "Q-1",
+        "policy.quoteDate": "2026-11-12",
+        "policy.coverage": "standard",
+        "policy.deductible": "500",
+        "policy.territory": "suburban",
+        "policy.customerSince": "2024-06-01",
+        "policy.otherPolicies": "0",
+        "policy.paperless": "false",
+        "policy.vehicle.make": "Skoda Octavia",
+        "policy.vehicle.modelYear": "2020",
+        "policy.vehicle.value": "20000",
+        "policy.vehicle.safetyFeatures": "[]",
+        "policy.drivers[0].name": "Alex Morgan",
+        "policy.drivers[0].birthDate": "1986-05-01",
+        "policy.drivers[0].licenseDate": "2005-01-01",
+        "policy.drivers[0].atFaultClaims": "0",
+        "policy.drivers[0].minorViolations": "0",
+        "policy.drivers[0].majorViolations": "1"
+      },
+      "assertions": {
+        "outcome": "REFER",
+        "rateVersion": "",
+        "premiumBeforeDiscounts": "610",
+        "discountRate": "0",
+        "discountCapped": "",
+        "annualPremium": "610",
+        "monthlyPremium": "52.36"
+      }
+    },
+    {
+      "id": "autoQuote-6",
+      "name": "Two at-fault claims",
+      "order": 5,
+      "inputs": {
+        "policy.policyId": "Q-1",
+        "policy.quoteDate": "2026-11-12",
+        "policy.coverage": "standard",
+        "policy.deductible": "500",
+        "policy.territory": "suburban",
+        "policy.customerSince": "2024-06-01",
+        "policy.otherPolicies": "0",
+        "policy.paperless": "false",
+        "policy.vehicle.make": "Skoda Octavia",
+        "policy.vehicle.modelYear": "2020",
+        "policy.vehicle.value": "20000",
+        "policy.vehicle.safetyFeatures": "[]",
+        "policy.drivers[0].name": "Alex Morgan",
+        "policy.drivers[0].birthDate": "1986-05-01",
+        "policy.drivers[0].licenseDate": "2005-01-01",
+        "policy.drivers[0].atFaultClaims": "2",
+        "policy.drivers[0].minorViolations": "0",
+        "policy.drivers[0].majorViolations": "0"
+      },
+      "assertions": {
+        "outcome": "ACCEPT",
+        "rateVersion": "",
+        "premiumBeforeDiscounts": "976",
+        "discountRate": "0",
+        "discountCapped": "",
+        "annualPremium": "976",
+        "monthlyPremium": "83.77"
+      }
+    },
+    {
+      "id": "autoQuote-7",
+      "name": "Liability ignores the vehicle and the deductible",
+      "order": 6,
+      "inputs": {
+        "policy.policyId": "Q-1",
+        "policy.quoteDate": "2026-11-12",
+        "policy.coverage": "liability",
+        "policy.deductible": "250",
+        "policy.territory": "suburban",
+        "policy.customerSince": "2024-06-01",
+        "policy.otherPolicies": "0",
+        "policy.paperless": "false",
+        "policy.vehicle.make": "Skoda Octavia",
+        "policy.vehicle.modelYear": "2026",
+        "policy.vehicle.value": "90000",
+        "policy.vehicle.safetyFeatures": "[]",
+        "policy.drivers[0].name": "Alex Morgan",
+        "policy.drivers[0].birthDate": "1986-05-01",
+        "policy.drivers[0].licenseDate": "2005-01-01",
+        "policy.drivers[0].atFaultClaims": "0",
+        "policy.drivers[0].minorViolations": "0",
+        "policy.drivers[0].majorViolations": "0"
+      },
+      "assertions": {
+        "outcome": "",
+        "rateVersion": "",
+        "premiumBeforeDiscounts": "420",
+        "discountRate": "",
+        "discountCapped": "",
+        "annualPremium": "378",
+        "monthlyPremium": "32.45"
+      }
+    },
+    {
+      "id": "autoQuote-8",
+      "name": "Urban comprehensive with a high deductible",
+      "order": 7,
+      "inputs": {
+        "policy.policyId": "Q-1",
+        "policy.quoteDate": "2026-11-12",
+        "policy.coverage": "comprehensive",
+        "policy.deductible": "1000",
+        "policy.territory": "urban",
+        "policy.customerSince": "2024-06-01",
+        "policy.otherPolicies": "0",
+        "policy.paperless": "false",
+        "policy.vehicle.make": "Skoda Octavia",
+        "policy.vehicle.modelYear": "2020",
+        "policy.vehicle.value": "20000",
+        "policy.vehicle.safetyFeatures": "[]",
+        "policy.drivers[0].name": "Alex Morgan",
+        "policy.drivers[0].birthDate": "1986-05-01",
+        "policy.drivers[0].licenseDate": "2005-01-01",
+        "policy.drivers[0].atFaultClaims": "0",
+        "policy.drivers[0].minorViolations": "0",
+        "policy.drivers[0].majorViolations": "0"
+      },
+      "assertions": {
+        "outcome": "",
+        "rateVersion": "",
+        "premiumBeforeDiscounts": "858",
+        "discountRate": "",
+        "discountCapped": "",
+        "annualPremium": "772.2",
+        "monthlyPremium": "66.28"
+      }
+    },
+    {
+      "id": "autoQuote-9",
+      "name": "All discounts: capped at 30%",
+      "order": 8,
+      "inputs": {
+        "policy.policyId": "Q-1",
+        "policy.quoteDate": "2026-11-12",
+        "policy.coverage": "standard",
+        "policy.deductible": "500",
+        "policy.territory": "suburban",
+        "policy.customerSince": "2019-03-01",
+        "policy.otherPolicies": "1",
+        "policy.paperless": "true",
+        "policy.vehicle.make": "Skoda Octavia",
+        "policy.vehicle.modelYear": "2020",
+        "policy.vehicle.value": "20000",
+        "policy.vehicle.safetyFeatures": "[\"automatic-emergency-braking\",\"lane-keeping\"]",
+        "policy.drivers[0].name": "Alex Morgan",
+        "policy.drivers[0].birthDate": "1986-05-01",
+        "policy.drivers[0].licenseDate": "2005-01-01",
+        "policy.drivers[0].atFaultClaims": "0",
+        "policy.drivers[0].minorViolations": "0",
+        "policy.drivers[0].majorViolations": "0"
+      },
+      "assertions": {
+        "outcome": "",
+        "rateVersion": "",
+        "premiumBeforeDiscounts": "610",
+        "discountRate": "0.3",
+        "discountCapped": "true",
+        "annualPremium": "427",
+        "monthlyPremium": "36.65"
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "../../../node_modules/edgerules-react/schemas/example.schema.json",
+  "kind": "EdgeRulesProject",
+  "formatVersion": 3,
+  "name": "Customer Onboarding KYC",
+  "description": "Screens the beneficial owners of a business customer, rates its money laundering risk and decides the level of due diligence",
+  "tags": ["finance", "kyc", "aml", "onboarding", "beneficial-owners", "explain"],
+  "model": {
+    "format": "dsl",
+    "source": "model/main.edge",
+    "name": "Customer Onboarding KYC",
+    "version": "1.0.0"
+  },
+  "documentation": "docs/descriptions.json",
+  "tests": [
+    "tests/countryRisk.tests.json",
+    "tests/industryRisk.tests.json",
+    "tests/onboardCustomer.tests.json",
+    "tests/riskLevel.tests.json"
+  ],
+  "flow": "flow/layout.json",
+  "example": {
+    "industry": "financial",
+    "level": "advanced",
+    "features": ["type", "facts", "decision-table", "decision", "function", "service", "workbook", "chart"],
+    "engine": ">=0.2.8-alpha",
+    "authors": ["edgerules"]
+  }
+}

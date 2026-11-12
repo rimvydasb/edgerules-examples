@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "byPath": {
+    "*": "Decides a return request item by item: the return window by category and customer tier, the restocking fee by condition and fault, the refund and the refund date",
+    "ItemReturn": "The window, the checks, the verdict, the restocking fee and the refund of one item",
+    "ReturnDecision": "The outcome of the request, the return label fee, the total refund and the date by which the refund is paid",
+    "ReturnItem": "One returned order line: category, price paid, quantity, condition, reason and the final sale flag",
+    "ReturnItemFacts": "The terms of the policy for one item: days since delivery, seller fault and value",
+    "ReturnRequest": "A return request: the request, order and delivery dates, the customer tier, the holidays and the returned items",
+    "ReturnRequestFacts": "The number of returned items and their value",
+    "itemVerdict": "Combines the checks of one item into ACCEPT, PARTIAL, REJECT or REVIEW, with the reason",
+    "mixedReturnBook": "A return of five items with five different verdicts",
+    "mixedReturnBook.decision": "The return decision",
+    "mixedReturnBook.request": "The return request",
+    "restockingFee": "The restocking fee rate by category, condition and fault",
+    "returnPolicy": "The parameters of the return policy: the defect warranty, the return label fee and the refund time",
+    "returnRefund": "Decides a return request and returns the verdict and the refund of every item",
+    "returnWindow": "The return window in days by product category and customer tier"
+  }
+}

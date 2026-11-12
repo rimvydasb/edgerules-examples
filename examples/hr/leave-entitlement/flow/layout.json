@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 2,
+  "layouts": {
+    "benchmarkBook": {
+      "positions": {},
+      "outputs": [
+        {
+          "id": "output",
+          "label": "Vacation days",
+          "source": {
+            "node": "benchmarkBook.days",
+            "handle": "out:result"
+          }
+        }
+      ],
+      "charts": [
+        {
+          "id": "chart",
+          "label": "Vacation days by profile",
+          "source": {
+            "node": "benchmarkBook.days",
+            "handle": "out:result"
+          },
+          "config": {
+            "kind": "bar",
+            "x": "profile",
+            "series": ["days", "extraDays"]
+          },
+          "size": {
+            "width": 560,
+            "height": 320
+          }
+        }
+      ]
+    },
+    "teamBook": {
+      "positions": {},
+      "outputs": [
+        {
+          "id": "output",
+          "label": "Team summary",
+          "source": {
+            "node": "teamBook.entitlements",
+            "handle": "out:summary"
+          }
+        },
+        {
+          "id": "output2",
+          "label": "Employees",
+          "source": {
+            "node": "teamBook.entitlements",
+            "handle": "out:employees"
+          }
+        }
+      ],
+      "charts": [
+        {
+          "id": "chart",
+          "label": "Available and remaining days",
+          "source": {
+            "node": "teamBook.entitlements",
+            "handle": "out:employees"
+          },
+          "config": {
+            "kind": "bar",
+            "x": "name",
+            "series": ["available", "remaining"]
+          },
+          "size": {
+            "width": 560,
+            "height": 320
+          }
+        }
+      ]
+    }
+  }
+}
