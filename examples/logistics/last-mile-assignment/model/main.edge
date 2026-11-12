@@ -82,9 +82,9 @@
         timeLimit: 5000
     }
 
-    func unassignedEntry(id: string, assigned: boolean, hasPairs: boolean, solved: boolean, blockers: string[]): {
+    func unassignedEntry(id: string, assigned: boolean, hasPairs: boolean, solved: boolean, blockers: string[], messages): {
         parcelId: if assigned then "" else id
-        reason: if assigned then "" else if not(hasPairs) then "No courier can carry it: " + join(blockers, "; ") else if solved then "No capacity or time left in the shift" else "Not planned: the shift has no feasible plan"
+        reason: if assigned then "" else if not(hasPairs) then messages.noCourier + join(blockers, "; ") else if solved then messages.noRoom else messages.noPlan
     }
 
     // Decisions layer: the candidate pairs, then the dispatch plan
@@ -95,6 +95,11 @@
         eligible: all[eligible = true]
     }
     decision Dispatch(shift: Shift): {
+        unassignedMessages: {
+            noCourier: "No courier can carry it: "
+            noRoom: "No capacity or time left in the shift"
+            noPlan: "Not planned: the shift has no feasible plan"
+        }
         pairs: shift.Candidates.eligible
         parcelIds: for p in shift.parcels return p.parcelId
         courierIds: for c in shift.couriers return c.courierId
@@ -123,7 +128,7 @@
             shiftMinutes: c.shiftMinutes
             cost: round(sum(for x in chosen[courierId = c.courierId] return x.cost), 2)
         }
-        unassigned: for p in shift.parcels return unassignedEntry(p.parcelId, count(chosen[parcelId = p.parcelId]) > 0, count(pairs[parcelId = p.parcelId]) > 0, solved, distinctValues(for x in shift.Candidates.all[parcelId = p.parcelId] return x.reason))
+        unassigned: for p in shift.parcels return unassignedEntry(p.parcelId, count(chosen[parcelId = p.parcelId]) > 0, count(pairs[parcelId = p.parcelId]) > 0, solved, distinctValues(for x in shift.Candidates.all[parcelId = p.parcelId] return x.reason), unassignedMessages)
     }
 
     // Service layer: the external contract

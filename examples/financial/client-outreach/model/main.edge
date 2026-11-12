@@ -89,9 +89,11 @@
         offer: if channel = "call" then record.call else if channel = "email" then record.email else record.sms
         minutes: if channel = "none" then 0 else offer.terms.minutes
         expectedValue: if channel = "none" then 0 else offer.value
-        reason: if channel != "none" then "Selected: " + toString(round(offer.probability * 100, 2)) + "% chance to buy" else notSelectedReason(record)
+        selectedReason: "Selected: " + toString(round(offer.probability * 100, 2)) + "% chance to buy"
+        dayFullReason: "Not selected: the day is full"
+        notContactableReason: "Not contactable: " + join(record.blockCodes, ", ")
+        reason: if channel != "none" then selectedReason else if record.contactable then dayFullReason else notContactableReason
     }
-    func notSelectedReason(record): if record.contactable then "Not selected: the day is full" else "Not contactable: " + join(record.blockCodes, ", ")
     func clockTime(minutesIntoDay: number): {
         at: campaign().dayStart + duration("PT" + toString(minutesIntoDay) + "M")
         text: padStart(toString(at.hour), 2, "0") + ":" + padStart(toString(at.minute), 2, "0")
