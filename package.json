@@ -9,7 +9,7 @@
     "build-index": "tooling/build-index.sh",
     "format": "prettier --write \"**/*.{json,md,mjs}\"",
     "format:check": "prettier --check \"**/*.{json,md,mjs}\"",
-    "test": "node --test tooling/__tests__"
+    "test": "node --test \"tooling/__tests__/*.test.mjs\""
   },
   "devDependencies": {
     "@edgerules/node": "0.2.7-alpha.202611081915",
