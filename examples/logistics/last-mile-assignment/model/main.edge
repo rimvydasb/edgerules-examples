@@ -82,16 +82,20 @@
         timeLimit: 5000
     }
 
-    func unassignedEntry(id: string, assigned: boolean, hasPairs: boolean, solved: boolean, blockers: string[], messages): {
-        parcelId: if assigned then "" else id
-        reason: if assigned then "" else if not(hasPairs) then messages.noCourier + join(blockers, "; ") else if solved then messages.noRoom else messages.noPlan
+    func unassignedEntry(status, solved: boolean, messages): {
+        parcelId: if status.assigned then "" else status.parcelId
+        reason: if status.assigned then "" else if not(status.hasPairs) then messages.noCourier + join(status.blockers, "; ") else if solved then messages.noRoom else messages.noPlan
     }
 
     // Decisions layer: the candidate pairs, then the dispatch plan
     decision Candidates(shift: Shift): {
-        func pairAt(shift: Shift, k: number): candidatePair(shift.parcels[floor(k / shift.courierCount)], shift.couriers[modulo(k, shift.courierCount)]).result
+        func pairAt(shift: Shift, k: number): {
+            parcel: shift.parcels[floor(k / shift.courierCount)]
+            courier: shift.couriers[modulo(k, shift.courierCount)]
+            pair: candidatePair(parcel, courier).result
+        }
 
-        all: for k in 0..(shift.parcelCount * shift.courierCount - 1) return pairAt(shift, k)
+        all: for k in 0..(shift.parcelCount * shift.courierCount - 1) return pairAt(shift, k).pair
         eligible: all[eligible = true]
     }
     decision Dispatch(shift: Shift): {
@@ -128,7 +132,15 @@
             shiftMinutes: c.shiftMinutes
             cost: round(sum(for x in chosen[courierId = c.courierId] return x.cost), 2)
         }
-        unassigned: for p in shift.parcels return unassignedEntry(p.parcelId, count(chosen[parcelId = p.parcelId]) > 0, count(pairs[parcelId = p.parcelId]) > 0, solved, distinctValues(for x in shift.Candidates.all[parcelId = p.parcelId] return x.reason), unassignedMessages)
+        func parcelStatus(p: Parcel, chosen: Pair[], pairs: Pair[], candidates: Pair[]): {
+            parcelId: p.parcelId
+            assigned: count(chosen[parcelId = p.parcelId]) > 0
+            hasPairs: count(pairs[parcelId = p.parcelId]) > 0
+            blockers: distinctValues(for x in candidates[parcelId = p.parcelId] return x.reason)
+        }
+
+        parcelStatuses: for p in shift.parcels return parcelStatus(p, chosen, pairs, shift.Candidates.all)
+        unassigned: for status in parcelStatuses return unassignedEntry(status, solved, unassignedMessages)
     }
 
     // Service layer: the external contract

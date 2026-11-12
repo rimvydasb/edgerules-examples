@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedFrom": "aa3380ab4bab7f73aac73cabd1626c7246fe1e58",
+  "generatedFrom": "cf4332cb95d8fd4122c9d9a90bca9c170e6e1fd5",
   "industries": [
     {
       "description": "Credit, pricing, repayment and sales planning",
@@ -155,7 +155,7 @@
       "path": "examples/logistics/carrier-selection",
       "requires": [],
       "stats": {
-        "lines": 153,
+        "lines": 155,
         "tests": 15
       },
       "tags": [
@@ -192,7 +192,7 @@
         "milp-solver"
       ],
       "stats": {
-        "lines": 302,
+        "lines": 305,
         "tests": 22
       },
       "tags": [
@@ -272,7 +272,7 @@
       "path": "examples/financial/kyc-onboarding",
       "requires": [],
       "stats": {
-        "lines": 190,
+        "lines": 191,
         "tests": 22
       },
       "tags": [
@@ -285,8 +285,6 @@
       ],
       "versions": [
         {
-          "ref": "aa3380ab4bab7f73aac73cabd1626c7246fe1e58",
-          "released": "2026-11-12",
           "version": "1.0.0"
         }
       ]
@@ -314,7 +312,7 @@
         "milp-solver"
       ],
       "stats": {
-        "lines": 207,
+        "lines": 219,
         "tests": 15
       },
       "tags": [

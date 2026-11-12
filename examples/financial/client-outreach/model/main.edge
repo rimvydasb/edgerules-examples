@@ -62,7 +62,10 @@
         email: channelOffer(client, tier, "email")
         sms: channelOffer(client, tier, "sms")
         contactable: call.allowed or email.allowed or sms.allowed
-        blockCodes: distinctValues(flatten([for b in call.blocks return b.code, for b in email.blocks return b.code, for b in sms.blocks return b.code]))
+        callBlockCodes: for b in call.blocks return b.code
+        emailBlockCodes: for b in email.blocks return b.code
+        smsBlockCodes: for b in sms.blocks return b.code
+        blockCodes: distinctValues(flatten([callBlockCodes, emailBlockCodes, smsBlockCodes]))
     }
     func allowedFlag(offer): {
         result: if offer.allowed then 1 else 0

@@ -12,7 +12,8 @@
         foreign: owner.nationality != owner.customer.country
         documentProvided: explain(owner.documentExpiry).status = "ok" and explain(owner.documentNumber).status = "ok"
         documentValid: documentProvided and owner.documentExpiry > owner.customer.onboardingDate
-        documentNumberValid: documentProvided and isAlphanumeric(owner.documentNumber) and length(owner.documentNumber) = (if owner.documentType = "passport" then 9 else 8)
+        expectedNumberLength: if owner.documentType = "passport" then 9 else 8
+        documentNumberValid: documentProvided and isAlphanumeric(owner.documentNumber) and length(owner.documentNumber) = expectedNumberLength
     }
     facts CustomerFacts(customer: Customer): {
         companyAgeYears: age(customer.incorporationDate, customer.onboardingDate)
