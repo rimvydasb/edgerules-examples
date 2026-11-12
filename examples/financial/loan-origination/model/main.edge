@@ -179,10 +179,14 @@
             applicants: [mainApplicant, coApplicant]
         } as Application
     }
-    func borrowingCapacity(householdIncome: number, householdDebtPayments: number, rate: number): for term in [10, 15, 20, 25, 30] return {
-        termYears: term
-        maxPayment: affordability(householdIncome, householdDebtPayments, 0, rate, term).maxPayment
-        maxLoan: affordability(householdIncome, householdDebtPayments, 0, rate, term).maxLoan
+    func borrowingCapacity(householdIncome: number, householdDebtPayments: number, rate: number): {
+        func affordabilityForTerm(householdIncome, householdDebtPayments, rate, term): {
+            termYears: term
+            maxPayment: affordability(householdIncome, householdDebtPayments, 0, rate, term).maxPayment
+            maxLoan: affordability(householdIncome, householdDebtPayments, 0, rate, term).maxLoan
+        }
+
+        result: for term in [10, 15, 20, 25, 30] return affordabilityForTerm(householdIncome, householdDebtPayments, rate, term)
     }
     sampleApplication: {
         applicationDate: date("2026-10-01")
