@@ -108,13 +108,27 @@
         codes: for s in fired return s.code
     }
     decision FraudScore(transaction: Transaction): {
-        lines: for s in transaction.FraudSignals.fired return { code: s.code, signal: s.signal, weight: championWeights(s.code).weight, hardBlock: championWeights(s.code).hardBlock }
+        func weighted(s): {
+            code: s.code
+            signal: s.signal
+            weight: championWeights(s.code).weight
+            hardBlock: championWeights(s.code).hardBlock
+        }
+
+        lines: for s in transaction.FraudSignals.fired return weighted(s)
         score: sum(for line in lines return line.weight)
         hardBlock: any(for line in lines return line.hardBlock)
         action: championAction(score, hardBlock).action
     }
     decision FraudScoreChallenger(transaction: Transaction): {
-        lines: for s in transaction.FraudSignals.fired return { code: s.code, signal: s.signal, weight: challengerWeights(s.code).weight, hardBlock: challengerWeights(s.code).hardBlock }
+        func weighted(s): {
+            code: s.code
+            signal: s.signal
+            weight: challengerWeights(s.code).weight
+            hardBlock: challengerWeights(s.code).hardBlock
+        }
+
+        lines: for s in transaction.FraudSignals.fired return weighted(s)
         score: sum(for line in lines return line.weight)
         hardBlock: any(for line in lines return line.hardBlock)
         action: challengerAction(score, hardBlock).action

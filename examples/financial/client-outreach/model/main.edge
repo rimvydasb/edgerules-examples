@@ -89,11 +89,22 @@
         offer: if channel = "call" then record.call else if channel = "email" then record.email else record.sms
         minutes: if channel = "none" then 0 else offer.terms.minutes
         expectedValue: if channel = "none" then 0 else offer.value
-        reason: if channel != "none" then "Selected: " + toString(round(offer.probability * 100, 2)) + "% chance to buy" else if not(record.contactable) then "Not contactable: " + join(record.blockCodes, ", ") else "Not selected: the day is full"
+        reason: if channel != "none" then "Selected: " + toString(round(offer.probability * 100, 2)) + "% chance to buy" else notSelectedReason(record)
     }
+    func notSelectedReason(record): if record.contactable then "Not selected: the day is full" else "Not contactable: " + join(record.blockCodes, ", ")
     func clockTime(minutesIntoDay: number): {
         at: campaign().dayStart + duration("PT" + toString(minutesIntoDay) + "M")
         text: padStart(toString(at.hour), 2, "0") + ":" + padStart(toString(at.minute), 2, "0")
+    }
+    func scheduledTask(action: Action, slot: number, begin: number): {
+        clientId: action.clientId
+        name: action.name
+        channel: action.channel
+        minutes: action.minutes
+        expectedValue: action.expectedValue
+        worker: slot + 1
+        startMinute: begin
+        startsAt: clockTime(begin).text
     }
     loop workSchedule(actions: Action[], workers: number): {
         over: actions
@@ -101,12 +112,19 @@
         do: {
             slot: find(state.loads, min(state.loads))
             loads: for i in 0..(workers - 1) return if i = slot then state.loads[i] + item.minutes else state.loads[i]
-            tasks: append(state.tasks, { clientId: item.clientId, name: item.name, channel: item.channel, minutes: item.minutes, expectedValue: item.expectedValue, worker: slot + 1, startMinute: state.loads[slot], startsAt: clockTime(state.loads[slot]).text })
+            tasks: append(state.tasks, scheduledTask(item, slot, state.loads[slot]))
         }
         return: state.tasks
     }
     func inWorkOrder(actions: Action[]): {
-        ranked: for a in actions return { action: a, seq: count(actions[minutes > a.minutes]) + count(actions[minutes = a.minutes and expectedValue > a.expectedValue]) + count(actions[minutes = a.minutes and expectedValue = a.expectedValue and clientId < a.clientId]) + 1 }
+        func rankOf(a: Action, actions: Action[]): {
+            longer: count(actions[minutes > a.minutes])
+            sameLengthWorthMore: count(actions[minutes = a.minutes and expectedValue > a.expectedValue])
+            sameLengthSameValue: count(actions[minutes = a.minutes and expectedValue = a.expectedValue and clientId < a.clientId])
+            position: longer + sameLengthWorthMore + sameLengthSameValue + 1
+        }
+
+        ranked: for a in actions return { action: a, seq: rankOf(a, actions).position }
         result: for k in 1..count(actions) return ranked[seq = k][0].action
     }
     func channelTotals(plan, channelName: string): {
@@ -122,12 +140,29 @@
         sms: count(plan[tier = tierName and action = "sms"])
         none: count(plan[tier = tierName and action = "none"])
     }
+    func contactedOf(record, action): {
+        clientId: record.data.id
+        name: record.data.name
+        channel: action.channel
+        minutes: action.minutes
+        expectedValue: action.expectedValue
+    }
     service contactPlan(clients: Client[], team: Team): {
         records: for client in clients return clientRecord(client)
         capacityMinutes: team.workers * team.dayHours * 60
-        mix: contactMix(clients: clients, callOk: for r in records return allowedFlag(r.call).result, emailOk: for r in records return allowedFlag(r.email).result, smsOk: for r in records return allowedFlag(r.sms).result, callValue: for r in records return r.call.value, emailValue: for r in records return r.email.value, smsValue: for r in records return r.sms.value, callMinutes: channelTerms("call").minutes, emailMinutes: channelTerms("email").minutes, smsMinutes: channelTerms("sms").minutes, capacityMinutes: capacityMinutes, smsCap: campaign().smsDailyCap)
+        callAllowed: for r in records return allowedFlag(r.call).result
+        emailAllowed: for r in records return allowedFlag(r.email).result
+        smsAllowed: for r in records return allowedFlag(r.sms).result
+        callValues: for r in records return r.call.value
+        emailValues: for r in records return r.email.value
+        smsValues: for r in records return r.sms.value
+        callMinutes: channelTerms("call").minutes
+        emailMinutes: channelTerms("email").minutes
+        smsMinutes: channelTerms("sms").minutes
+        smsCap: campaign().smsDailyCap
+        mix: contactMix(clients, callAllowed, emailAllowed, smsAllowed, callValues, emailValues, smsValues, callMinutes, emailMinutes, smsMinutes, capacityMinutes, smsCap)
         actions: for i in 0..(count(records) - 1) return clientAction(records[i], mix.call[i], mix.email[i], mix.sms[i])
-        contacted: for i in 0..(count(records) - 1) return { clientId: records[i].data.id, name: records[i].data.name, channel: actions[i].channel, minutes: actions[i].minutes, expectedValue: actions[i].expectedValue }
+        contacted: for i in 0..(count(records) - 1) return contactedOf(records[i], actions[i])
         schedule: workSchedule(actions: inWorkOrder(contacted[channel != "none"]).result, workers: team.workers)
         plan: for i in 0..(count(records) - 1) return {
             clientId: records[i].data.id

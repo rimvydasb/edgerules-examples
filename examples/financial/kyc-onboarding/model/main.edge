@@ -90,6 +90,8 @@
         mustVerify: owner.significant or owner.pep
         missingDocument: mustVerify and not(owner.documentValid and owner.documentNumberValid)
     }
+    func factorLine(label: string, score: number): { factor: label; points: score }
+    func plusYears(start: date, years: number): start + period("P" + toString(years) + "Y")
     decision CustomerRisk(customer: Customer): {
         country: countryRisk(customer.country)
         industry: industryRisk(customer.industryCode)
@@ -97,16 +99,26 @@
         foreignOwner: any(for o in customer.owners return o.significant and o.foreign)
         opaqueOwnership: customer.declaredOwnership < kycPolicy().minimumDeclaredOwnership
         scorecard: riskScorecard(customer.companyAgeYears, customer.cashIntensive, customer.expectedMonthlyVolume, pepOwner, foreignOwner, opaqueOwnership)
-        breakdown: concatenate([{ factor: "Country " + customer.country, points: country.points }, { factor: "Sector " + industry.sector, points: industry.points }], scorecard)
+        countryFactor: factorLine("Country " + customer.country, country.points)
+        sectorFactor: factorLine("Sector " + industry.sector, industry.points)
+        breakdown: concatenate([countryFactor, sectorFactor], scorecard)
         score: sum(for line in breakdown return line.points)
         rating: riskLevel(score)
     }
     decision DueDiligence(customer: Customer): {
-        missingDocuments: for o in customer.owners return if o.OwnerScreening.missingDocument then "A valid identity document of " + o.name else ""
-        requests: append(missingDocuments, if customer.CustomerRisk.opaqueOwnership then "An ownership structure chart" else "")[... != ""]
+        func missingDocumentOf(name: string, missing: boolean): if missing then "A valid identity document of " + name else ""
+
+        missingDocuments: for o in customer.owners return missingDocumentOf(o.name, o.OwnerScreening.missingDocument)
+        ownershipChartRequest: if customer.CustomerRisk.opaqueOwnership then "An ownership structure chart" else ""
+        requests: append(missingDocuments, ownershipChartRequest)[... != ""]
         sanctionsHit: any(for o in customer.owners return o.sanctionsHit)
-        verdict: dueDiligence(customer.CustomerRisk.country.level = "PROHIBITED", sanctionsHit, count(requests), customer.CustomerRisk.pepOwner, customer.CustomerRisk.rating.level)
-        nextReview: if verdict.outcome = "ACCEPT" then customer.onboardingDate + period("P" + toString(customer.CustomerRisk.rating.reviewYears) + "Y") else customer.onboardingDate
+        prohibitedCountry: customer.CustomerRisk.country.level = "PROHIBITED"
+        openRequests: count(requests)
+        pepOwner: customer.CustomerRisk.pepOwner
+        riskLevel: customer.CustomerRisk.rating.level
+        verdict: dueDiligence(prohibitedCountry, sanctionsHit, openRequests, pepOwner, riskLevel)
+        reviewYears: customer.CustomerRisk.rating.reviewYears
+        nextReview: if verdict.outcome = "ACCEPT" then plusYears(customer.onboardingDate, reviewYears) else customer.onboardingDate
     }
 
     // Service layer: the external contract

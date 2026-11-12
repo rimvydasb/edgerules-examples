@@ -90,8 +90,10 @@
         selected: cheapest[days = fastestDays][0]
         found: explain(selected).status = "ok"
         status: if found then "SELECTED" else "NO_CARRIER"
-        reason: if found then selected.carrierName + " is the cheapest eligible carrier" else "No carrier can take the shipment: " + toString(count(shipment.CarrierQuotes.excluded)) + " carriers have a restriction"
-        ranking: flatten(for amount in sort(distinctValues(for q in eligible return q.price)) return for q in eligible[price = amount] return { carrier: q.carrierName, price: q.price, days: q.days })
+        restrictedCarriers: count(shipment.CarrierQuotes.excluded)
+        reason: if found then selected.carrierName + " is the cheapest eligible carrier" else "No carrier can take the shipment: " + toString(restrictedCarriers) + " carriers have a restriction"
+        prices: sort(distinctValues(for q in eligible return q.price))
+        ranking: flatten(for amount in prices return for q in eligible[price = amount] return { carrier: q.carrierName, price: q.price, days: q.days })
     }
 
     // Service layer: the external contract

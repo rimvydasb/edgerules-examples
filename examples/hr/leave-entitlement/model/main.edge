@@ -35,7 +35,13 @@
     }
     func halfDaysUp(days: number): ceiling(days * 2) / 2
     func vacationDaysTable(profiles: Profile[]): {
-        result: for p in profiles return { profile: p.profile; extraDays: sum(for extra in vacationDays(p.age, p.serviceYears).extras return extra.days); days: vacationDays(p.age, p.serviceYears).days }
+        func rowOf(p): {
+            profile: p.profile
+            extraDays: sum(for extra in vacationDays(p.age, p.serviceYears).extras return extra.days)
+            days: vacationDays(p.age, p.serviceYears).days
+        }
+
+        result: for p in profiles return rowOf(p)
     }
 
     // Decisions layer: one business question per decision

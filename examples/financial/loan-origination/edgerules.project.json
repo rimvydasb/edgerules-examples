@@ -9,7 +9,7 @@
     "format": "dsl",
     "source": "model/main.edge",
     "name": "Loan Origination",
-    "version": "2.0.0"
+    "version": "2.0.1"
   },
   "documentation": "docs/descriptions.json",
   "tests": [

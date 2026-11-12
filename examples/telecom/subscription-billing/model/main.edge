@@ -38,6 +38,7 @@
         { tier: "Next 15 GB"; upToGb: 20; pricePerGb: 1.5 }
         { tier: "Above 20 GB"; upToGb: 1000000; pricePerGb: 1 }
     ]
+    func tierLine(item: Tier, billed: number): { tier: item.tier; gb: billed; pricePerGb: item.pricePerGb; amount: billed * item.pricePerGb }
     loop graduatedCharge(units: number, tiers: Tier[]): {
         over: tiers
         state: { remaining: units, from: 0, billed: 0, lines: <TierLine[], []> }
@@ -46,7 +47,7 @@
             billed: min([state.remaining, item.upToGb - state.from])
             remaining: state.remaining - billed
             from: item.upToGb
-            lines: append(state.lines, { tier: item.tier, gb: billed, pricePerGb: item.pricePerGb, amount: billed * item.pricePerGb })
+            lines: append(state.lines, tierLine(item, billed))
         }
         return: { lines: state.lines, total: sum(for line in state.lines return line.amount) }
     }
@@ -65,10 +66,13 @@
 
     // Decisions layer: recurring charges, usage, discounts and the invoice
     decision RecurringCharges(cycle: BillingCycle): {
-        lines: for period in cycle.plans return {
-            description: planCatalog(period.plan).name + " for " + toString(period.days) + " of " + toString(cycle.periodDays) + " days"
-            amount: round(planCatalog(period.plan).monthlyFee * period.share, 2)
+        func recurringLine(period: PlanPeriod, periodDays: number): {
+            plan: planCatalog(period.plan)
+            description: plan.name + " for " + toString(period.days) + " of " + toString(periodDays) + " days"
+            amount: round(plan.monthlyFee * period.share, 2)
         }
+
+        lines: for period in cycle.plans return recurringLine(period, cycle.periodDays)
         total: sum(for line in lines return line.amount)
     }
     decision DataUsage(cycle: BillingCycle): {
@@ -80,14 +84,22 @@
         overage: graduatedCharge(overageGb, overageTiers())
     }
     decision Discounts(cycle: BillingCycle): {
-        lines: for promotion in cycle.promotions return {
+        func promotionLine(promotion: Promotion, recurringTotal: number, periodDays: number): {
+            share: promotion.percent / 100 * promotion.days / periodDays
             description: "Promotion " + promotion.code + " for " + toString(promotion.days) + " days"
-            amount: 0 - round(cycle.RecurringCharges.total * promotion.percent / 100 * promotion.days / cycle.periodDays, 2)
+            amount: 0 - round(recurringTotal * share, 2)
         }
+
+        lines: for promotion in cycle.promotions return promotionLine(promotion, cycle.RecurringCharges.total, cycle.periodDays)
         total: sum(for line in lines return line.amount)
     }
     decision Invoice(cycle: BillingCycle): {
-        overageLines: for line in cycle.DataUsage.overage.lines return { description: "Extra data, " + line.tier + ": " + toString(line.gb) + " GB", amount: line.amount }
+        func overageLine(line): {
+            description: "Extra data, " + line.tier + ": " + toString(line.gb) + " GB"
+            amount: line.amount
+        }
+
+        overageLines: for line in cycle.DataUsage.overage.lines return overageLine(line)
         lines: flatten([cycle.RecurringCharges.lines, overageLines, cycle.Discounts.lines])
         net: round(cycle.RecurringCharges.total + cycle.DataUsage.overage.total + cycle.Discounts.total, 2)
         vat: vatTreatment(cycle.country, cycle.customerType, cycle.hasVatId)
