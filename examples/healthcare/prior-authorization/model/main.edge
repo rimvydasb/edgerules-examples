@@ -51,6 +51,7 @@
         ]
         default: { status: "APPROVED", code: "CRITERIA_MET", reason: "All medical criteria are met" }
     }
+    func plusMonths(start: date, months: number): start + period("P" + toString(months) + "M")
     func matchesIndication(diagnosisCodes: string[], indications: string[]): any(for code in diagnosisCodes return any(for prefix in indications return startsWith(code, prefix)))
 
     // Decisions layer: coverage, clinical criteria and the verdict
@@ -63,14 +64,24 @@
     decision ClinicalReview(request: AuthRequest): {
         policy: request.CoverageCheck.policy
         indicated: matchesIndication(request.diagnosisCodes, policy.indications)
-        qualifyingTrials: for t in request.treatments return t.therapy = policy.stepTherapy and t.unsuccessful and (t.trialDays >= policy.minTrialDays or t.outcome = "intolerant")
+        func qualifies(t: PriorTreatment, policy): t.therapy = policy.stepTherapy and t.unsuccessful and (t.trialDays >= policy.minTrialDays or t.outcome = "intolerant")
+
+        qualifyingTrials: for t in request.treatments return qualifies(t, policy)
         stepTherapyMet: policy.stepTherapy = "" or any(qualifyingTrials)
         missingDocuments: (for d in policy.requiredDocuments return if contains(request.documents, d) then "" else d)[... != ""]
     }
     decision AuthorizationDecision(request: AuthRequest): {
-        verdict: authorizationVerdict(request.CoverageCheck.required, request.CoverageCheck.knownService, request.CoverageCheck.covered, request.providerInNetwork, count(request.ClinicalReview.missingDocuments), request.ClinicalReview.indicated, request.ClinicalReview.stepTherapyMet)
+        required: request.CoverageCheck.required
+        knownService: request.CoverageCheck.knownService
+        covered: request.CoverageCheck.covered
+        inNetwork: request.providerInNetwork
+        missingDocuments: count(request.ClinicalReview.missingDocuments)
+        indicated: request.ClinicalReview.indicated
+        stepTherapyMet: request.ClinicalReview.stepTherapyMet
+        verdict: authorizationVerdict(required, knownService, covered, inNetwork, missingDocuments, indicated, stepTherapyMet)
         approved: verdict.status = "APPROVED"
-        validUntil: if approved and request.CoverageCheck.required then request.serviceDate + period("P" + toString(request.CoverageCheck.policy.validMonths) + "M") else request.serviceDate
+        validMonths: request.CoverageCheck.policy.validMonths
+        validUntil: if approved and required then plusMonths(request.serviceDate, validMonths) else request.serviceDate
     }
 
     // Service layer: the external contract

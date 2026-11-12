@@ -126,13 +126,15 @@
         ]
     }
 
+    func underwritingOf(driver: Driver): driverUnderwriting(driver.age, driver.licenseYears, driver.atFaultClaims, driver.majorViolations)
+
     // Decisions layer: rating, discounts, underwriting and the premium
     decision DriverRating(driver: Driver): {
         ageFactor: driverAgeFactor(driver.age).factor
         experience: experienceFactor(driver.licenseYears).factor
         record: drivingRecordFactor(driver.atFaultClaims, driver.minorViolations).factor
         factor: round(ageFactor * experience * record, 4)
-        findings: for finding in driverUnderwriting(driver.age, driver.licenseYears, driver.atFaultClaims, driver.majorViolations) return { driver: driver.name, action: finding.action, reason: finding.reason }
+        findings: for finding in underwritingOf(driver) return { driver: driver.name, action: finding.action, reason: finding.reason }
     }
     decision PolicyRating(policy: Policy): {
         rateVersion: rateVersion(policy.quoteDate).version
@@ -148,7 +150,8 @@
         premium: roundHalfUp(base * product(for line in breakdown return line.value), 2)
     }
     decision PolicyDiscounts(policy: Policy): {
-        applied: discounts(policy.otherPolicies, policy.tenureYears, policy.vehicle.safetyFeatureCount, all(for driver in policy.drivers return driver.claimFree), policy.paperless)
+        allClaimFree: all(for driver in policy.drivers return driver.claimFree)
+        applied: discounts(policy.otherPolicies, policy.tenureYears, policy.vehicle.safetyFeatureCount, allClaimFree, policy.paperless)
         earned: sum(for d in applied return d.rate)
         rate: min([earned, ratingPolicy().maxDiscount])
         capped: earned > rate
@@ -196,6 +199,22 @@
 
     // Example execution
     func requoteOn(policy: Policy, quoteDate: date): {
+        func copyVehicle(v): {
+            make: v.make
+            modelYear: v.modelYear
+            value: v.value
+            safetyFeatures: v.safetyFeatures
+        }
+
+        func copyDriver(d): {
+            name: d.name
+            birthDate: d.birthDate
+            licenseDate: d.licenseDate
+            atFaultClaims: d.atFaultClaims
+            minorViolations: d.minorViolations
+            majorViolations: d.majorViolations
+        }
+
         result: autoQuote(policy: {
             policyId: policy.policyId
             quoteDate: quoteDate
@@ -205,8 +224,8 @@
             customerSince: policy.customerSince
             otherPolicies: policy.otherPolicies
             paperless: policy.paperless
-            vehicle: { make: policy.vehicle.make; modelYear: policy.vehicle.modelYear; value: policy.vehicle.value; safetyFeatures: policy.vehicle.safetyFeatures }
-            drivers: for d in policy.drivers return { name: d.name; birthDate: d.birthDate; licenseDate: d.licenseDate; atFaultClaims: d.atFaultClaims; minorViolations: d.minorViolations; majorViolations: d.majorViolations }
+            vehicle: copyVehicle(policy.vehicle)
+            drivers: for d in policy.drivers return copyDriver(d)
         } as Policy)
     }
     @Name("Family car quote")

@@ -130,15 +130,20 @@
     decision LoanDecision(application: Application): {
         knockouts: flatten(for applicant in application.applicants return applicant.ApplicantPolicy.knockouts)
         affordability: affordability(application.householdIncome, application.householdDebtPayments, application.loanAmount, application.LoanPricing.rate, application.termYears)
-        verdict: decisionMatrix(count(knockouts), application.HouseholdRisk.grade.grade, application.ltv, affordability.dsti)
+        knockoutCount: count(knockouts)
+        verdict: decisionMatrix(knockoutCount, application.HouseholdRisk.grade.grade, application.ltv, affordability.dsti)
     }
     decision LoanOffer(application: Application): {
         approved: application.LoanDecision.verdict.outcome = "APPROVE"
         amount: if approved then application.loanAmount else 0
         rate: if approved then application.LoanPricing.rate else 0
         monthlyPayment: if approved then application.LoanDecision.affordability.payment else 0
-        maxAmount: round(min([application.LoanDecision.affordability.maxLoan, application.propertyValue * creditPolicy().maxLtv]), 0)
-        counterOfferAmount: if not approved and count(application.LoanDecision.knockouts) = 0 and application.HouseholdRisk.grade.grade != "E" and maxAmount < application.loanAmount then maxAmount else 0
+        affordableLoan: application.LoanDecision.affordability.maxLoan
+        propertyLimit: application.propertyValue * creditPolicy().maxLtv
+        maxAmount: round(min([affordableLoan, propertyLimit]), 0)
+        noKnockouts: count(application.LoanDecision.knockouts) = 0
+        acceptableGrade: application.HouseholdRisk.grade.grade != "E"
+        counterOfferAmount: if not approved and noKnockouts and acceptableGrade and maxAmount < application.loanAmount then maxAmount else 0
     }
 
     // Service layer: the external contract

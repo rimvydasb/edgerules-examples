@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedFrom": "86910f470133bdf6f4642a755fc385c0cc30b9cd",
+  "generatedFrom": "cf4332cb95d8fd4122c9d9a90bca9c170e6e1fd5",
   "industries": [
     {
       "description": "Credit, pricing, repayment and sales planning",
@@ -116,7 +116,7 @@
       "path": "examples/insurance/auto-premium",
       "requires": [],
       "stats": {
-        "lines": 236,
+        "lines": 255,
         "tests": 29
       },
       "tags": [
@@ -129,7 +129,7 @@
       ],
       "versions": [
         {
-          "ref": "86910f470133bdf6f4642a755fc385c0cc30b9cd",
+          "ref": "aa3380ab4bab7f73aac73cabd1626c7246fe1e58",
           "released": "2026-11-12",
           "version": "1.0.0"
         }
@@ -155,7 +155,7 @@
       "path": "examples/logistics/carrier-selection",
       "requires": [],
       "stats": {
-        "lines": 150,
+        "lines": 155,
         "tests": 15
       },
       "tags": [
@@ -168,8 +168,6 @@
       ],
       "versions": [
         {
-          "ref": "86910f470133bdf6f4642a755fc385c0cc30b9cd",
-          "released": "2026-11-12",
           "version": "1.0.0"
         }
       ]
@@ -194,7 +192,7 @@
         "milp-solver"
       ],
       "stats": {
-        "lines": 265,
+        "lines": 305,
         "tests": 22
       },
       "tags": [
@@ -205,6 +203,9 @@
         "workbook"
       ],
       "versions": [
+        {
+          "version": "1.0.1"
+        },
         {
           "ref": "15a91ac338692fea6cf8cb2aaae7b80ca04f93ff",
           "released": "2026-11-10",
@@ -232,7 +233,7 @@
       "path": "examples/financial/fraud-detection",
       "requires": [],
       "stats": {
-        "lines": 247,
+        "lines": 261,
         "tests": 16
       },
       "tags": [
@@ -245,7 +246,7 @@
       ],
       "versions": [
         {
-          "ref": "9da43af7a9cf83ee2f6afb31aef5b4c85bd60977",
+          "ref": "aa3380ab4bab7f73aac73cabd1626c7246fe1e58",
           "released": "2026-11-12",
           "version": "1.0.0"
         }
@@ -271,7 +272,7 @@
       "path": "examples/financial/kyc-onboarding",
       "requires": [],
       "stats": {
-        "lines": 178,
+        "lines": 191,
         "tests": 22
       },
       "tags": [
@@ -284,8 +285,6 @@
       ],
       "versions": [
         {
-          "ref": "86910f470133bdf6f4642a755fc385c0cc30b9cd",
-          "released": "2026-11-12",
           "version": "1.0.0"
         }
       ]
@@ -313,7 +312,7 @@
         "milp-solver"
       ],
       "stats": {
-        "lines": 178,
+        "lines": 219,
         "tests": 15
       },
       "tags": [
@@ -326,8 +325,6 @@
       ],
       "versions": [
         {
-          "ref": "86910f470133bdf6f4642a755fc385c0cc30b9cd",
-          "released": "2026-11-12",
           "version": "1.0.0"
         }
       ]
@@ -352,7 +349,7 @@
       "path": "examples/hr/leave-entitlement",
       "requires": [],
       "stats": {
-        "lines": 119,
+        "lines": 125,
         "tests": 19
       },
       "tags": [
@@ -365,7 +362,7 @@
       ],
       "versions": [
         {
-          "ref": "9da43af7a9cf83ee2f6afb31aef5b4c85bd60977",
+          "ref": "aa3380ab4bab7f73aac73cabd1626c7246fe1e58",
           "released": "2026-11-12",
           "version": "1.0.0"
         }
@@ -390,7 +387,7 @@
       "path": "examples/financial/loan-origination",
       "requires": [],
       "stats": {
-        "lines": 226,
+        "lines": 231,
         "tests": 38
       },
       "tags": [
@@ -402,6 +399,11 @@
         "workbook"
       ],
       "versions": [
+        {
+          "ref": "aa3380ab4bab7f73aac73cabd1626c7246fe1e58",
+          "released": "2026-11-12",
+          "version": "2.0.1"
+        },
         {
           "ref": "e500732bf32dd476f84cb128a50ae970e00d4ad1",
           "released": "2026-11-12",
@@ -463,7 +465,7 @@
       "path": "examples/healthcare/prior-authorization",
       "requires": [],
       "stats": {
-        "lines": 137,
+        "lines": 148,
         "tests": 18
       },
       "tags": [
@@ -476,7 +478,7 @@
       ],
       "versions": [
         {
-          "ref": "9da43af7a9cf83ee2f6afb31aef5b4c85bd60977",
+          "ref": "aa3380ab4bab7f73aac73cabd1626c7246fe1e58",
           "released": "2026-11-12",
           "version": "1.0.0"
         }
@@ -502,7 +504,7 @@
       "path": "examples/retail/returns-refund",
       "requires": [],
       "stats": {
-        "lines": 127,
+        "lines": 140,
         "tests": 23
       },
       "tags": [
@@ -515,7 +517,7 @@
       ],
       "versions": [
         {
-          "ref": "9da43af7a9cf83ee2f6afb31aef5b4c85bd60977",
+          "ref": "aa3380ab4bab7f73aac73cabd1626c7246fe1e58",
           "released": "2026-11-12",
           "version": "1.0.0"
         }
@@ -542,7 +544,7 @@
       "path": "examples/telecom/subscription-billing",
       "requires": [],
       "stats": {
-        "lines": 149,
+        "lines": 161,
         "tests": 19
       },
       "tags": [
@@ -555,7 +557,7 @@
       ],
       "versions": [
         {
-          "ref": "86910f470133bdf6f4642a755fc385c0cc30b9cd",
+          "ref": "aa3380ab4bab7f73aac73cabd1626c7246fe1e58",
           "released": "2026-11-12",
           "version": "1.0.0"
         }

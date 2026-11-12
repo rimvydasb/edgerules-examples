@@ -57,7 +57,16 @@
         fit: courierFit(courier.vehicle, contains(courier.zones, parcel.zone), parcel.coldChain, parcel.weightKg)
         stopTime: stopMinutes(courier.vehicle, parcel.zone).minutes
         stopPrice: stopCost(courier.vehicle).perStop + stopTime * dispatchPolicy().costPerMinute
-        result: { parcelId: parcel.parcelId, courierId: courier.courierId, eligible: fit.eligible, reason: fit.reason, weightKg: parcel.weightKg, minutes: stopTime, cost: stopPrice, value: parcel.deliveryValue - stopPrice } as Pair
+        result: {
+            parcelId: parcel.parcelId
+            courierId: courier.courierId
+            eligible: fit.eligible
+            reason: fit.reason
+            weightKg: parcel.weightKg
+            minutes: stopTime
+            cost: stopPrice
+            value: parcel.deliveryValue - stopPrice
+        } as Pair
     }
     optimise dispatchPlan(pairs: Pair[], value: number[], parcelOf: number[], courierOf: number[], weightKg: number[], minutes: number[], mustDeliver: number[], capacityKg: number[], shiftMinutes: number[]): {
         variables: {
@@ -73,16 +82,40 @@
         timeLimit: 5000
     }
 
+    func unassignedEntry(status, solved: boolean, messages): {
+        parcelId: if status.assigned then "" else status.parcelId
+        reason: if status.assigned then "" else if not(status.hasPairs) then messages.noCourier + join(status.blockers, "; ") else if solved then messages.noRoom else messages.noPlan
+    }
+
     // Decisions layer: the candidate pairs, then the dispatch plan
     decision Candidates(shift: Shift): {
-        all: for k in 0..(shift.parcelCount * shift.courierCount - 1) return candidatePair(shift.parcels[floor(k / shift.courierCount)], shift.couriers[modulo(k, shift.courierCount)]).result
+        func pairAt(shift: Shift, k: number): {
+            parcel: shift.parcels[floor(k / shift.courierCount)]
+            courier: shift.couriers[modulo(k, shift.courierCount)]
+            pair: candidatePair(parcel, courier).result
+        }
+
+        all: for k in 0..(shift.parcelCount * shift.courierCount - 1) return pairAt(shift, k).pair
         eligible: all[eligible = true]
     }
     decision Dispatch(shift: Shift): {
+        unassignedMessages: {
+            noCourier: "No courier can carry it: "
+            noRoom: "No capacity or time left in the shift"
+            noPlan: "Not planned: the shift has no feasible plan"
+        }
         pairs: shift.Candidates.eligible
         parcelIds: for p in shift.parcels return p.parcelId
         courierIds: for c in shift.couriers return c.courierId
-        plan: dispatchPlan(pairs: pairs, value: for x in pairs return x.value, parcelOf: for x in pairs return find(parcelIds, x.parcelId), courierOf: for x in pairs return find(courierIds, x.courierId), weightKg: for x in pairs return x.weightKg, minutes: for x in pairs return x.minutes, mustDeliver: for p in shift.parcels return if p.express and count(pairs[parcelId = p.parcelId]) > 0 then 1 else 0, capacityKg: for c in shift.couriers return c.capacityKg, shiftMinutes: for c in shift.couriers return c.shiftMinutes)
+        pairValues: for x in pairs return x.value
+        pairParcels: for x in pairs return find(parcelIds, x.parcelId)
+        pairCouriers: for x in pairs return find(courierIds, x.courierId)
+        pairWeights: for x in pairs return x.weightKg
+        pairMinutes: for x in pairs return x.minutes
+        mustDeliver: for p in shift.parcels return if p.express and count(pairs[parcelId = p.parcelId]) > 0 then 1 else 0
+        courierCapacities: for c in shift.couriers return c.capacityKg
+        courierShifts: for c in shift.couriers return c.shiftMinutes
+        plan: dispatchPlan(pairs, pairValues, pairParcels, pairCouriers, pairWeights, pairMinutes, mustDeliver, courierCapacities, courierShifts)
         solved: contains(["optimal", "feasible"], plan.status)
         diagnosis: if solved then "" else explain(plan.objective).origin
         picks: for i in 0..(count(pairs) - 1) return { pair: pairs[i], assigned: solved and plan.assign[i] > 0.5 }
@@ -99,7 +132,15 @@
             shiftMinutes: c.shiftMinutes
             cost: round(sum(for x in chosen[courierId = c.courierId] return x.cost), 2)
         }
-        unassigned: for p in shift.parcels return if count(chosen[parcelId = p.parcelId]) > 0 then { parcelId: "", reason: "" } else { parcelId: p.parcelId, reason: if count(pairs[parcelId = p.parcelId]) = 0 then "No courier can carry it: " + join(distinctValues(for x in shift.Candidates.all[parcelId = p.parcelId] return x.reason), "; ") else if solved then "No capacity or time left in the shift" else "Not planned: the shift has no feasible plan" }
+        func parcelStatus(p: Parcel, chosen: Pair[], pairs: Pair[], candidates: Pair[]): {
+            parcelId: p.parcelId
+            assigned: count(chosen[parcelId = p.parcelId]) > 0
+            hasPairs: count(pairs[parcelId = p.parcelId]) > 0
+            blockers: distinctValues(for x in candidates[parcelId = p.parcelId] return x.reason)
+        }
+
+        parcelStatuses: for p in shift.parcels return parcelStatus(p, chosen, pairs, shift.Candidates.all)
+        unassigned: for status in parcelStatuses return unassignedEntry(status, solved, unassignedMessages)
     }
 
     // Service layer: the external contract

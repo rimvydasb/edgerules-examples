@@ -68,9 +68,22 @@
         restockingFee: if accepted then round(item.value * fee.rate, 2) else 0
         refund: if accepted then item.value - restockingFee else 0
     }
+    func countOf(verdicts: string[], wanted: string): count(verdicts[... = wanted])
+    ruleset requestOutcome(anyReview: boolean, allRejected: boolean, allAccepted: boolean): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { anyReview: true }, then: { outcome: "REVIEW" } }
+            { when: { allRejected: true }, then: { outcome: "REJECT" } }
+            { when: { allAccepted: true }, then: { outcome: "ACCEPT" } }
+        ]
+        default: { outcome: "PARTIAL" }
+    }
     decision ReturnDecision(request: ReturnRequest): {
         verdicts: for item in request.items return item.ItemReturn.verdict.verdict
-        outcome: if count(verdicts[... = "REVIEW"]) > 0 then "REVIEW" else if count(verdicts[... = "REJECT"]) = count(verdicts) then "REJECT" else if count(verdicts[... = "ACCEPT"]) = count(verdicts) then "ACCEPT" else "PARTIAL"
+        anyReview: countOf(verdicts, "REVIEW") > 0
+        allRejected: countOf(verdicts, "REJECT") = count(verdicts)
+        allAccepted: countOf(verdicts, "ACCEPT") = count(verdicts)
+        outcome: requestOutcome(anyReview, allRejected, allAccepted).outcome
         sellerPaysShipping: request.customerTier = "gold" or any(for item in request.items return item.sellerFault and item.ItemReturn.accepted)
         itemsRefund: sum(for item in request.items return item.ItemReturn.refund)
         returnLabelFee: if itemsRefund = 0 or sellerPaysShipping then 0 else returnPolicy().returnLabelFee
