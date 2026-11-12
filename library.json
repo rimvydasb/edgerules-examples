@@ -1,12 +1,54 @@
 {
   "schemaVersion": 1,
-  "generatedFrom": "b1c7ed0e99e4620d7d6250be9b39901b4b3b82a3",
+  "generatedFrom": "86910f470133bdf6f4642a755fc385c0cc30b9cd",
   "industries": [
     {
       "description": "Credit, pricing, repayment and sales planning",
       "icon": "bank",
       "id": "financial",
       "title": "Financial"
+    },
+    {
+      "description": "Rating, underwriting and premium calculation",
+      "icon": "shield",
+      "id": "insurance",
+      "title": "Insurance"
+    },
+    {
+      "description": "Coverage, prior authorization and clinical criteria",
+      "icon": "heart",
+      "id": "healthcare",
+      "title": "Healthcare"
+    },
+    {
+      "description": "Carrier selection, shipping cost and delivery planning",
+      "icon": "truck",
+      "id": "logistics",
+      "title": "Logistics"
+    },
+    {
+      "description": "Returns, refunds and customer policies",
+      "icon": "store",
+      "id": "retail",
+      "title": "Retail"
+    },
+    {
+      "description": "Subscription plans, usage billing and tax",
+      "icon": "wifi",
+      "id": "telecom",
+      "title": "Telecom"
+    },
+    {
+      "description": "Benefit eligibility and rules as code",
+      "icon": "government",
+      "id": "public",
+      "title": "Public Sector"
+    },
+    {
+      "description": "Leave, pay and employee policies",
+      "icon": "puzzle",
+      "id": "hr",
+      "title": "Human Resources"
     }
   ],
   "featured": [
@@ -15,6 +57,123 @@
     "client-outreach"
   ],
   "examples": [
+    {
+      "description": "Decides the food assistance of a household: income and asset tests, deductions and the monthly benefit, or the documents still needed",
+      "engine": ">=0.2.7-alpha",
+      "features": [
+        "type",
+        "facts",
+        "decision-table",
+        "decision",
+        "function",
+        "service",
+        "workbook",
+        "chart"
+      ],
+      "id": "assistance-eligibility",
+      "industry": "public",
+      "level": "intermediate",
+      "name": "Government Assistance Eligibility",
+      "path": "examples/public/assistance-eligibility",
+      "requires": [],
+      "stats": {
+        "lines": 165,
+        "tests": 13
+      },
+      "tags": [
+        "public-sector",
+        "benefits",
+        "eligibility",
+        "rules-as-code",
+        "explain",
+        "decision-table"
+      ],
+      "versions": [
+        {
+          "ref": "9da43af7a9cf83ee2f6afb31aef5b4c85bd60977",
+          "released": "2026-11-12",
+          "version": "1.0.0"
+        }
+      ]
+    },
+    {
+      "description": "Rates a car policy by its riskiest driver, the vehicle, the territory and the deductible, with dated rate tables and capped discounts",
+      "engine": ">=0.2.8-alpha",
+      "features": [
+        "type",
+        "facts",
+        "decision-table",
+        "decision",
+        "function",
+        "service",
+        "workbook",
+        "chart"
+      ],
+      "id": "auto-premium",
+      "industry": "insurance",
+      "level": "intermediate",
+      "name": "Auto Insurance Premium",
+      "path": "examples/insurance/auto-premium",
+      "requires": [],
+      "stats": {
+        "lines": 236,
+        "tests": 29
+      },
+      "tags": [
+        "insurance",
+        "auto",
+        "rating",
+        "premium",
+        "effective-dated",
+        "decision-table"
+      ],
+      "versions": [
+        {
+          "ref": "86910f470133bdf6f4642a755fc385c0cc30b9cd",
+          "released": "2026-11-12",
+          "version": "1.0.0"
+        }
+      ]
+    },
+    {
+      "description": "Quotes four carriers with their rate cards and limits, excludes the carriers that cannot take a shipment, and selects the cheapest",
+      "engine": ">=0.2.8-alpha",
+      "features": [
+        "type",
+        "facts",
+        "decision-table",
+        "decision",
+        "function",
+        "service",
+        "workbook",
+        "chart"
+      ],
+      "id": "carrier-selection",
+      "industry": "logistics",
+      "level": "intermediate",
+      "name": "Shipping Carrier Selector",
+      "path": "examples/logistics/carrier-selection",
+      "requires": [],
+      "stats": {
+        "lines": 150,
+        "tests": 15
+      },
+      "tags": [
+        "logistics",
+        "shipping",
+        "carrier",
+        "rate-card",
+        "dimensional-weight",
+        "explain"
+      ],
+      "versions": [
+        {
+          "ref": "86910f470133bdf6f4642a755fc385c0cc30b9cd",
+          "released": "2026-11-12",
+          "version": "1.0.0"
+        }
+      ]
+    },
     {
       "description": "Decides whom to call, email or text in one working day for the largest expected revenue",
       "engine": ">=0.2.7-alpha",
@@ -47,8 +206,167 @@
       ],
       "versions": [
         {
-          "ref": "b1c7ed0e99e4620d7d6250be9b39901b4b3b82a3",
-          "released": "2026-11-09",
+          "ref": "15a91ac338692fea6cf8cb2aaae7b80ca04f93ff",
+          "released": "2026-11-10",
+          "version": "1.0.0"
+        }
+      ]
+    },
+    {
+      "description": "Scores a card payment against the recent history of the card, with a champion and a challenger strategy on the same signals",
+      "engine": ">=0.2.7-alpha",
+      "features": [
+        "type",
+        "facts",
+        "decision-table",
+        "decision",
+        "loop",
+        "service",
+        "workbook",
+        "chart"
+      ],
+      "id": "fraud-detection",
+      "industry": "financial",
+      "level": "advanced",
+      "name": "Real-Time Fraud Detection",
+      "path": "examples/financial/fraud-detection",
+      "requires": [],
+      "stats": {
+        "lines": 247,
+        "tests": 16
+      },
+      "tags": [
+        "finance",
+        "fraud",
+        "cards",
+        "velocity",
+        "champion-challenger",
+        "loop"
+      ],
+      "versions": [
+        {
+          "ref": "9da43af7a9cf83ee2f6afb31aef5b4c85bd60977",
+          "released": "2026-11-12",
+          "version": "1.0.0"
+        }
+      ]
+    },
+    {
+      "description": "Screens the beneficial owners of a business customer, rates its money laundering risk and decides the level of due diligence",
+      "engine": ">=0.2.8-alpha",
+      "features": [
+        "type",
+        "facts",
+        "decision-table",
+        "decision",
+        "function",
+        "service",
+        "workbook",
+        "chart"
+      ],
+      "id": "kyc-onboarding",
+      "industry": "financial",
+      "level": "advanced",
+      "name": "Customer Onboarding KYC",
+      "path": "examples/financial/kyc-onboarding",
+      "requires": [],
+      "stats": {
+        "lines": 178,
+        "tests": 22
+      },
+      "tags": [
+        "finance",
+        "kyc",
+        "aml",
+        "onboarding",
+        "beneficial-owners",
+        "explain"
+      ],
+      "versions": [
+        {
+          "ref": "86910f470133bdf6f4642a755fc385c0cc30b9cd",
+          "released": "2026-11-12",
+          "version": "1.0.0"
+        }
+      ]
+    },
+    {
+      "description": "Assigns the parcels of a delivery shift to couriers: rules decide who may carry what, and an optimisation picks the best plan",
+      "engine": ">=0.2.8-alpha",
+      "features": [
+        "type",
+        "facts",
+        "decision-table",
+        "decision",
+        "function",
+        "optimise",
+        "service",
+        "workbook",
+        "chart"
+      ],
+      "id": "last-mile-assignment",
+      "industry": "logistics",
+      "level": "advanced",
+      "name": "Last-Mile Delivery Assignment",
+      "path": "examples/logistics/last-mile-assignment",
+      "requires": [
+        "milp-solver"
+      ],
+      "stats": {
+        "lines": 178,
+        "tests": 15
+      },
+      "tags": [
+        "logistics",
+        "last-mile",
+        "dispatch",
+        "optimisation",
+        "milp",
+        "decision-table"
+      ],
+      "versions": [
+        {
+          "ref": "86910f470133bdf6f4642a755fc385c0cc30b9cd",
+          "released": "2026-11-12",
+          "version": "1.0.0"
+        }
+      ]
+    },
+    {
+      "description": "Annual leave days of every employee by age and service, pro rata for part-time and new hires, with a capped carry-over",
+      "engine": ">=0.2.7-alpha",
+      "features": [
+        "type",
+        "facts",
+        "decision-table",
+        "decision",
+        "function",
+        "service",
+        "workbook",
+        "chart"
+      ],
+      "id": "leave-entitlement",
+      "industry": "hr",
+      "level": "beginner",
+      "name": "Leave Entitlement",
+      "path": "examples/hr/leave-entitlement",
+      "requires": [],
+      "stats": {
+        "lines": 119,
+        "tests": 19
+      },
+      "tags": [
+        "hr",
+        "leave",
+        "vacation-days",
+        "dmn-benchmark",
+        "decision-table",
+        "workbook"
+      ],
+      "versions": [
+        {
+          "ref": "9da43af7a9cf83ee2f6afb31aef5b4c85bd60977",
+          "released": "2026-11-12",
           "version": "1.0.0"
         }
       ]
@@ -72,7 +390,7 @@
       "path": "examples/financial/loan-origination",
       "requires": [],
       "stats": {
-        "lines": 222,
+        "lines": 226,
         "tests": 38
       },
       "tags": [
@@ -85,8 +403,8 @@
       ],
       "versions": [
         {
-          "ref": "b1c7ed0e99e4620d7d6250be9b39901b4b3b82a3",
-          "released": "2026-11-09",
+          "ref": "e500732bf32dd476f84cb128a50ae970e00d4ad1",
+          "released": "2026-11-12",
           "version": "2.0.0"
         }
       ]
@@ -119,9 +437,127 @@
       ],
       "versions": [
         {
-          "ref": "b1c7ed0e99e4620d7d6250be9b39901b4b3b82a3",
-          "released": "2026-11-09",
+          "ref": "15a91ac338692fea6cf8cb2aaae7b80ca04f93ff",
+          "released": "2026-11-10",
           "version": "1.2.0"
+        }
+      ]
+    },
+    {
+      "description": "Decides a prior authorization request: coverage, network, required documents, diagnosis and step therapy, with the decision deadline",
+      "engine": ">=0.2.7-alpha",
+      "features": [
+        "type",
+        "facts",
+        "decision-table",
+        "decision",
+        "function",
+        "service",
+        "workbook",
+        "chart"
+      ],
+      "id": "prior-authorization",
+      "industry": "healthcare",
+      "level": "advanced",
+      "name": "Insurance Prior Authorization",
+      "path": "examples/healthcare/prior-authorization",
+      "requires": [],
+      "stats": {
+        "lines": 137,
+        "tests": 18
+      },
+      "tags": [
+        "healthcare",
+        "prior-authorization",
+        "step-therapy",
+        "icd-10",
+        "explain",
+        "decision-table"
+      ],
+      "versions": [
+        {
+          "ref": "9da43af7a9cf83ee2f6afb31aef5b4c85bd60977",
+          "released": "2026-11-12",
+          "version": "1.0.0"
+        }
+      ]
+    },
+    {
+      "description": "Accepts or rejects every returned item by window, condition and fault, and calculates the restocking fee, the refund and the refund date",
+      "engine": ">=0.2.7-alpha",
+      "features": [
+        "type",
+        "facts",
+        "decision-table",
+        "decision",
+        "function",
+        "service",
+        "workbook",
+        "chart"
+      ],
+      "id": "returns-refund",
+      "industry": "retail",
+      "level": "beginner",
+      "name": "Returns and Refund Policy",
+      "path": "examples/retail/returns-refund",
+      "requires": [],
+      "stats": {
+        "lines": 127,
+        "tests": 23
+      },
+      "tags": [
+        "retail",
+        "returns",
+        "refund",
+        "explain",
+        "business-days",
+        "decision-table"
+      ],
+      "versions": [
+        {
+          "ref": "9da43af7a9cf83ee2f6afb31aef5b4c85bd60977",
+          "released": "2026-11-12",
+          "version": "1.0.0"
+        }
+      ]
+    },
+    {
+      "description": "Bills a mobile plan for one cycle: pro rata plan changes, graduated data overage, promotions, data rollover and VAT",
+      "engine": ">=0.2.8-alpha",
+      "features": [
+        "type",
+        "facts",
+        "decision-table",
+        "decision",
+        "function",
+        "loop",
+        "service",
+        "workbook",
+        "chart"
+      ],
+      "id": "subscription-billing",
+      "industry": "telecom",
+      "level": "intermediate",
+      "name": "Subscription Billing",
+      "path": "examples/telecom/subscription-billing",
+      "requires": [],
+      "stats": {
+        "lines": 149,
+        "tests": 19
+      },
+      "tags": [
+        "telecom",
+        "billing",
+        "subscription",
+        "proration",
+        "vat",
+        "loop"
+      ],
+      "versions": [
+        {
+          "ref": "86910f470133bdf6f4642a755fc385c0cc30b9cd",
+          "released": "2026-11-12",
+          "version": "1.0.0"
         }
       ]
     }
