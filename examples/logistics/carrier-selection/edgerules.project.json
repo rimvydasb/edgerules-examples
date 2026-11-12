@@ -18,7 +18,7 @@
     "industry": "logistics",
     "level": "intermediate",
     "features": ["type", "facts", "decision-table", "decision", "function", "service", "workbook", "chart"],
-    "engine": ">=0.2.7-alpha",
+    "engine": ">=0.2.8-alpha",
     "authors": ["edgerules"]
   }
 }

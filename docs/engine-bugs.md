@@ -21,7 +21,12 @@ run. Optimise repros used the `highs` package with `toCplexLp` and `mapHighsSolu
 
 ---
 
-## 1. A comparison with a `Missing` operand returns `false`
+## 1. A comparison with a `Missing` operand returns `false` [NOT A BUG]
+
+> **Resolution:** By design. `special-values-spec.md` (Common Special Value Treatment, rule 5) states that every
+> comparison and logical operation with a special value is `false`, and that a special value cannot be a boolean. Check
+> the input before the comparison: `if isMissing(h.assets) then ... else h.assets <= 3000`, or
+> `explain(h.assets).status`. A change of this rule is a language design decision, not a bug fix.
 
 Arithmetic keeps the `Missing` and its origin, but a comparison turns it into a plain `false`. `explain` then reports
 the result as healthy, so the model cannot tell "the test failed" from "the evidence is missing". This works against the
@@ -63,7 +68,12 @@ missing.
 **Workaround:** check every input with `explain(x).status = "ok"` before the comparison and carry a separate "known"
 flag.
 
-## 2. `min` / `max` of an empty list throws a hard interpreter error
+## 2. `min` / `max` of an empty list throws a hard interpreter error [FIXED]
+
+> **Resolution:** `min`, `max`, `minBy`, and `maxBy` of an empty list (or of a list of `NotApplicable` elements only)
+> return `Invalid(number)` with the origin `min of an empty list` (`max …`, `minBy …`, `maxBy …`). The execution goes
+> on. The result is `Invalid`, not `Missing`, to match `mean`, `median`, and `stddev` of an empty list. Tests:
+> `eval_collection_tests.rs`, `tests/wasm/builtins/list-functions.test.ts`.
 
 ```edgerules
 {
@@ -92,7 +102,13 @@ evaluated. An empty list is ordinary data (no eligible carrier, no history), so 
 
 **Workaround:** `if count(xs) > 0 then min(xs) else 0` (used in `carrier-selection`).
 
-## 3. An `optimise` row without variables makes the whole result `Missing`, without a reason
+## 3. An `optimise` row without variables makes the whole result `Missing`, without a reason [FIXED]
+
+> **Resolution:** The engine decides a row without decision variables before it builds the `LpProblem`. A row that
+> holds is not sent to the solver, and its bottleneck value is 0 (the family keeps one value per element). A false row
+> makes the result `status: "infeasible"` without a solver call; the origin is
+> `E340: optimise 'pick' is infeasible — … relaxes 'leastPerGroup[2]' by 1 (>= 1)`. Tests:
+> `eval_optimise_indexed_tests.rs`, `tests/wasm/optimise.test.ts`.
 
 A constraint family can produce a row whose sum has no variable terms, for example a group with no candidates. The row
 is trivially true (`0 <= 1`), but `toCplexLp` throws `LpFormatError`. The engine then returns the whole result record as
@@ -135,7 +151,13 @@ LpFormatError - constraint 'onePerGroup[2]' has no variable terms
 **Workaround:** build the constraint families only over the rows that have candidates (`parcelIds` and `courierIds` in
 `last-mile-assignment`).
 
-## 4. Record fields shadow parameters and cause false cycles (E110 / E103)
+## 4. Record fields shadow parameters and cause false cycles (E110 / E103) [FIXED] (A, B) / [NOT A BUG] (C)
+
+> **Resolution:** Repros A and B are fixed. In an anonymous record literal, a field's own name in its value now reads
+> the outer binding, the same as in a named context (`b: { a: a }` already worked): `{ driver: driver.name }` reads the
+> `driver` parameter. Repro C is by design: `dsl-context-spec.md` R8 ("Shadowing: nearest wins, no escape hatch"). In
+> the `return` context, `household` in `applicationId: household.applicationId` is the sibling field `household`, not
+> the parameter. Rename the field or the parameter. Tests: `eval_context_rules_tests.rs`.
 
 Inside a record literal, a field name hides a parameter or context name of the same spelling, even in the field's own
 value and in sibling fields. The result is a circular dependency, or a member lookup on the wrong object. A plain
@@ -192,7 +214,10 @@ so: "field 'driver' hides the parameter 'driver'; rename one of them".
 
 **Impact:** hit 4 times in 10 examples (`auto-premium` twice, `assistance-eligibility`, `last-mile-assignment`).
 
-## 5. A list filter cannot read a `facts` field (E102)
+## 5. A list filter cannot read a `facts` field (E102) [FIXED]
+
+> **Resolution:** A filter predicate reads a facts field of the element by name, in a service, `facts`, or `decision`
+> body: `household.members[age >= 60]`. The E102 message format (node id) is unchanged. Tests: `eval_layer_tests.rs`.
 
 ```edgerules
 {
@@ -216,7 +241,11 @@ should name the field and the list, not a node id.
 
 **Workaround:** project, then filter: `count((for m in household.members return m.age >= 60)[... = true])`.
 
-## 6. `< date("...")` in a ruleset cell parses as the `<date>` type wrapper
+## 6. `< date("...")` in a ruleset cell parses as the `<date>` type wrapper [FIXED]
+
+> **Resolution:** `<name` is a type wrapper only when `>`, `,`, `[`, or `:` follows the name. Otherwise `<` is a comparison:
+> `< date("2027-01-01")`, `< limits.cutoff`, and `< cutoff` (a bare parameter, which also failed) all parse. Tests:
+> `eval_ruleset_tests.rs`.
 
 ```edgerules
 {
@@ -243,7 +272,10 @@ parse error: Parse errors: InvalidTypeReference at 125, UnexpectedToken at 131, 
 exactly this cell. The same ambiguity probably applies to `< datetime(...)`, `< time(...)` and any type name. The parse
 error should at least point at the cell and suggest parentheses.
 
-## 7. `flatten` loses the element type
+## 7. `flatten` loses the element type [FIXED]
+
+> **Resolution:** `flatten` returns the innermost element type in one list: `Finding[][]` gives `Finding[]`, and
+> `number[][][]` gives `number[]` (the flatten is deep). Tests: `eval_collection_tests.rs`.
 
 ```edgerules
 {
@@ -264,7 +296,12 @@ linker can infer it.
 
 **Workaround:** `concatenate`, or flatten only lists of scalars.
 
-## 8. `[]` in a ruleset result is typed `absent[]` and fails the shape check (E307)
+## 8. `[]` in a ruleset result is typed `absent[]` and fails the shape check (E307) [FIXED]
+
+> **Resolution:** The ruleset shape check unifies `Absent` at any depth: `[]` takes `string[]` from the other rows,
+> in `then` and in `default`. Other field differences are still E307. Note: the engine evaluates an empty list
+> literal `[]` to `Missing('empty list')` everywhere (`x: []`, `count([])`), so the `VISIT` row returns
+> `documents: Missing('empty list')`. Tests: `eval_ruleset_tests.rs`.
 
 ```edgerules
 {
@@ -288,7 +325,13 @@ A typed form in a cell, such as `<string[], []>`, would also do.
 
 **Workaround:** remove the row and handle the case in another table (`prior-authorization`).
 
-## 9. A `decision` on a child type cannot be tested on its own
+## 9. A `decision` on a child type cannot be tested on its own [NOT A BUG]
+
+> **Resolution:** The second option already works. The input supplies the owner inside the child (decision layers
+> reference: "The parent child field is transient if the input supplies the parent inside the child"):
+> `execute("MemberCheck", {"member": {"birthDate": "1950-01-01", "household": {"applicationDate": "2026-01-01"}}})`
+> gives `{"senior": true}`. Input binding rejects a facts key by design (`field is computed`). To supply facts as plain
+> values, call the decision with a literal in a model field (`t: MemberCheck({ age: 70 })`) and execute that field.
 
 A decision on a type with an `owner` link reads facts that go through the owner. A test of that decision must supply the
 input as the service binding does, which rejects facts keys and cannot supply the owner.
@@ -320,7 +363,10 @@ Another option is to let the test supply the owner (`{"member": {..., "household
 **Impact:** in all 10 examples, decisions such as `ItemReturn`, `DriverRating`, `OwnerScreening` and `MemberCheck` are
 tested only through the decision of the root type or the service.
 
-## 10. `min` / `max` reject dates
+## 10. `min` / `max` reject dates [NOT A BUG]
+
+> **Resolution:** Feature request. The list functions reference documents `min` and `max` over numbers only. Use
+> `sort(dates)[0]` or `if a < b then a else b`.
 
 ```edgerules
 {
@@ -335,7 +381,10 @@ two dates" is common in business rules: a coverage end, a promotion end within a
 
 **Workaround:** `if a < b then a else b`.
 
-## 11. `x in [...]` is not an expression, only a ruleset cell
+## 11. `x in [...]` is not an expression, only a ruleset cell [NOT A BUG]
+
+> **Resolution:** Feature request. `in` is a unary test only (EBNF, Unary Tests): `in ["a", "b"]` desugars to
+> `contains(["a", "b"], ...)`. In an expression, write `contains(["wrong-item", "defective"], reason)`.
 
 ```edgerules
 {
@@ -350,7 +399,10 @@ two dates" is common in business rules: a coverage end, a promotion end within a
 to work in a `when` expression and in a `facts` field too. If it stays cell-only, the parse error should suggest
 `contains(list, value)`.
 
-## 12. A list cannot be filtered by a boolean mask
+## 12. A list cannot be filtered by a boolean mask [NOT A BUG]
+
+> **Resolution:** Feature request. A filter takes a predicate over the element or a number index (EBNF, Disambiguation
+> in filter position), not a list. The zip-and-filter workaround is the supported form.
 
 ```edgerules
 {

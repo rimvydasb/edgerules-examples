@@ -20,7 +20,7 @@
         share: days / period.cycle.periodDays
     }
     facts PromotionFacts(promotion: Promotion): {
-        lastDay: if promotion.validUntil < promotion.cycle.periodEnd then promotion.validUntil else promotion.cycle.periodEnd
+        lastDay: min([promotion.validUntil, promotion.cycle.periodEnd])
         days: max([0, (lastDay - promotion.cycle.periodStart).days + 1])
     }
 

@@ -17,7 +17,7 @@
     facts CustomerFacts(customer: Customer): {
         companyAgeYears: age(customer.incorporationDate, customer.onboardingDate)
         declaredOwnership: sum(for o in customer.owners return o.ownershipShare)
-        significantOwners: count((for o in customer.owners return o.significant)[... = true])
+        significantOwners: count(customer.owners[significant = true])
     }
 
     // Knowledge layer: the KYC policy, the risk tables and the scorecard

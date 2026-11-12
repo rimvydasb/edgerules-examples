@@ -12,7 +12,16 @@
     "test": "node --test \"tooling/__tests__/*.test.mjs\""
   },
   "devDependencies": {
-    "@edgerules/node": "0.2.7-alpha.202611081915",
+    "@codemirror/autocomplete": "^6.20.4",
+    "@codemirror/commands": "^6.11.1",
+    "@codemirror/language": "^6.13.1",
+    "@codemirror/lint": "^6.9.7",
+    "@codemirror/state": "^6.7.6",
+    "@codemirror/view": "^6.43.15",
+    "@edgerules/node": "0.2.8-alpha.202611121551",
+    "@lezer/highlight": "^1.2.5",
+    "@mantine/notifications": "^9.8.0",
+    "@tabler/icons-react": "^3.51.0",
     "ajv": "^8.17.1",
     "edgerules-react": "github:rimvydasb/edgerules-react#develop",
     "highs": "^1.15.4",

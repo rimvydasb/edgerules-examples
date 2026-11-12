@@ -73,7 +73,7 @@
       "present": true
     },
     {
-      "path": "ratedDriver.name",
+      "path": "ratedDriver.driver",
       "section": "assertions",
       "order": 2,
       "type": "string",
@@ -112,7 +112,7 @@
       "assertions": {
         "rateVersion": "2026-01",
         "base": "780",
-        "ratedDriver.name": "Maja Larsen",
+        "ratedDriver.driver": "Maja Larsen",
         "ratedDriver.factor": "2.28",
         "premium": "2311.92"
       }
@@ -134,7 +134,7 @@
       "assertions": {
         "rateVersion": "",
         "base": "",
-        "ratedDriver.name": "Erik Larsen",
+        "ratedDriver.driver": "Erik Larsen",
         "ratedDriver.factor": "1.1",
         "premium": "1115.4"
       }

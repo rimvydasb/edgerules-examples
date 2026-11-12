@@ -1,0 +1,144 @@
+{
+  "rows": [
+    {
+      "path": "driver.name",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "driver.birthDate",
+      "section": "inputs",
+      "order": 1,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "driver.licenseDate",
+      "section": "inputs",
+      "order": 2,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "driver.atFaultClaims",
+      "section": "inputs",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "driver.minorViolations",
+      "section": "inputs",
+      "order": 4,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "driver.policy",
+      "section": "inputs",
+      "order": 5,
+      "type": "Policy",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "ageFactor",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "experience",
+      "section": "assertions",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "record",
+      "section": "assertions",
+      "order": 2,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "factor",
+      "section": "assertions",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "findings",
+      "section": "assertions",
+      "order": 4,
+      "type": "array",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "DriverRating-1",
+      "name": "Teenage driver with a new licence",
+      "order": 0,
+      "inputs": {
+        "driver.name": "Maja Larsen",
+        "driver.birthDate": "2007-05-30",
+        "driver.licenseDate": "2025-09-15",
+        "driver.atFaultClaims": "0",
+        "driver.minorViolations": "0",
+        "driver.policy": "{\"quoteDate\":\"2026-11-12\"}"
+      },
+      "assertions": {
+        "ageFactor": "1.9",
+        "experience": "1.2",
+        "record": "1",
+        "factor": "2.28",
+        "findings": "[]"
+      }
+    },
+    {
+      "id": "DriverRating-2",
+      "name": "Experienced driver with one minor violation",
+      "order": 1,
+      "inputs": {
+        "driver.name": "Erik Larsen",
+        "driver.birthDate": "1977-08-03",
+        "driver.licenseDate": "1995-04-02",
+        "driver.atFaultClaims": "0",
+        "driver.minorViolations": "1",
+        "driver.policy": "{\"quoteDate\":\"2026-11-12\"}"
+      },
+      "assertions": {
+        "ageFactor": "1",
+        "experience": "1",
+        "record": "1.1",
+        "factor": "1.1",
+        "findings": "[]"
+      }
+    },
+    {
+      "id": "DriverRating-3",
+      "name": "Driver under 18 is declined",
+      "order": 2,
+      "inputs": {
+        "driver.name": "Kid Larsen",
+        "driver.birthDate": "2010-01-01",
+        "driver.licenseDate": "2026-01-01",
+        "driver.atFaultClaims": "0",
+        "driver.minorViolations": "0",
+        "driver.policy": "{\"quoteDate\":\"2026-11-12\"}"
+      },
+      "assertions": {
+        "ageFactor": "1.9",
+        "experience": "1.4",
+        "record": "1",
+        "factor": "2.66",
+        "findings": "[{\"driver\":\"Kid Larsen\",\"action\":\"DECLINE\",\"reason\":\"The driver is under 18\"}]"
+      }
+    }
+  ]
+}

@@ -28,11 +28,11 @@
         installmentCharge: 0.03
     }
     ruleset rateVersion(quoteDate: date): {
-        hitPolicy: "first-match"
+        hitPolicy: "unique-match"
         rules: [
+            { when: { quoteDate: < date("2027-01-01") }, then: { version: "2026-01" } }
             { when: { quoteDate: >= date("2027-01-01") }, then: { version: "2027-01" } }
         ]
-        default: { version: "2026-01" }
     }
     ruleset baseRate(coverage: string, version: string): {
         hitPolicy: "unique-match"
@@ -132,12 +132,12 @@
         experience: experienceFactor(driver.licenseYears).factor
         record: drivingRecordFactor(driver.atFaultClaims, driver.minorViolations).factor
         factor: round(ageFactor * experience * record, 4)
-        findings: for finding in driverUnderwriting(driver.age, driver.licenseYears, driver.atFaultClaims, driver.majorViolations) return { name: driver.name, action: finding.action, reason: finding.reason }
+        findings: for finding in driverUnderwriting(driver.age, driver.licenseYears, driver.atFaultClaims, driver.majorViolations) return { driver: driver.name, action: finding.action, reason: finding.reason }
     }
     decision PolicyRating(policy: Policy): {
         rateVersion: rateVersion(policy.quoteDate).version
         base: baseRate(policy.coverage, rateVersion).rate
-        driverFactors: for driver in policy.drivers return { name: driver.name, factor: driver.DriverRating.factor }
+        driverFactors: for d in policy.drivers return { driver: d.name, factor: d.DriverRating.factor }
         ratedDriver: driverFactors[factor = max(for d in driverFactors return d.factor)][0]
         breakdown: [
             { factor: "Rated driver", value: ratedDriver.factor }
@@ -156,7 +156,7 @@
     }
     decision Underwriting(policy: Policy): {
         findings: flatten(for driver in policy.drivers return driver.DriverRating.findings)
-        actions: flatten(for driver in policy.drivers return for finding in driver.DriverRating.findings return finding.action)
+        actions: for finding in findings return finding.action
         outcome: if contains(actions, "DECLINE") then "DECLINE" else if contains(actions, "REFER") then "REFER" else "ACCEPT"
     }
     decision PolicyPremium(policy: Policy): {
@@ -183,7 +183,7 @@
                 recordFactor: driver.DriverRating.record
                 factor: driver.DriverRating.factor
             }
-            ratedDriver: policy.PolicyRating.ratedDriver.name
+            ratedDriver: policy.PolicyRating.ratedDriver.driver
             breakdown: policy.PolicyRating.breakdown
             premiumBeforeDiscounts: policy.PolicyRating.premium
             discounts: policy.PolicyDiscounts.applied
@@ -195,10 +195,10 @@
     }
 
     // Example execution
-    func requoteOn(policy: Policy, newQuoteDate: date): {
+    func requoteOn(policy: Policy, quoteDate: date): {
         result: autoQuote(policy: {
             policyId: policy.policyId
-            quoteDate: newQuoteDate
+            quoteDate: quoteDate
             coverage: policy.coverage
             deductible: policy.deductible
             territory: policy.territory
@@ -231,6 +231,6 @@
         @FunctionNode(name: "Quote")
         quote: autoQuote(policy: policy)
         @FunctionNode(name: "Requote after the rate change")
-        requote: requoteOn(policy: policy, newQuoteDate: date("2027-01-04"))
+        requote: requoteOn(policy: policy, quoteDate: date("2027-01-04"))
     }
 }

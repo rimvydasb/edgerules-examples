@@ -16,7 +16,7 @@
     facts ShiftFacts(shift: Shift): {
         parcelCount: count(shift.parcels)
         courierCount: count(shift.couriers)
-        expressCount: count((for p in shift.parcels return p.express)[... = true])
+        expressCount: count(shift.parcels[express = true])
         totalWeightKg: sum(for p in shift.parcels return p.weightKg)
     }
 
@@ -77,14 +77,12 @@
     decision Candidates(shift: Shift): {
         all: for k in 0..(shift.parcelCount * shift.courierCount - 1) return candidatePair(shift.parcels[floor(k / shift.courierCount)], shift.couriers[modulo(k, shift.courierCount)]).result
         eligible: all[eligible = true]
-        parcelIds: (for p in shift.parcels return if count(eligible[parcelId = p.parcelId]) > 0 then p.parcelId else "")[... != ""]
-        courierIds: (for c in shift.couriers return if count(eligible[courierId = c.courierId]) > 0 then c.courierId else "")[... != ""]
     }
     decision Dispatch(shift: Shift): {
         pairs: shift.Candidates.eligible
-        parcelIds: shift.Candidates.parcelIds
-        courierIds: shift.Candidates.courierIds
-        plan: dispatchPlan(pairs: pairs, value: for x in pairs return x.value, parcelOf: for x in pairs return find(parcelIds, x.parcelId), courierOf: for x in pairs return find(courierIds, x.courierId), weightKg: for x in pairs return x.weightKg, minutes: for x in pairs return x.minutes, mustDeliver: for id in parcelIds return if shift.parcels[parcelId = id][0].express then 1 else 0, capacityKg: for id in courierIds return shift.couriers[courierId = id][0].capacityKg, shiftMinutes: for id in courierIds return shift.couriers[courierId = id][0].shiftMinutes)
+        parcelIds: for p in shift.parcels return p.parcelId
+        courierIds: for c in shift.couriers return c.courierId
+        plan: dispatchPlan(pairs: pairs, value: for x in pairs return x.value, parcelOf: for x in pairs return find(parcelIds, x.parcelId), courierOf: for x in pairs return find(courierIds, x.courierId), weightKg: for x in pairs return x.weightKg, minutes: for x in pairs return x.minutes, mustDeliver: for p in shift.parcels return if p.express and count(pairs[parcelId = p.parcelId]) > 0 then 1 else 0, capacityKg: for c in shift.couriers return c.capacityKg, shiftMinutes: for c in shift.couriers return c.shiftMinutes)
         solved: contains(["optimal", "feasible"], plan.status)
         diagnosis: if solved then "" else explain(plan.objective).origin
         picks: for i in 0..(count(pairs) - 1) return { pair: pairs[i], assigned: solved and plan.assign[i] > 0.5 }

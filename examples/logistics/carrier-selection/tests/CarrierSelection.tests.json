@@ -122,7 +122,7 @@
         "shipment.packages": "[{\"lengthCm\":200,\"widthCm\":50,\"heightCm\":50,\"weightKg\":40}]"
       },
       "assertions": {
-        "lowestPrice": "0",
+        "lowestPrice": "Invalid('min of an empty list')",
         "found": "false",
         "status": "NO_CARRIER",
         "reason": "No carrier can take the shipment: 4 carriers have a restriction",

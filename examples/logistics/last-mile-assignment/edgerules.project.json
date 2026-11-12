@@ -18,7 +18,7 @@
     "industry": "logistics",
     "level": "advanced",
     "features": ["type", "facts", "decision-table", "decision", "function", "optimise", "service", "workbook", "chart"],
-    "engine": ">=0.2.7-alpha",
+    "engine": ">=0.2.8-alpha",
     "authors": ["edgerules"],
     "requires": ["milp-solver"]
   }

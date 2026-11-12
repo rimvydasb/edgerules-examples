@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "byPath": {
     "*": "Plans a delivery shift: rules decide which courier may carry which parcel, and a MILP optimisation assigns the parcels within capacity and shift time",
-    "Candidates": "Every parcel and courier pair, the eligible pairs, and the parcels and couriers that have at least one",
+    "Candidates": "Every parcel and courier pair, and the eligible pairs",
     "Courier": "A courier: vehicle, capacity in kilograms, minutes in the shift and the zones served",
     "Dispatch": "The optimised plan, the diagnosis when no plan exists, the route of every courier and the unassigned parcels",
     "Pair": "One parcel and one courier: whether the courier may carry it, why not, the stop time, the cost and the value",

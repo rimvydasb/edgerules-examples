@@ -84,9 +84,9 @@
     }
     decision CarrierSelection(shipment: Shipment): {
         eligible: shipment.CarrierQuotes.eligible
-        lowestPrice: if count(eligible) > 0 then min(for q in eligible return q.price) else 0
+        lowestPrice: min(for q in eligible return q.price)
         cheapest: eligible[price = lowestPrice]
-        fastestDays: if count(cheapest) > 0 then min(for q in cheapest return q.days) else 0
+        fastestDays: min(for q in cheapest return q.days)
         selected: cheapest[days = fastestDays][0]
         found: explain(selected).status = "ok"
         status: if found then "SELECTED" else "NO_CARRIER"
