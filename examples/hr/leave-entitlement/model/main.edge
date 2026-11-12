@@ -1,0 +1,119 @@
+{
+    // Structure layer: the leave year and its employees
+    @Name("Leave year")
+    type LeaveYear: { calculationDate: <date>; employees: <Employee[]> }
+    @Name("Employee profile")
+    type Profile: { profile: <string>; age: <number>; serviceYears: <number> }
+    @Name("Employee")
+    type Employee: { owner leaveYear: <LeaveYear>; id: <string>; name: <string>; birthDate: <date>; hireDate: <date>; contract: <string, enum: ["full-time", "part-time"]>; fte: <number, default: 1, min: 0, max: 1>; carriedOverDays: <number, default: 0, min: 0>; takenDays: <number, default: 0, min: 0> }
+
+    // Facts layer: the vocabulary of the leave policy
+    facts EmployeeFacts(employee: Employee): {
+        age: age(employee.birthDate, employee.leaveYear.calculationDate)
+        serviceYears: age(employee.hireDate, employee.leaveYear.calculationDate)
+        hiredThisYear: employee.hireDate.year = employee.leaveYear.calculationDate.year
+        monthsInService: if hiredThisYear then 13 - employee.hireDate.month else 12
+        workingTime: if employee.contract = "part-time" then employee.fte else 1
+    }
+
+    // Knowledge layer: the leave policy and the vacation days table
+    func leavePolicy(): {
+        baseDays: 22
+        maxCarryOverDays: 5
+    }
+    ruleset extraDays(age: number, serviceYears: number): {
+        hitPolicy: "collect-matches"
+        rules: [
+            { name: "R1", when: age < 18 or age >= 60 or serviceYears >= 30, then: { rule: "Under 18, 60 or over, or 30 years of service", days: 5 } }
+            { name: "R2", when: age >= 60 or serviceYears >= 30, then: { rule: "60 or over, or 30 years of service", days: 3 } }
+            { name: "R3", when: (serviceYears >= 15 or age >= 45) and not(age < 18 or age >= 60 or serviceYears >= 30), then: { rule: "15 to 29 years of service, or 45 to 59 years old", days: 2 } }
+        ]
+    }
+    func vacationDays(age: number, serviceYears: number): {
+        extras: extraDays(age, serviceYears)
+        days: leavePolicy().baseDays + sum(for extra in extras return extra.days)
+    }
+    func halfDaysUp(days: number): ceiling(days * 2) / 2
+    func vacationDaysTable(profiles: Profile[]): {
+        result: for p in profiles return { profile: p.profile; extraDays: sum(for extra in vacationDays(p.age, p.serviceYears).extras return extra.days); days: vacationDays(p.age, p.serviceYears).days }
+    }
+
+    // Decisions layer: one business question per decision
+    decision LeaveEntitlement(employee: Employee): {
+        statutory: vacationDays(employee.age, employee.serviceYears)
+        proRata: employee.workingTime * employee.monthsInService / 12
+        days: halfDaysUp(statutory.days * proRata)
+    }
+    decision LeaveBalance(employee: Employee): {
+        carriedOver: min([employee.carriedOverDays, leavePolicy().maxCarryOverDays])
+        forfeited: employee.carriedOverDays - carriedOver
+        available: employee.LeaveEntitlement.days + carriedOver
+        remaining: available - employee.takenDays
+        overdrawn: remaining < 0
+    }
+
+    // Service layer: the external contract
+    service leaveEntitlements(leaveYear: LeaveYear): {
+        employees: for employee in leaveYear.employees return {
+            id: employee.id
+            name: employee.name
+            age: employee.age
+            serviceYears: employee.serviceYears
+            appliedRules: for extra in employee.LeaveEntitlement.statutory.extras return extra.rule
+            statutoryDays: employee.LeaveEntitlement.statutory.days
+            proRata: round(employee.LeaveEntitlement.proRata, 4)
+            entitlement: employee.LeaveEntitlement.days
+            carriedOver: employee.LeaveBalance.carriedOver
+            forfeited: employee.LeaveBalance.forfeited
+            available: employee.LeaveBalance.available
+            taken: employee.takenDays
+            remaining: employee.LeaveBalance.remaining
+            overdrawn: employee.LeaveBalance.overdrawn
+        }
+        @ReturnNode(name: "Leave entitlements")
+        return: {
+            employees: employees
+            summary: {
+                headcount: count(employees)
+                entitlement: sum(for e in employees return e.entitlement)
+                forfeited: sum(for e in employees return e.forfeited)
+                remaining: sum(for e in employees return e.remaining)
+                overdrawn: for e in employees[overdrawn = true] return e.name
+            }
+        }
+    }
+
+    // Example execution
+    @Name("Team leave 2026")
+    workbook teamBook: {
+        @InputNode(name: "Leave year")
+        leaveYear: {
+            calculationDate: date("2026-12-31")
+            employees: [
+                { id: "E01"; name: "Lina Kaye"; birthDate: date("2009-03-14"); hireDate: date("2025-06-01"); contract: "part-time"; fte: 0.5; carriedOverDays: 0; takenDays: 6 }
+                { id: "E02"; name: "Marco Silva"; birthDate: date("2001-05-20"); hireDate: date("2021-02-01"); contract: "full-time"; carriedOverDays: 3; takenDays: 18 }
+                { id: "E03"; name: "Ana Rossi"; birthDate: date("1982-09-02"); hireDate: date("2006-04-10"); contract: "full-time"; carriedOverDays: 8; takenDays: 20 }
+                { id: "E04"; name: "Tom Becker"; birthDate: date("1982-01-15"); hireDate: date("1996-09-01"); contract: "full-time"; carriedOverDays: 2; takenDays: 25 }
+                { id: "E05"; name: "Rita Nowak"; birthDate: date("1966-07-30"); hireDate: date("2006-01-09"); contract: "part-time"; fte: 0.8; carriedOverDays: 5; takenDays: 31 }
+                { id: "E06"; name: "Omar Haddad"; birthDate: date("1994-11-11"); hireDate: date("2026-04-01"); contract: "full-time"; carriedOverDays: 0; takenDays: 10 }
+            ]
+        }
+        @FunctionNode(name: "Leave entitlements")
+        entitlements: leaveEntitlements(leaveYear: leaveYear)
+    }
+    @Name("Vacation days table")
+    workbook benchmarkBook: {
+        @InputNode(name: "Employee profiles")
+        profiles: [
+            { profile: "16 years old, 1 year of service"; age: 16; serviceYears: 1 }
+            { profile: "25 years old, 5 years of service"; age: 25; serviceYears: 5 }
+            { profile: "44 years old, 20 years of service"; age: 44; serviceYears: 20 }
+            { profile: "44 years old, 30 years of service"; age: 44; serviceYears: 30 }
+            { profile: "50 years old, 20 years of service"; age: 50; serviceYears: 20 }
+            { profile: "50 years old, 30 years of service"; age: 50; serviceYears: 30 }
+            { profile: "60 years old, 20 years of service"; age: 60; serviceYears: 20 }
+        ]
+        @FunctionNode(name: "Vacation days")
+        days: vacationDaysTable(profiles: profiles)
+    }
+}

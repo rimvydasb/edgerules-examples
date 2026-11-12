@@ -1,0 +1,42 @@
+{
+  "rows": [
+    {
+      "path": "size",
+      "section": "inputs",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "monthly",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "maximumBenefit-1",
+      "name": "Four persons",
+      "order": 0,
+      "inputs": {
+        "size": "4"
+      },
+      "assertions": {
+        "monthly": "975"
+      }
+    },
+    {
+      "id": "maximumBenefit-2",
+      "name": "Nine persons",
+      "order": 1,
+      "inputs": {
+        "size": "9"
+      },
+      "assertions": {
+        "monthly": "1976"
+      }
+    }
+  ]
+}

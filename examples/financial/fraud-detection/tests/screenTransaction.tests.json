@@ -1,0 +1,345 @@
+{
+  "rows": [
+    {
+      "path": "transaction.transactionId",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "transaction.timestamp",
+      "section": "inputs",
+      "order": 1,
+      "type": "datetime",
+      "present": true
+    },
+    {
+      "path": "transaction.amount",
+      "section": "inputs",
+      "order": 2,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "transaction.merchantCategory",
+      "section": "inputs",
+      "order": 3,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "transaction.country",
+      "section": "inputs",
+      "order": 4,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "transaction.deviceId",
+      "section": "inputs",
+      "order": 5,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "transaction.channel",
+      "section": "inputs",
+      "order": 6,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "transaction.cardholder",
+      "section": "inputs",
+      "order": 7,
+      "type": "Cardholder",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "transaction.history",
+      "section": "inputs",
+      "order": 8,
+      "type": "PastTransaction[]",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "action",
+      "section": "assertions",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "score",
+      "section": "assertions",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "signalCodes",
+      "section": "assertions",
+      "order": 2,
+      "type": "string[]",
+      "present": true
+    },
+    {
+      "path": "challenger.action",
+      "section": "assertions",
+      "order": 3,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "challenger.score",
+      "section": "assertions",
+      "order": 4,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "challenger.agrees",
+      "section": "assertions",
+      "order": 5,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "profile.count1h",
+      "section": "assertions",
+      "order": 6,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "screenTransaction-1",
+      "name": "Card testing attack at night",
+      "order": 0,
+      "inputs": {
+        "transaction.transactionId": "T-1",
+        "transaction.timestamp": "2026-11-12T03:42:00Z",
+        "transaction.amount": "480",
+        "transaction.merchantCategory": "5732",
+        "transaction.country": "LT",
+        "transaction.deviceId": "dev-unknown-77",
+        "transaction.channel": "online",
+        "transaction.cardholder": "{\"homeCountry\":\"LT\",\"accountOpened\":\"2020-01-01\",\"knownDevices\":[\"dev-phone-01\"]}",
+        "transaction.history": "[{\"timestamp\":\"2026-11-12T03:39:00Z\",\"amount\":1,\"country\":\"LT\",\"declined\":true},{\"timestamp\":\"2026-11-12T03:36:00Z\",\"amount\":1,\"country\":\"LT\",\"declined\":true},{\"timestamp\":\"2026-11-12T03:30:00Z\",\"amount\":2,\"country\":\"LT\"},{\"timestamp\":\"2026-11-10T18:12:00Z\",\"amount\":64.2,\"country\":\"LT\"},{\"timestamp\":\"2026-11-07T12:01:00Z\",\"amount\":38.9,\"country\":\"LT\"},{\"timestamp\":\"2026-10-29T09:15:00Z\",\"amount\":120,\"country\":\"LT\"}]"
+      },
+      "assertions": {
+        "action": "BLOCK",
+        "score": "85",
+        "signalCodes": "[\"VELOCITY_1H\",\"AMOUNT_SPIKE\",\"NEW_DEVICE\",\"NIGHT\",\"RECENT_DECLINES\"]",
+        "challenger.action": "BLOCK",
+        "challenger.score": "115",
+        "challenger.agrees": "true",
+        "profile.count1h": "3"
+      }
+    },
+    {
+      "id": "screenTransaction-2",
+      "name": "Regular groceries",
+      "order": 1,
+      "inputs": {
+        "transaction.transactionId": "T-1",
+        "transaction.timestamp": "2026-11-12T14:00:00Z",
+        "transaction.amount": "50",
+        "transaction.merchantCategory": "5411",
+        "transaction.country": "LT",
+        "transaction.deviceId": "card",
+        "transaction.channel": "card-present",
+        "transaction.cardholder": "{\"homeCountry\":\"LT\",\"accountOpened\":\"2020-01-01\",\"knownDevices\":[\"dev-phone-01\"]}",
+        "transaction.history": "[{\"timestamp\":\"2026-11-10T13:40:00Z\",\"amount\":61.1,\"country\":\"LT\"},{\"timestamp\":\"2026-11-03T13:20:00Z\",\"amount\":48,\"country\":\"LT\"}]"
+      },
+      "assertions": {
+        "action": "ALLOW",
+        "score": "0",
+        "signalCodes": "[]",
+        "challenger.action": "ALLOW",
+        "challenger.score": "",
+        "challenger.agrees": "true",
+        "profile.count1h": ""
+      }
+    },
+    {
+      "id": "screenTransaction-3",
+      "name": "Third transaction exactly 60 minutes back counts",
+      "order": 2,
+      "inputs": {
+        "transaction.transactionId": "T-1",
+        "transaction.timestamp": "2026-11-12T14:00:00Z",
+        "transaction.amount": "50",
+        "transaction.merchantCategory": "5411",
+        "transaction.country": "LT",
+        "transaction.deviceId": "card",
+        "transaction.channel": "card-present",
+        "transaction.cardholder": "{\"homeCountry\":\"LT\",\"accountOpened\":\"2020-01-01\",\"knownDevices\":[\"dev-phone-01\"]}",
+        "transaction.history": "[{\"timestamp\":\"2026-11-12T13:00:00Z\",\"amount\":20,\"country\":\"LT\"},{\"timestamp\":\"2026-11-12T13:30:00Z\",\"amount\":20,\"country\":\"LT\"},{\"timestamp\":\"2026-11-12T13:50:00Z\",\"amount\":20,\"country\":\"LT\"}]"
+      },
+      "assertions": {
+        "action": "ALLOW",
+        "score": "25",
+        "signalCodes": "[\"VELOCITY_1H\"]",
+        "challenger.action": "",
+        "challenger.score": "",
+        "challenger.agrees": "",
+        "profile.count1h": "3"
+      }
+    },
+    {
+      "id": "screenTransaction-4",
+      "name": "Third transaction 61 minutes back does not count",
+      "order": 3,
+      "inputs": {
+        "transaction.transactionId": "T-1",
+        "transaction.timestamp": "2026-11-12T14:00:00Z",
+        "transaction.amount": "50",
+        "transaction.merchantCategory": "5411",
+        "transaction.country": "LT",
+        "transaction.deviceId": "card",
+        "transaction.channel": "card-present",
+        "transaction.cardholder": "{\"homeCountry\":\"LT\",\"accountOpened\":\"2020-01-01\",\"knownDevices\":[\"dev-phone-01\"]}",
+        "transaction.history": "[{\"timestamp\":\"2026-11-12T12:59:00Z\",\"amount\":20,\"country\":\"LT\"},{\"timestamp\":\"2026-11-12T13:30:00Z\",\"amount\":20,\"country\":\"LT\"},{\"timestamp\":\"2026-11-12T13:50:00Z\",\"amount\":20,\"country\":\"LT\"}]"
+      },
+      "assertions": {
+        "action": "",
+        "score": "0",
+        "signalCodes": "[]",
+        "challenger.action": "",
+        "challenger.score": "",
+        "challenger.agrees": "",
+        "profile.count1h": "2"
+      }
+    },
+    {
+      "id": "screenTransaction-5",
+      "name": "Another country 119 minutes ago: hard block",
+      "order": 4,
+      "inputs": {
+        "transaction.transactionId": "T-1",
+        "transaction.timestamp": "2026-11-12T14:00:00Z",
+        "transaction.amount": "50",
+        "transaction.merchantCategory": "5411",
+        "transaction.country": "ES",
+        "transaction.deviceId": "card",
+        "transaction.channel": "card-present",
+        "transaction.cardholder": "{\"homeCountry\":\"LT\",\"accountOpened\":\"2020-01-01\",\"knownDevices\":[\"dev-phone-01\"]}",
+        "transaction.history": "[{\"timestamp\":\"2026-11-12T12:01:00Z\",\"amount\":30,\"country\":\"LT\"},{\"timestamp\":\"2026-11-10T12:00:00Z\",\"amount\":40,\"country\":\"LT\"}]"
+      },
+      "assertions": {
+        "action": "BLOCK",
+        "score": "50",
+        "signalCodes": "[\"FOREIGN\",\"IMPOSSIBLE_TRAVEL\"]",
+        "challenger.action": "BLOCK",
+        "challenger.score": "",
+        "challenger.agrees": "",
+        "profile.count1h": ""
+      }
+    },
+    {
+      "id": "screenTransaction-6",
+      "name": "Another country 120 minutes ago: only foreign",
+      "order": 5,
+      "inputs": {
+        "transaction.transactionId": "T-1",
+        "transaction.timestamp": "2026-11-12T14:00:00Z",
+        "transaction.amount": "50",
+        "transaction.merchantCategory": "5411",
+        "transaction.country": "ES",
+        "transaction.deviceId": "card",
+        "transaction.channel": "card-present",
+        "transaction.cardholder": "{\"homeCountry\":\"LT\",\"accountOpened\":\"2020-01-01\",\"knownDevices\":[\"dev-phone-01\"]}",
+        "transaction.history": "[{\"timestamp\":\"2026-11-12T12:00:00Z\",\"amount\":30,\"country\":\"LT\"},{\"timestamp\":\"2026-11-10T12:00:00Z\",\"amount\":40,\"country\":\"LT\"}]"
+      },
+      "assertions": {
+        "action": "ALLOW",
+        "score": "10",
+        "signalCodes": "[\"FOREIGN\"]",
+        "challenger.action": "",
+        "challenger.score": "",
+        "challenger.agrees": "",
+        "profile.count1h": ""
+      }
+    },
+    {
+      "id": "screenTransaction-7",
+      "name": "First online payment of a new account: the strategies disagree",
+      "order": 6,
+      "inputs": {
+        "transaction.transactionId": "T-1",
+        "transaction.timestamp": "2026-11-12T14:00:00Z",
+        "transaction.amount": "50",
+        "transaction.merchantCategory": "5411",
+        "transaction.country": "LT",
+        "transaction.deviceId": "dev-new-01",
+        "transaction.channel": "online",
+        "transaction.cardholder": "{\"homeCountry\":\"LT\",\"accountOpened\":\"2026-11-12\",\"knownDevices\":[]}",
+        "transaction.history": "[]"
+      },
+      "assertions": {
+        "action": "ALLOW",
+        "score": "25",
+        "signalCodes": "[\"NEW_DEVICE\",\"NEW_ACCOUNT\"]",
+        "challenger.action": "REVIEW",
+        "challenger.score": "35",
+        "challenger.agrees": "false",
+        "profile.count1h": ""
+      }
+    },
+    {
+      "id": "screenTransaction-8",
+      "name": "Exactly 2 000 in 24 hours is not over the limit",
+      "order": 7,
+      "inputs": {
+        "transaction.transactionId": "T-1",
+        "transaction.timestamp": "2026-11-12T14:00:00Z",
+        "transaction.amount": "500",
+        "transaction.merchantCategory": "5411",
+        "transaction.country": "LT",
+        "transaction.deviceId": "card",
+        "transaction.channel": "card-present",
+        "transaction.cardholder": "{\"homeCountry\":\"LT\",\"accountOpened\":\"2020-01-01\",\"knownDevices\":[\"dev-phone-01\"]}",
+        "transaction.history": "[{\"timestamp\":\"2026-11-12T09:00:00Z\",\"amount\":1500,\"country\":\"LT\"},{\"timestamp\":\"2026-10-29T16:40:00Z\",\"amount\":1000,\"country\":\"LT\"}]"
+      },
+      "assertions": {
+        "action": "",
+        "score": "0",
+        "signalCodes": "[]",
+        "challenger.action": "",
+        "challenger.score": "",
+        "challenger.agrees": "",
+        "profile.count1h": ""
+      }
+    },
+    {
+      "id": "screenTransaction-9",
+      "name": "2 000.01 in 24 hours is over the limit",
+      "order": 8,
+      "inputs": {
+        "transaction.transactionId": "T-1",
+        "transaction.timestamp": "2026-11-12T14:00:00Z",
+        "transaction.amount": "500.01",
+        "transaction.merchantCategory": "5411",
+        "transaction.country": "LT",
+        "transaction.deviceId": "card",
+        "transaction.channel": "card-present",
+        "transaction.cardholder": "{\"homeCountry\":\"LT\",\"accountOpened\":\"2020-01-01\",\"knownDevices\":[\"dev-phone-01\"]}",
+        "transaction.history": "[{\"timestamp\":\"2026-11-12T09:00:00Z\",\"amount\":1500,\"country\":\"LT\"},{\"timestamp\":\"2026-10-29T16:40:00Z\",\"amount\":1000,\"country\":\"LT\"}]"
+      },
+      "assertions": {
+        "action": "",
+        "score": "15",
+        "signalCodes": "[\"SPEND_24H\"]",
+        "challenger.action": "",
+        "challenger.score": "",
+        "challenger.agrees": "",
+        "profile.count1h": ""
+      }
+    }
+  ]
+}

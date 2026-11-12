@@ -1,0 +1,472 @@
+{
+  "rows": [
+    {
+      "path": "request.requestId",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "request.receivedAt",
+      "section": "inputs",
+      "order": 1,
+      "type": "datetime",
+      "present": true
+    },
+    {
+      "path": "request.serviceDate",
+      "section": "inputs",
+      "order": 2,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "request.urgency",
+      "section": "inputs",
+      "order": 3,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "request.serviceCode",
+      "section": "inputs",
+      "order": 4,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "request.diagnosisCodes",
+      "section": "inputs",
+      "order": 5,
+      "type": "string[]",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "request.providerInNetwork",
+      "section": "inputs",
+      "order": 6,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "request.documents",
+      "section": "inputs",
+      "order": 7,
+      "type": "string[]",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "request.member",
+      "section": "inputs",
+      "order": 8,
+      "type": "Member",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "request.treatments",
+      "section": "inputs",
+      "order": 9,
+      "type": "PriorTreatment[]",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "status",
+      "section": "assertions",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "code",
+      "section": "assertions",
+      "order": 1,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "validUntil",
+      "section": "assertions",
+      "order": 2,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "decisionDue",
+      "section": "assertions",
+      "order": 3,
+      "type": "datetime",
+      "present": true
+    },
+    {
+      "path": "missingDocuments",
+      "section": "assertions",
+      "order": 4,
+      "type": "string[]",
+      "present": true
+    },
+    {
+      "path": "checks.stepTherapyMet",
+      "section": "assertions",
+      "order": 5,
+      "type": "boolean",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "authorize-1",
+      "name": "Biologic after a failed methotrexate trial",
+      "order": 0,
+      "inputs": {
+        "request.requestId": "PA-1",
+        "request.receivedAt": "2026-11-12T09:30:00Z",
+        "request.serviceDate": "2026-11-20",
+        "request.urgency": "standard",
+        "request.serviceCode": "J0135",
+        "request.diagnosisCodes": "[\"M05.79\"]",
+        "request.providerInNetwork": "true",
+        "request.documents": "[\"clinical-notes\",\"tb-screening\"]",
+        "request.member": "{\"memberId\":\"M-1\",\"plan\":\"silver\",\"birthDate\":\"1979-04-08\",\"coverageStart\":\"2024-01-01\"}",
+        "request.treatments": "[{\"therapy\":\"methotrexate\",\"startDate\":\"2026-03-02\",\"endDate\":\"2026-07-15\",\"outcome\":\"failed\"}]"
+      },
+      "assertions": {
+        "status": "APPROVED",
+        "code": "CRITERIA_MET",
+        "validUntil": "2027-11-20",
+        "decisionDue": "2026-11-26T09:30:00",
+        "missingDocuments": "[]",
+        "checks.stepTherapyMet": "true"
+      }
+    },
+    {
+      "id": "authorize-2",
+      "name": "Methotrexate for 89 days is not enough",
+      "order": 1,
+      "inputs": {
+        "request.requestId": "PA-1",
+        "request.receivedAt": "2026-11-12T09:30:00Z",
+        "request.serviceDate": "2026-11-20",
+        "request.urgency": "standard",
+        "request.serviceCode": "J0135",
+        "request.diagnosisCodes": "[\"M05.79\"]",
+        "request.providerInNetwork": "true",
+        "request.documents": "[\"clinical-notes\",\"tb-screening\"]",
+        "request.member": "{\"memberId\":\"M-1\",\"plan\":\"silver\",\"birthDate\":\"1979-04-08\",\"coverageStart\":\"2024-01-01\"}",
+        "request.treatments": "[{\"therapy\":\"methotrexate\",\"startDate\":\"2026-03-02\",\"endDate\":\"2026-05-29\",\"outcome\":\"failed\"}]"
+      },
+      "assertions": {
+        "status": "DENIED",
+        "code": "STEP_THERAPY",
+        "validUntil": "2026-11-20",
+        "decisionDue": "",
+        "missingDocuments": "",
+        "checks.stepTherapyMet": "false"
+      }
+    },
+    {
+      "id": "authorize-3",
+      "name": "Methotrexate for 90 days is enough",
+      "order": 2,
+      "inputs": {
+        "request.requestId": "PA-1",
+        "request.receivedAt": "2026-11-12T09:30:00Z",
+        "request.serviceDate": "2026-11-20",
+        "request.urgency": "standard",
+        "request.serviceCode": "J0135",
+        "request.diagnosisCodes": "[\"M05.79\"]",
+        "request.providerInNetwork": "true",
+        "request.documents": "[\"clinical-notes\",\"tb-screening\"]",
+        "request.member": "{\"memberId\":\"M-1\",\"plan\":\"silver\",\"birthDate\":\"1979-04-08\",\"coverageStart\":\"2024-01-01\"}",
+        "request.treatments": "[{\"therapy\":\"methotrexate\",\"startDate\":\"2026-03-02\",\"endDate\":\"2026-05-30\",\"outcome\":\"failed\"}]"
+      },
+      "assertions": {
+        "status": "APPROVED",
+        "code": "CRITERIA_MET",
+        "validUntil": "",
+        "decisionDue": "",
+        "missingDocuments": "",
+        "checks.stepTherapyMet": "true"
+      }
+    },
+    {
+      "id": "authorize-4",
+      "name": "Methotrexate stopped early for intolerance",
+      "order": 3,
+      "inputs": {
+        "request.requestId": "PA-1",
+        "request.receivedAt": "2026-11-12T09:30:00Z",
+        "request.serviceDate": "2026-11-20",
+        "request.urgency": "standard",
+        "request.serviceCode": "J0135",
+        "request.diagnosisCodes": "[\"M05.79\"]",
+        "request.providerInNetwork": "true",
+        "request.documents": "[\"clinical-notes\",\"tb-screening\"]",
+        "request.member": "{\"memberId\":\"M-1\",\"plan\":\"silver\",\"birthDate\":\"1979-04-08\",\"coverageStart\":\"2024-01-01\"}",
+        "request.treatments": "[{\"therapy\":\"methotrexate\",\"startDate\":\"2026-03-02\",\"endDate\":\"2026-03-21\",\"outcome\":\"intolerant\"}]"
+      },
+      "assertions": {
+        "status": "APPROVED",
+        "code": "",
+        "validUntil": "",
+        "decisionDue": "",
+        "missingDocuments": "",
+        "checks.stepTherapyMet": "true"
+      }
+    },
+    {
+      "id": "authorize-5",
+      "name": "Methotrexate still effective",
+      "order": 4,
+      "inputs": {
+        "request.requestId": "PA-1",
+        "request.receivedAt": "2026-11-12T09:30:00Z",
+        "request.serviceDate": "2026-11-20",
+        "request.urgency": "standard",
+        "request.serviceCode": "J0135",
+        "request.diagnosisCodes": "[\"M05.79\"]",
+        "request.providerInNetwork": "true",
+        "request.documents": "[\"clinical-notes\",\"tb-screening\"]",
+        "request.member": "{\"memberId\":\"M-1\",\"plan\":\"silver\",\"birthDate\":\"1979-04-08\",\"coverageStart\":\"2024-01-01\"}",
+        "request.treatments": "[{\"therapy\":\"methotrexate\",\"startDate\":\"2026-03-02\",\"endDate\":\"2026-09-30\",\"outcome\":\"effective\"}]"
+      },
+      "assertions": {
+        "status": "DENIED",
+        "code": "STEP_THERAPY",
+        "validUntil": "",
+        "decisionDue": "",
+        "missingDocuments": "",
+        "checks.stepTherapyMet": ""
+      }
+    },
+    {
+      "id": "authorize-6",
+      "name": "No diagnosis matches an indication",
+      "order": 5,
+      "inputs": {
+        "request.requestId": "PA-1",
+        "request.receivedAt": "2026-11-12T09:30:00Z",
+        "request.serviceDate": "2026-11-20",
+        "request.urgency": "standard",
+        "request.serviceCode": "J0135",
+        "request.diagnosisCodes": "[\"E11.9\",\"I10\"]",
+        "request.providerInNetwork": "true",
+        "request.documents": "[\"clinical-notes\",\"tb-screening\"]",
+        "request.member": "{\"memberId\":\"M-1\",\"plan\":\"silver\",\"birthDate\":\"1979-04-08\",\"coverageStart\":\"2024-01-01\"}",
+        "request.treatments": "[{\"therapy\":\"methotrexate\",\"startDate\":\"2026-03-02\",\"endDate\":\"2026-07-15\",\"outcome\":\"failed\"}]"
+      },
+      "assertions": {
+        "status": "DENIED",
+        "code": "NOT_INDICATED",
+        "validUntil": "",
+        "decisionDue": "",
+        "missingDocuments": "",
+        "checks.stepTherapyMet": ""
+      }
+    },
+    {
+      "id": "authorize-7",
+      "name": "TB screening missing",
+      "order": 6,
+      "inputs": {
+        "request.requestId": "PA-1",
+        "request.receivedAt": "2026-11-12T09:30:00Z",
+        "request.serviceDate": "2026-11-20",
+        "request.urgency": "standard",
+        "request.serviceCode": "J0135",
+        "request.diagnosisCodes": "[\"M05.79\"]",
+        "request.providerInNetwork": "true",
+        "request.documents": "[\"clinical-notes\"]",
+        "request.member": "{\"memberId\":\"M-1\",\"plan\":\"silver\",\"birthDate\":\"1979-04-08\",\"coverageStart\":\"2024-01-01\"}",
+        "request.treatments": "[{\"therapy\":\"methotrexate\",\"startDate\":\"2026-03-02\",\"endDate\":\"2026-07-15\",\"outcome\":\"failed\"}]"
+      },
+      "assertions": {
+        "status": "PENDED",
+        "code": "MISSING_DOCUMENTS",
+        "validUntil": "",
+        "decisionDue": "",
+        "missingDocuments": "[\"tb-screening\"]",
+        "checks.stepTherapyMet": ""
+      }
+    },
+    {
+      "id": "authorize-8",
+      "name": "Coverage ends the day before the service",
+      "order": 7,
+      "inputs": {
+        "request.requestId": "PA-1",
+        "request.receivedAt": "2026-11-12T09:30:00Z",
+        "request.serviceDate": "2026-11-20",
+        "request.urgency": "standard",
+        "request.serviceCode": "J0135",
+        "request.diagnosisCodes": "[\"M05.79\"]",
+        "request.providerInNetwork": "true",
+        "request.documents": "[\"clinical-notes\",\"tb-screening\"]",
+        "request.member": "{\"memberId\":\"M-1\",\"plan\":\"silver\",\"birthDate\":\"1979-04-08\",\"coverageStart\":\"2024-01-01\",\"coverageEnd\":\"2026-11-19\"}",
+        "request.treatments": "[{\"therapy\":\"methotrexate\",\"startDate\":\"2026-03-02\",\"endDate\":\"2026-07-15\",\"outcome\":\"failed\"}]"
+      },
+      "assertions": {
+        "status": "DENIED",
+        "code": "COVERAGE_INACTIVE",
+        "validUntil": "",
+        "decisionDue": "",
+        "missingDocuments": "",
+        "checks.stepTherapyMet": ""
+      }
+    },
+    {
+      "id": "authorize-9",
+      "name": "Coverage ends on the service date",
+      "order": 8,
+      "inputs": {
+        "request.requestId": "PA-1",
+        "request.receivedAt": "2026-11-12T09:30:00Z",
+        "request.serviceDate": "2026-11-20",
+        "request.urgency": "standard",
+        "request.serviceCode": "J0135",
+        "request.diagnosisCodes": "[\"M05.79\"]",
+        "request.providerInNetwork": "true",
+        "request.documents": "[\"clinical-notes\",\"tb-screening\"]",
+        "request.member": "{\"memberId\":\"M-1\",\"plan\":\"silver\",\"birthDate\":\"1979-04-08\",\"coverageStart\":\"2024-01-01\",\"coverageEnd\":\"2026-11-20\"}",
+        "request.treatments": "[{\"therapy\":\"methotrexate\",\"startDate\":\"2026-03-02\",\"endDate\":\"2026-07-15\",\"outcome\":\"failed\"}]"
+      },
+      "assertions": {
+        "status": "APPROVED",
+        "code": "CRITERIA_MET",
+        "validUntil": "",
+        "decisionDue": "",
+        "missingDocuments": "",
+        "checks.stepTherapyMet": ""
+      }
+    },
+    {
+      "id": "authorize-10",
+      "name": "Provider out of network",
+      "order": 9,
+      "inputs": {
+        "request.requestId": "PA-1",
+        "request.receivedAt": "2026-11-12T09:30:00Z",
+        "request.serviceDate": "2026-11-20",
+        "request.urgency": "standard",
+        "request.serviceCode": "J0135",
+        "request.diagnosisCodes": "[\"M05.79\"]",
+        "request.providerInNetwork": "false",
+        "request.documents": "[\"clinical-notes\",\"tb-screening\"]",
+        "request.member": "{\"memberId\":\"M-1\",\"plan\":\"silver\",\"birthDate\":\"1979-04-08\",\"coverageStart\":\"2024-01-01\"}",
+        "request.treatments": "[{\"therapy\":\"methotrexate\",\"startDate\":\"2026-03-02\",\"endDate\":\"2026-07-15\",\"outcome\":\"failed\"}]"
+      },
+      "assertions": {
+        "status": "DENIED",
+        "code": "OUT_OF_NETWORK",
+        "validUntil": "",
+        "decisionDue": "",
+        "missingDocuments": "",
+        "checks.stepTherapyMet": ""
+      }
+    },
+    {
+      "id": "authorize-11",
+      "name": "MRI on the gold plan needs no authorization",
+      "order": 10,
+      "inputs": {
+        "request.requestId": "PA-1",
+        "request.receivedAt": "2026-11-12T09:30:00Z",
+        "request.serviceDate": "2026-11-20",
+        "request.urgency": "standard",
+        "request.serviceCode": "70553",
+        "request.diagnosisCodes": "[\"G43.909\"]",
+        "request.providerInNetwork": "true",
+        "request.documents": "[]",
+        "request.member": "{\"memberId\":\"M-1\",\"plan\":\"gold\",\"birthDate\":\"1979-04-08\",\"coverageStart\":\"2024-01-01\"}",
+        "request.treatments": "[]"
+      },
+      "assertions": {
+        "status": "APPROVED",
+        "code": "NO_AUTH_REQUIRED",
+        "validUntil": "2026-11-20",
+        "decisionDue": "",
+        "missingDocuments": "",
+        "checks.stepTherapyMet": ""
+      }
+    },
+    {
+      "id": "authorize-12",
+      "name": "Urgent MRI without clinical notes",
+      "order": 11,
+      "inputs": {
+        "request.requestId": "PA-1",
+        "request.receivedAt": "2026-11-12T16:45:00Z",
+        "request.serviceDate": "2026-11-13",
+        "request.urgency": "urgent",
+        "request.serviceCode": "70553",
+        "request.diagnosisCodes": "[\"G35\"]",
+        "request.providerInNetwork": "true",
+        "request.documents": "[]",
+        "request.member": "{\"memberId\":\"M-1\",\"plan\":\"bronze\",\"birthDate\":\"1979-04-08\",\"coverageStart\":\"2024-01-01\"}",
+        "request.treatments": "[]"
+      },
+      "assertions": {
+        "status": "PENDED",
+        "code": "MISSING_DOCUMENTS",
+        "validUntil": "",
+        "decisionDue": "2026-11-15T16:45:00",
+        "missingDocuments": "[\"clinical-notes\"]",
+        "checks.stepTherapyMet": ""
+      }
+    },
+    {
+      "id": "authorize-13",
+      "name": "Knee replacement after 12 weeks of physical therapy",
+      "order": 12,
+      "inputs": {
+        "request.requestId": "PA-1",
+        "request.receivedAt": "2026-11-12T09:30:00Z",
+        "request.serviceDate": "2026-11-20",
+        "request.urgency": "standard",
+        "request.serviceCode": "27447",
+        "request.diagnosisCodes": "[\"M17.11\"]",
+        "request.providerInNetwork": "true",
+        "request.documents": "[\"clinical-notes\",\"imaging-report\"]",
+        "request.member": "{\"memberId\":\"M-1\",\"plan\":\"silver\",\"birthDate\":\"1979-04-08\",\"coverageStart\":\"2024-01-01\"}",
+        "request.treatments": "[{\"therapy\":\"physical-therapy\",\"startDate\":\"2026-06-01\",\"endDate\":\"2026-08-23\",\"outcome\":\"failed\"}]"
+      },
+      "assertions": {
+        "status": "APPROVED",
+        "code": "CRITERIA_MET",
+        "validUntil": "2027-05-20",
+        "decisionDue": "",
+        "missingDocuments": "",
+        "checks.stepTherapyMet": ""
+      }
+    },
+    {
+      "id": "authorize-14",
+      "name": "Service code not in the medical policy",
+      "order": 13,
+      "inputs": {
+        "request.requestId": "PA-1",
+        "request.receivedAt": "2026-11-12T09:30:00Z",
+        "request.serviceDate": "2026-11-20",
+        "request.urgency": "standard",
+        "request.serviceCode": "A9999",
+        "request.diagnosisCodes": "[\"M05.79\"]",
+        "request.providerInNetwork": "true",
+        "request.documents": "[\"clinical-notes\",\"tb-screening\"]",
+        "request.member": "{\"memberId\":\"M-1\",\"plan\":\"silver\",\"birthDate\":\"1979-04-08\",\"coverageStart\":\"2024-01-01\"}",
+        "request.treatments": "[{\"therapy\":\"methotrexate\",\"startDate\":\"2026-03-02\",\"endDate\":\"2026-07-15\",\"outcome\":\"failed\"}]"
+      },
+      "assertions": {
+        "status": "PENDED",
+        "code": "UNKNOWN_SERVICE",
+        "validUntil": "",
+        "decisionDue": "",
+        "missingDocuments": "",
+        "checks.stepTherapyMet": ""
+      }
+    }
+  ]
+}

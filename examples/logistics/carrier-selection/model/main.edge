@@ -1,0 +1,150 @@
+{
+    // Structure layer: the shipment, its packages and the carrier profile
+    @Name("Shipment")
+    type Shipment: { shipmentId: <string>; destinationZone: <number, integer: true, min: 1, max: 8>; serviceLevel: <string, enum: ["economy", "standard", "express"]>; residential: <boolean, default: false>; declaredValue: <number, default: 0, min: 0>; hazardous: <boolean, default: false>; packages: <Package[]> }
+    @Name("Package")
+    type Package: { owner shipment: <Shipment>; lengthCm: <number, min: 0>; widthCm: <number, min: 0>; heightCm: <number, min: 0>; weightKg: <number, min: 0> }
+    @Name("Carrier profile")
+    type Carrier: { carrier: <string>; services: <string[]>; dimDivisor: <number>; maxPackageKg: <number>; maxLengthCm: <number>; maxLengthPlusGirthCm: <number>; hazardous: <boolean>; maxDeclaredValue: <number>; residentialSurcharge: <number>; fuelRate: <number>; insuranceRate: <number> }
+
+    // Facts layer: the measures of every package and of the shipment
+    facts PackageFacts(package: Package): {
+        volumeCm3: package.lengthCm * package.widthCm * package.heightCm
+        longestSideCm: max([package.lengthCm, package.widthCm, package.heightCm])
+        lengthPlusGirthCm: longestSideCm + 2 * (package.lengthCm + package.widthCm + package.heightCm - longestSideCm)
+    }
+    facts ShipmentFacts(shipment: Shipment): {
+        packageCount: count(shipment.packages)
+        actualWeightKg: sum(for p in shipment.packages return p.weightKg)
+        heaviestPackageKg: max(for p in shipment.packages return p.weightKg)
+        longestSideCm: max(for p in shipment.packages return p.longestSideCm)
+        largestLengthPlusGirthCm: max(for p in shipment.packages return p.lengthPlusGirthCm)
+    }
+
+    // Knowledge layer: the carrier profiles, the rate cards and the restrictions
+    func carriers(): [
+        { carrier: "ParcelGo"; services: ["economy", "standard"]; dimDivisor: 5000; maxPackageKg: 30; maxLengthCm: 150; maxLengthPlusGirthCm: 300; hazardous: false; maxDeclaredValue: 2500; residentialSurcharge: 3.5; fuelRate: 0.12; insuranceRate: 0.01 }
+        { carrier: "SwiftAir"; services: ["standard", "express"]; dimDivisor: 5000; maxPackageKg: 50; maxLengthCm: 175; maxLengthPlusGirthCm: 330; hazardous: true; maxDeclaredValue: 10000; residentialSurcharge: 5; fuelRate: 0.18; insuranceRate: 0.008 }
+        { carrier: "RoadLine"; services: ["economy", "standard"]; dimDivisor: 4000; maxPackageKg: 70; maxLengthCm: 300; maxLengthPlusGirthCm: 600; hazardous: true; maxDeclaredValue: 20000; residentialSurcharge: 12; fuelRate: 0.1; insuranceRate: 0.012 }
+        { carrier: "CityPost"; services: ["economy", "standard", "express"]; dimDivisor: 6000; maxPackageKg: 20; maxLengthCm: 105; maxLengthPlusGirthCm: 200; hazardous: false; maxDeclaredValue: 1000; residentialSurcharge: 0; fuelRate: 0.05; insuranceRate: 0.015 }
+    ]
+    func shippingPolicy(): {
+        insuredFree: 100
+    }
+    ruleset zoneRate(carrier: string, service: string, zone: number): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { carrier: "ParcelGo", service: "economy", zone: 1..3 }, then: { base: 5.9, perKg: 0.45, days: 4 } }
+            { when: { carrier: "ParcelGo", service: "economy" }, then: { base: 7.9, perKg: 0.6, days: 6 } }
+            { when: { carrier: "ParcelGo", service: "standard", zone: 1..3 }, then: { base: 7.5, perKg: 0.55, days: 2 } }
+            { when: { carrier: "ParcelGo", service: "standard" }, then: { base: 9.9, perKg: 0.75, days: 3 } }
+            { when: { carrier: "SwiftAir", service: "standard", zone: 1..3 }, then: { base: 9, perKg: 0.7, days: 2 } }
+            { when: { carrier: "SwiftAir", service: "standard" }, then: { base: 11, perKg: 0.9, days: 2 } }
+            { when: { carrier: "SwiftAir", service: "express", zone: 1..3 }, then: { base: 14, perKg: 1.2, days: 1 } }
+            { when: { carrier: "SwiftAir", service: "express" }, then: { base: 18, perKg: 1.5, days: 1 } }
+            { when: { carrier: "RoadLine", service: "economy", zone: >= 6 }, then: { base: 22, perKg: 0.35, days: 6 } }
+            { when: { carrier: "RoadLine", service: "economy" }, then: { base: 18, perKg: 0.3, days: 5 } }
+            { when: { carrier: "RoadLine", service: "standard" }, then: { base: 24, perKg: 0.4, days: 3 } }
+            { when: { carrier: "CityPost", service: "economy" }, then: { base: 4.5, perKg: 0.5, days: 5 } }
+            { when: { carrier: "CityPost", service: "standard" }, then: { base: 6, perKg: 0.65, days: 3 } }
+            { when: { carrier: "CityPost", service: "express" }, then: { base: 12, perKg: 1.4, days: 1 } }
+        ]
+    }
+    ruleset carrierRestrictions(carrier: Carrier, shipment: Shipment): {
+        hitPolicy: "collect-matches"
+        rules: [
+            { name: "SERVICE", when: not(contains(carrier.services, shipment.serviceLevel)), then: { code: "SERVICE", reason: carrier.carrier + " does not offer " + shipment.serviceLevel + " service" } }
+            { name: "HAZARDOUS", when: shipment.hazardous and not(carrier.hazardous), then: { code: "HAZARDOUS", reason: carrier.carrier + " does not carry hazardous goods" } }
+            { name: "WEIGHT", when: shipment.heaviestPackageKg > carrier.maxPackageKg, then: { code: "WEIGHT", reason: "A package is over the " + toString(carrier.maxPackageKg) + " kg limit of " + carrier.carrier } }
+            { name: "LENGTH", when: shipment.longestSideCm > carrier.maxLengthCm, then: { code: "LENGTH", reason: "A package is longer than the " + toString(carrier.maxLengthCm) + " cm limit of " + carrier.carrier } }
+            { name: "GIRTH", when: shipment.largestLengthPlusGirthCm > carrier.maxLengthPlusGirthCm, then: { code: "GIRTH", reason: "A package is over the length plus girth limit of " + carrier.carrier } }
+            { name: "VALUE", when: shipment.declaredValue > carrier.maxDeclaredValue, then: { code: "VALUE", reason: "The declared value is over the liability limit of " + carrier.carrier } }
+        ]
+    }
+    func billableKg(package: Package, dimDivisor: number): ceiling(max([package.weightKg, package.volumeCm3 / dimDivisor]))
+    func carrierQuote(carrier: Carrier, shipment: Shipment): {
+        carrierName: carrier.carrier
+        exclusions: for restriction in carrierRestrictions(carrier, shipment) return restriction.reason
+        eligible: count(exclusions) = 0
+        billableWeightKg: sum(for p in shipment.packages return billableKg(p, carrier.dimDivisor))
+        rate: zoneRate(carrier.carrier, shipment.serviceLevel, shipment.destinationZone)
+        transport: rate.base + rate.perKg * billableWeightKg
+        fuel: round(transport * carrier.fuelRate, 2)
+        residential: if shipment.residential then carrier.residentialSurcharge else 0
+        insurance: round(max([0, shipment.declaredValue - shippingPolicy().insuredFree]) * carrier.insuranceRate, 2)
+        price: round(transport + fuel + residential + insurance, 2)
+        days: rate.days
+    }
+
+    // Decisions layer: quote every carrier, then select one
+    decision CarrierQuotes(shipment: Shipment): {
+        quotes: for carrier in carriers() return carrierQuote(carrier as Carrier, shipment)
+        eligible: quotes[eligible = true]
+        excluded: for q in quotes[eligible = false] return { carrier: q.carrierName, reasons: q.exclusions }
+    }
+    decision CarrierSelection(shipment: Shipment): {
+        eligible: shipment.CarrierQuotes.eligible
+        lowestPrice: if count(eligible) > 0 then min(for q in eligible return q.price) else 0
+        cheapest: eligible[price = lowestPrice]
+        fastestDays: if count(cheapest) > 0 then min(for q in cheapest return q.days) else 0
+        selected: cheapest[days = fastestDays][0]
+        found: explain(selected).status = "ok"
+        status: if found then "SELECTED" else "NO_CARRIER"
+        reason: if found then selected.carrierName + " is the cheapest eligible carrier" else "No carrier can take the shipment: " + toString(count(shipment.CarrierQuotes.excluded)) + " carriers have a restriction"
+        ranking: flatten(for amount in sort(distinctValues(for q in eligible return q.price)) return for q in eligible[price = amount] return { carrier: q.carrierName, price: q.price, days: q.days })
+    }
+
+    // Service layer: the external contract
+    service selectCarrier(shipment: Shipment): {
+        @ReturnNode(name: "Carrier selection")
+        return: {
+            shipmentId: shipment.shipmentId
+            status: shipment.CarrierSelection.status
+            reason: shipment.CarrierSelection.reason
+            carrier: if shipment.CarrierSelection.found then shipment.CarrierSelection.selected.carrierName else ""
+            price: if shipment.CarrierSelection.found then shipment.CarrierSelection.selected.price else 0
+            days: if shipment.CarrierSelection.found then shipment.CarrierSelection.selected.days else 0
+            billableWeightKg: if shipment.CarrierSelection.found then shipment.CarrierSelection.selected.billableWeightKg else 0
+            actualWeightKg: shipment.actualWeightKg
+            ranking: shipment.CarrierSelection.ranking
+            excluded: shipment.CarrierQuotes.excluded
+        }
+    }
+
+    // Example execution
+    @Name("Two boxes to a home address")
+    workbook homeDeliveryBook: {
+        @InputNode(name: "Shipment")
+        shipment: {
+            shipmentId: "S-5521"
+            destinationZone: 5
+            serviceLevel: "standard"
+            residential: true
+            declaredValue: 600
+            packages: [
+                { lengthCm: 40; widthCm: 30; heightCm: 30; weightKg: 6 }
+                { lengthCm: 60; widthCm: 40; heightCm: 40; weightKg: 9 }
+            ]
+        }
+        @FunctionNode(name: "Carrier selection")
+        selection: selectCarrier(shipment: shipment)
+        @FunctionNode(name: "All quotes")
+        quotes: CarrierQuotes(shipment: shipment)
+    }
+    @Name("Hazardous express")
+    workbook hazardousBook: {
+        @InputNode(name: "Shipment")
+        shipment: {
+            shipmentId: "S-5522"
+            destinationZone: 2
+            serviceLevel: "express"
+            hazardous: true
+            declaredValue: 1800
+            packages: [
+                { lengthCm: 50; widthCm: 40; heightCm: 35; weightKg: 18 }
+            ]
+        }
+        @FunctionNode(name: "Carrier selection")
+        selection: selectCarrier(shipment: shipment)
+    }
+}

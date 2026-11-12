@@ -1,0 +1,24 @@
+{
+  "$schema": "../../../node_modules/edgerules-react/schemas/example.schema.json",
+  "kind": "EdgeRulesProject",
+  "formatVersion": 3,
+  "name": "Government Assistance Eligibility",
+  "description": "Decides the food assistance of a household: income and asset tests, deductions and the monthly benefit, or the documents still needed",
+  "tags": ["public-sector", "benefits", "eligibility", "rules-as-code", "explain", "decision-table"],
+  "model": {
+    "format": "dsl",
+    "source": "model/main.edge",
+    "name": "Government Assistance Eligibility",
+    "version": "1.0.0"
+  },
+  "documentation": "docs/descriptions.json",
+  "tests": ["tests/assessHousehold.tests.json", "tests/maximumBenefit.tests.json", "tests/povertyLine.tests.json"],
+  "flow": "flow/layout.json",
+  "example": {
+    "industry": "public",
+    "level": "intermediate",
+    "features": ["type", "facts", "decision-table", "decision", "function", "service", "workbook", "chart"],
+    "engine": ">=0.2.7-alpha",
+    "authors": ["edgerules"]
+  }
+}

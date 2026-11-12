@@ -1,0 +1,127 @@
+{
+    // Structure layer: the return request and its items
+    @Name("Return request")
+    type ReturnRequest: { requestId: <string>; requestDate: <date>; orderDate: <date>; deliveryDate: <date>; customerTier: <string, enum: ["standard", "silver", "gold"]>; holidays: <date[], default: []>; items: <ReturnItem[]> }
+    @Name("Returned item")
+    type ReturnItem: { owner request: <ReturnRequest>; sku: <string>; category: <string, enum: ["apparel", "electronics", "home", "beauty"]>; pricePaid: <number, min: 0>; quantity: <number, default: 1, min: 1>; condition: <string, enum: ["unopened", "opened", "damaged"]>; reason: <string, enum: ["changed-mind", "wrong-item", "defective", "not-as-described"]>; finalSale: <boolean, default: false> }
+
+    // Facts layer: the vocabulary of the return policy
+    facts ReturnItemFacts(item: ReturnItem): {
+        daysSinceDelivery: (item.request.requestDate - item.request.deliveryDate).days
+        sellerFault: contains(["wrong-item", "defective", "not-as-described"], item.reason)
+        value: item.pricePaid * item.quantity
+    }
+    facts ReturnRequestFacts(request: ReturnRequest): {
+        itemCount: count(request.items)
+        returnedValue: sum(for item in request.items return item.value)
+    }
+
+    // Knowledge layer: the return policy and its decision tables
+    func returnPolicy(): {
+        defectWarrantyDays: 365
+        returnLabelFee: 4.95
+        refundBusinessDays: 5
+    }
+    ruleset returnWindow(category: string, tier: string): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { category: "electronics", tier: "gold" }, then: { days: 30 } }
+            { when: { category: "electronics" }, then: { days: 14 } }
+            { when: { tier: "gold" }, then: { days: 60 } }
+            { when: { tier: "silver" }, then: { days: 45 } }
+        ]
+        default: { days: 30 }
+    }
+    ruleset restockingFee(category: string, condition: string, sellerFault: boolean): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { sellerFault: true }, then: { rate: 0, note: "No fee: the seller is at fault" } }
+            { when: { condition: "unopened" }, then: { rate: 0, note: "No fee: unopened" } }
+            { when: { condition: "opened", category: "electronics" }, then: { rate: 0.15, note: "15% fee: opened electronics" } }
+            { when: { condition: "opened", category: "beauty" }, then: { rate: 1, note: "No refund: opened beauty product" } }
+            { when: { condition: "opened" }, then: { rate: 0.1, note: "10% fee: opened item" } }
+        ]
+        default: { rate: 0.5, note: "50% fee: damaged by the customer" }
+    }
+    ruleset itemVerdict(deliveryKnown: boolean, finalSale: boolean, sellerFault: boolean, reason: string, withinWindow: boolean, withinWarranty: boolean, feeRate: number): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { deliveryKnown: false }, then: { verdict: "REVIEW", reason: "The delivery date is unknown" } }
+            { when: { finalSale: true, sellerFault: false }, then: { verdict: "REJECT", reason: "Final sale items are not returnable" } }
+            { when: { reason: "defective", withinWarranty: true }, then: { verdict: "ACCEPT", reason: "Defective within the warranty" } }
+            { when: { withinWindow: false }, then: { verdict: "REJECT", reason: "The return window is closed" } }
+            { when: { feeRate: 1 }, then: { verdict: "REJECT", reason: "Opened beauty products are not returnable" } }
+            { when: { feeRate: > 0 }, then: { verdict: "PARTIAL", reason: "Accepted with a restocking fee" } }
+        ]
+        default: { verdict: "ACCEPT", reason: "Accepted for a full refund" }
+    }
+
+    // Decisions layer: one decision for each item and one for the request
+    decision ItemReturn(item: ReturnItem): {
+        window: returnWindow(item.category, item.request.customerTier).days
+        deliveryKnown: explain(item.daysSinceDelivery).status = "ok"
+        withinWindow: item.daysSinceDelivery <= window
+        withinWarranty: item.daysSinceDelivery <= returnPolicy().defectWarrantyDays
+        fee: restockingFee(item.category, item.condition, item.sellerFault)
+        verdict: itemVerdict(deliveryKnown, item.finalSale, item.sellerFault, item.reason, withinWindow, withinWarranty, fee.rate)
+        accepted: contains(["ACCEPT", "PARTIAL"], verdict.verdict)
+        restockingFee: if accepted then round(item.value * fee.rate, 2) else 0
+        refund: if accepted then item.value - restockingFee else 0
+    }
+    decision ReturnDecision(request: ReturnRequest): {
+        verdicts: for item in request.items return item.ItemReturn.verdict.verdict
+        outcome: if count(verdicts[... = "REVIEW"]) > 0 then "REVIEW" else if count(verdicts[... = "REJECT"]) = count(verdicts) then "REJECT" else if count(verdicts[... = "ACCEPT"]) = count(verdicts) then "ACCEPT" else "PARTIAL"
+        sellerPaysShipping: request.customerTier = "gold" or any(for item in request.items return item.sellerFault and item.ItemReturn.accepted)
+        itemsRefund: sum(for item in request.items return item.ItemReturn.refund)
+        returnLabelFee: if itemsRefund = 0 or sellerPaysShipping then 0 else returnPolicy().returnLabelFee
+        totalRefund: itemsRefund - returnLabelFee
+        refundBy: addBusinessDays(request.requestDate, returnPolicy().refundBusinessDays, request.holidays)
+    }
+
+    // Service layer: the external contract
+    service returnRefund(request: ReturnRequest): {
+        @ReturnNode(name: "Return decision")
+        return: {
+            requestId: request.requestId
+            outcome: request.ReturnDecision.outcome
+            items: for item in request.items return {
+                sku: item.sku
+                daysSinceDelivery: item.daysSinceDelivery
+                window: item.ItemReturn.window
+                verdict: item.ItemReturn.verdict.verdict
+                reason: item.ItemReturn.verdict.reason
+                fee: item.ItemReturn.fee.note
+                value: item.value
+                restockingFee: item.ItemReturn.restockingFee
+                refund: item.ItemReturn.refund
+            }
+            returnedValue: request.returnedValue
+            returnLabelFee: request.ReturnDecision.returnLabelFee
+            totalRefund: request.ReturnDecision.totalRefund
+            refundBy: request.ReturnDecision.refundBy
+        }
+    }
+
+    // Example execution
+    @Name("Mixed return")
+    workbook mixedReturnBook: {
+        @InputNode(name: "Return request")
+        request: {
+            requestId: "R-1001"
+            requestDate: date("2026-11-20")
+            orderDate: date("2026-10-28")
+            deliveryDate: date("2026-10-31")
+            customerTier: "silver"
+            holidays: [date("2026-11-26")]
+            items: [
+                { sku: "JKT-220"; category: "apparel"; pricePaid: 120; quantity: 1; condition: "unopened"; reason: "changed-mind" }
+                { sku: "HDP-901"; category: "electronics"; pricePaid: 249; quantity: 1; condition: "opened"; reason: "changed-mind" }
+                { sku: "LMP-310"; category: "home"; pricePaid: 45; quantity: 2; condition: "opened"; reason: "changed-mind" }
+                { sku: "SRM-050"; category: "beauty"; pricePaid: 32; quantity: 1; condition: "opened"; reason: "changed-mind" }
+                { sku: "KTL-777"; category: "home"; pricePaid: 60; quantity: 1; condition: "opened"; reason: "defective"; finalSale: true }
+            ]
+        }
+        @FunctionNode(name: "Return decision")
+        decision: returnRefund(request: request)
+    }
+}

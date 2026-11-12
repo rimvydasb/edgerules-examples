@@ -1,0 +1,259 @@
+{
+  "rows": [
+    {
+      "path": "household.applicationId",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "household.applicationDate",
+      "section": "inputs",
+      "order": 1,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "household.monthlyRent",
+      "section": "inputs",
+      "order": 2,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "household.monthlyUtilities",
+      "section": "inputs",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "household.assets",
+      "section": "inputs",
+      "order": 4,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "household.members",
+      "section": "inputs",
+      "order": 5,
+      "type": "Member[]",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "status",
+      "section": "assertions",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "monthlyBenefit",
+      "section": "assertions",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "failedTests",
+      "section": "assertions",
+      "order": 2,
+      "type": "string[]",
+      "present": true
+    },
+    {
+      "path": "missingDocuments",
+      "section": "assertions",
+      "order": 3,
+      "type": "string[]",
+      "present": true
+    },
+    {
+      "path": "income.grossLimit",
+      "section": "assertions",
+      "order": 4,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "income.netIncome",
+      "section": "assertions",
+      "order": 5,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "assessHousehold-1",
+      "name": "Family of four with a working student",
+      "order": 0,
+      "inputs": {
+        "household.applicationId": "APP-1",
+        "household.applicationDate": "2026-11-02",
+        "household.monthlyRent": "1150",
+        "household.monthlyUtilities": "240",
+        "household.assets": "1200",
+        "household.members": "[{\"name\":\"Maria Lopez\",\"birthDate\":\"1988-03-09\",\"earnedIncome\":2100},{\"name\":\"Daniel Lopez\",\"birthDate\":\"1986-07-21\",\"unearnedIncome\":450},{\"name\":\"Sofia Lopez\",\"birthDate\":\"2010-01-15\",\"student\":true,\"earnedIncome\":320},{\"name\":\"Leo Lopez\",\"birthDate\":\"2017-09-30\"}]"
+      },
+      "assertions": {
+        "status": "ELIGIBLE",
+        "monthlyBenefit": "531",
+        "failedTests": "[]",
+        "missingDocuments": "[]",
+        "income.grossLimit": "3484",
+        "income.netIncome": "1479.5"
+      }
+    },
+    {
+      "id": "assessHousehold-2",
+      "name": "Single adult just over the gross limit",
+      "order": 1,
+      "inputs": {
+        "household.applicationId": "APP-1",
+        "household.applicationDate": "2026-11-02",
+        "household.monthlyRent": "0",
+        "household.monthlyUtilities": "0",
+        "household.assets": "500",
+        "household.members": "[{\"name\":\"Ann Lee\",\"birthDate\":\"1985-04-10\",\"earnedIncome\":1698}]"
+      },
+      "assertions": {
+        "status": "INELIGIBLE",
+        "monthlyBenefit": "0",
+        "failedTests": "[\"Gross income at most 130% of the poverty line, or an elderly or disabled member\"]",
+        "missingDocuments": "",
+        "income.grossLimit": "1697",
+        "income.netIncome": ""
+      }
+    },
+    {
+      "id": "assessHousehold-3",
+      "name": "Single adult at the gross limit gets the minimum benefit",
+      "order": 2,
+      "inputs": {
+        "household.applicationId": "APP-1",
+        "household.applicationDate": "2026-11-02",
+        "household.monthlyRent": "0",
+        "household.monthlyUtilities": "0",
+        "household.assets": "500",
+        "household.members": "[{\"name\":\"Ann Lee\",\"birthDate\":\"1985-04-10\",\"earnedIncome\":1697}]"
+      },
+      "assertions": {
+        "status": "ELIGIBLE",
+        "monthlyBenefit": "24",
+        "failedTests": "[]",
+        "missingDocuments": "",
+        "income.grossLimit": "",
+        "income.netIncome": "1153.6"
+      }
+    },
+    {
+      "id": "assessHousehold-4",
+      "name": "Elderly couple skips the gross income test",
+      "order": 3,
+      "inputs": {
+        "household.applicationId": "APP-1",
+        "household.applicationDate": "2026-11-02",
+        "household.monthlyRent": "1500",
+        "household.monthlyUtilities": "300",
+        "household.assets": "4000",
+        "household.members": "[{\"name\":\"Walter Brown\",\"birthDate\":\"1957-02-14\",\"unearnedIncome\":2500},{\"name\":\"June Brown\",\"birthDate\":\"1985-04-10\"}]"
+      },
+      "assertions": {
+        "status": "ELIGIBLE",
+        "monthlyBenefit": "42",
+        "failedTests": "",
+        "missingDocuments": "",
+        "income.grossLimit": "",
+        "income.netIncome": "1644"
+      }
+    },
+    {
+      "id": "assessHousehold-5",
+      "name": "Same couple without an elderly member",
+      "order": 4,
+      "inputs": {
+        "household.applicationId": "APP-1",
+        "household.applicationDate": "2026-11-02",
+        "household.monthlyRent": "1500",
+        "household.monthlyUtilities": "300",
+        "household.assets": "4000",
+        "household.members": "[{\"name\":\"Walter Brown\",\"birthDate\":\"1985-04-10\",\"unearnedIncome\":2500},{\"name\":\"June Brown\",\"birthDate\":\"1985-04-10\"}]"
+      },
+      "assertions": {
+        "status": "INELIGIBLE",
+        "monthlyBenefit": "0",
+        "failedTests": "[\"Gross income at most 130% of the poverty line, or an elderly or disabled member\",\"Assets within the limit\"]",
+        "missingDocuments": "",
+        "income.grossLimit": "",
+        "income.netIncome": ""
+      }
+    },
+    {
+      "id": "assessHousehold-6",
+      "name": "High rent: the shelter deduction is capped",
+      "order": 5,
+      "inputs": {
+        "household.applicationId": "APP-1",
+        "household.applicationDate": "2026-11-02",
+        "household.monthlyRent": "2000",
+        "household.monthlyUtilities": "200",
+        "household.assets": "500",
+        "household.members": "[{\"name\":\"Rosa Diaz\",\"birthDate\":\"1985-04-10\",\"earnedIncome\":1800},{\"name\":\"Tim Diaz\",\"birthDate\":\"2021-05-01\"},{\"name\":\"Eva Diaz\",\"birthDate\":\"2023-08-12\"}]"
+      },
+      "assertions": {
+        "status": "ELIGIBLE",
+        "monthlyBenefit": "610",
+        "failedTests": "",
+        "missingDocuments": "",
+        "income.grossLimit": "",
+        "income.netIncome": "524"
+      }
+    },
+    {
+      "id": "assessHousehold-7",
+      "name": "Assets over the limit",
+      "order": 6,
+      "inputs": {
+        "household.applicationId": "APP-1",
+        "household.applicationDate": "2026-11-02",
+        "household.monthlyRent": "0",
+        "household.monthlyUtilities": "0",
+        "household.assets": "3500",
+        "household.members": "[{\"name\":\"Ann Lee\",\"birthDate\":\"1985-04-10\",\"earnedIncome\":1000}]"
+      },
+      "assertions": {
+        "status": "INELIGIBLE",
+        "monthlyBenefit": "0",
+        "failedTests": "[\"Assets within the limit\"]",
+        "missingDocuments": "",
+        "income.grossLimit": "",
+        "income.netIncome": ""
+      }
+    },
+    {
+      "id": "assessHousehold-8",
+      "name": "Missing birth date and assets: pending",
+      "order": 7,
+      "inputs": {
+        "household.applicationId": "APP-1",
+        "household.applicationDate": "2026-11-02",
+        "household.monthlyRent": "700",
+        "household.monthlyUtilities": "0",
+        "household.assets": "",
+        "household.members": "[{\"name\":\"Walter Brown\",\"birthDate\":\"1957-02-14\",\"unearnedIncome\":1450},{\"name\":\"June Brown\",\"unearnedIncome\":600}]"
+      },
+      "assertions": {
+        "status": "PENDING",
+        "monthlyBenefit": "0",
+        "failedTests": "[]",
+        "missingDocuments": "[\"Proof of age for June Brown\",\"Statement of assets\"]",
+        "income.grossLimit": "",
+        "income.netIncome": ""
+      }
+    }
+  ]
+}

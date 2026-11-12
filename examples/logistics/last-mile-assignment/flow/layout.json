@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 2,
+  "layouts": {
+    "morningBook": {
+      "positions": {},
+      "outputs": [
+        {
+          "id": "output",
+          "label": "Routes",
+          "source": {
+            "node": "morningBook.plan",
+            "handle": "out:routes"
+          }
+        },
+        {
+          "id": "output2",
+          "label": "Unassigned parcels",
+          "source": {
+            "node": "morningBook.plan",
+            "handle": "out:unassigned"
+          }
+        },
+        {
+          "id": "output3",
+          "label": "Summary",
+          "source": {
+            "node": "morningBook.plan",
+            "handle": "out:summary"
+          }
+        }
+      ],
+      "charts": [
+        {
+          "id": "chart",
+          "label": "Minutes used by courier",
+          "source": {
+            "node": "morningBook.plan",
+            "handle": "out:routes"
+          },
+          "config": {
+            "kind": "bar",
+            "x": "name",
+            "series": ["minutes", "shiftMinutes"]
+          },
+          "size": {
+            "width": 520,
+            "height": 320
+          }
+        }
+      ]
+    },
+    "peakBook": {
+      "positions": {},
+      "outputs": [
+        {
+          "id": "output",
+          "label": "Status",
+          "source": {
+            "node": "peakBook.plan",
+            "handle": "out:status"
+          }
+        },
+        {
+          "id": "output2",
+          "label": "Diagnosis",
+          "source": {
+            "node": "peakBook.plan",
+            "handle": "out:diagnosis"
+          }
+        },
+        {
+          "id": "output3",
+          "label": "Unassigned parcels",
+          "source": {
+            "node": "peakBook.plan",
+            "handle": "out:unassigned"
+          }
+        }
+      ]
+    }
+  }
+}

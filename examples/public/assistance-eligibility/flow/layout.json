@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 2,
+  "layouts": {
+    "familyBook": {
+      "positions": {},
+      "outputs": [
+        {
+          "id": "output",
+          "label": "Status",
+          "source": {
+            "node": "familyBook.assessment",
+            "handle": "out:status"
+          }
+        },
+        {
+          "id": "output2",
+          "label": "Monthly benefit",
+          "source": {
+            "node": "familyBook.assessment",
+            "handle": "out:monthlyBenefit"
+          }
+        },
+        {
+          "id": "output3",
+          "label": "Tests",
+          "source": {
+            "node": "familyBook.assessment",
+            "handle": "out:tests"
+          }
+        },
+        {
+          "id": "output4",
+          "label": "Income calculation",
+          "source": {
+            "node": "familyBook.assessment",
+            "handle": "out:income"
+          }
+        }
+      ],
+      "charts": [
+        {
+          "id": "chart",
+          "label": "Counted income by member",
+          "source": {
+            "node": "familyBook.assessment",
+            "handle": "out:members"
+          },
+          "config": {
+            "kind": "bar",
+            "x": "name",
+            "series": ["countedIncome"]
+          },
+          "size": {
+            "width": 480,
+            "height": 300
+          }
+        }
+      ]
+    },
+    "incompleteBook": {
+      "positions": {},
+      "outputs": [
+        {
+          "id": "output",
+          "label": "Status",
+          "source": {
+            "node": "incompleteBook.assessment",
+            "handle": "out:status"
+          }
+        },
+        {
+          "id": "output2",
+          "label": "Missing documents",
+          "source": {
+            "node": "incompleteBook.assessment",
+            "handle": "out:missingDocuments"
+          }
+        },
+        {
+          "id": "output3",
+          "label": "Tests",
+          "source": {
+            "node": "incompleteBook.assessment",
+            "handle": "out:tests"
+          }
+        }
+      ]
+    }
+  }
+}

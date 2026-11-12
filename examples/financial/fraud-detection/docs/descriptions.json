@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "byPath": {
+    "*": "Screens a card payment in real time: profiles the recent history of the card, detects fraud signals and scores them with a champion and a challenger strategy",
+    "Cardholder": "The cardholder: home country, account opening date and known devices",
+    "FraudScore": "The champion strategy: the weighted signals, the score and the action",
+    "FraudScoreChallenger": "The challenger strategy: the same signals with other weights and thresholds",
+    "FraudSignals": "The fired signals of the payment",
+    "HistoryStats": "The profile of the recent history: counts and amounts in 1 hour, 24 hours and 30 days, and the last country",
+    "PastTransaction": "A recent payment of the same card: time, amount, country and whether it was declined",
+    "PastTransactionFacts": "The minutes between a past payment and the payment to screen",
+    "Transaction": "The card payment to screen: time, amount, merchant category, country, device, channel, cardholder and recent history",
+    "TransactionFacts": "The history profile, the 30-day average, the amount ratio, the device, country and account age signals",
+    "attackBook": "A card testing attack: small declined payments, then a large online payment at night from an unknown device",
+    "attackBook.screening": "The screening of the payment",
+    "attackBook.transaction": "The payment and its history",
+    "challengerAction": "ALLOW, REVIEW or BLOCK by the challenger score thresholds",
+    "challengerWeights": "The weight of each signal in the challenger strategy, and the signals that block at once",
+    "championAction": "ALLOW, REVIEW or BLOCK by the champion score thresholds",
+    "championWeights": "The weight of each signal in the champion strategy, and the signals that block at once",
+    "compareStrategies": "The champion and challenger scores and actions of several payments side by side",
+    "comparisonBook": "Four payments scored by both strategies",
+    "comparisonBook.comparison": "The scores and actions of both strategies",
+    "comparisonBook.transactions": "The payments and their histories",
+    "fraudSignals": "Every fraud signal that the payment raises",
+    "historyStats": "One pass over the history: counts and sums in each time window, and the country of the latest payment",
+    "screenTransaction": "Screens one payment: the champion action, the signals, the challenger result in shadow mode and the history profile"
+  }
+}

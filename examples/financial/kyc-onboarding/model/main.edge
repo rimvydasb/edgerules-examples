@@ -1,0 +1,178 @@
+{
+    // Structure layer: the business customer and its beneficial owners
+    @Name("Business customer")
+    type Customer: { customerId: <string>; legalName: <string>; country: <string>; industryCode: <string>; incorporationDate: <date>; onboardingDate: <date>; expectedMonthlyVolume: <number, min: 0>; cashIntensive: <boolean, default: false>; owners: <BeneficialOwner[]> }
+    @Name("Beneficial owner")
+    type BeneficialOwner: { owner customer: <Customer>; name: <string>; birthDate: <date>; nationality: <string>; ownershipShare: <number, min: 0, max: 1>; pep: <boolean, default: false>; sanctionsHit: <boolean, default: false>; documentType: <string, enum: ["passport", "id-card"]>; documentNumber: <string>; documentExpiry: <date> }
+
+    // Facts layer: what we know about each owner and the customer
+    facts OwnerFacts(owner: BeneficialOwner): {
+        age: age(owner.birthDate, owner.customer.onboardingDate)
+        significant: owner.ownershipShare >= kycPolicy().significantShare
+        foreign: owner.nationality != owner.customer.country
+        documentProvided: explain(owner.documentExpiry).status = "ok" and explain(owner.documentNumber).status = "ok"
+        documentValid: documentProvided and owner.documentExpiry > owner.customer.onboardingDate
+        documentNumberValid: documentProvided and isAlphanumeric(owner.documentNumber) and length(owner.documentNumber) = (if owner.documentType = "passport" then 9 else 8)
+    }
+    facts CustomerFacts(customer: Customer): {
+        companyAgeYears: age(customer.incorporationDate, customer.onboardingDate)
+        declaredOwnership: sum(for o in customer.owners return o.ownershipShare)
+        significantOwners: count((for o in customer.owners return o.significant)[... = true])
+    }
+
+    // Knowledge layer: the KYC policy, the risk tables and the scorecard
+    func kycPolicy(): {
+        significantShare: 0.25
+        minimumDeclaredOwnership: 0.75
+    }
+    ruleset countryRisk(country: string): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { country: in ["KP", "IR"] }, then: { level: "PROHIBITED", points: 100 } }
+            { when: { country: in ["MM", "SY", "YE", "HT", "SS"] }, then: { level: "HIGH", points: 30 } }
+            { when: { country: in ["LT", "LV", "EE", "DE", "FR", "NL", "SE", "FI", "DK", "IE", "AT", "BE"] }, then: { level: "LOW", points: 0 } }
+        ]
+        default: { level: "MEDIUM", points: 15 }
+    }
+    ruleset industryRisk(industryCode: string): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: startsWith(industryCode, "92"), then: { sector: "Gambling", level: "HIGH", points: 25 } }
+            { when: startsWith(industryCode, "64"), then: { sector: "Financial services", level: "HIGH", points: 20 } }
+            { when: startsWith(industryCode, "68"), then: { sector: "Real estate", level: "HIGH", points: 20 } }
+            { when: startsWith(industryCode, "56") or startsWith(industryCode, "47"), then: { sector: "Retail and hospitality", level: "MEDIUM", points: 10 } }
+        ]
+        default: { sector: "Other", level: "LOW", points: 0 }
+    }
+    ruleset riskScorecard(companyAgeYears: number, cashIntensive: boolean, monthlyVolume: number, pepOwner: boolean, foreignOwner: boolean, opaqueOwnership: boolean): {
+        hitPolicy: "collect-matches"
+        rules: [
+            { when: { companyAgeYears: < 2 }, then: { factor: "Company younger than 2 years", points: 10 } }
+            { when: { cashIntensive: true }, then: { factor: "Cash-intensive business", points: 15 } }
+            { when: { monthlyVolume: > 500000 }, then: { factor: "Monthly volume over 500 000", points: 15 } }
+            { when: { monthlyVolume: 100000..500000 }, then: { factor: "Monthly volume of 100 000 to 500 000", points: 5 } }
+            { when: { pepOwner: true }, then: { factor: "A politically exposed owner", points: 20 } }
+            { when: { foreignOwner: true }, then: { factor: "A significant foreign owner", points: 5 } }
+            { when: { opaqueOwnership: true }, then: { factor: "Less than 75% of the ownership declared", points: 15 } }
+        ]
+    }
+    ruleset riskLevel(score: number): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { score: >= 60 }, then: { level: "HIGH", reviewYears: 1 } }
+            { when: { score: >= 30 }, then: { level: "MEDIUM", reviewYears: 3 } }
+        ]
+        default: { level: "LOW", reviewYears: 5 }
+    }
+    ruleset dueDiligence(prohibitedCountry: boolean, sanctionsHit: boolean, openRequests: number, pepOwner: boolean, level: string): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { prohibitedCountry: true }, then: { outcome: "REJECT", diligence: "NONE", reason: "The customer is in a prohibited country" } }
+            { when: { sanctionsHit: true }, then: { outcome: "REJECT", diligence: "NONE", reason: "An owner is on a sanctions list" } }
+            { when: { openRequests: > 0 }, then: { outcome: "PENDING", diligence: "NONE", reason: "Documents are missing or not valid" } }
+            { when: { pepOwner: true }, then: { outcome: "ACCEPT", diligence: "ENHANCED", reason: "A politically exposed owner needs enhanced due diligence" } }
+            { when: { level: "HIGH" }, then: { outcome: "ACCEPT", diligence: "ENHANCED", reason: "High risk needs enhanced due diligence" } }
+            { when: { level: "MEDIUM" }, then: { outcome: "ACCEPT", diligence: "STANDARD", reason: "Medium risk" } }
+        ]
+        default: { outcome: "ACCEPT", diligence: "SIMPLIFIED", reason: "Low risk" }
+    }
+
+    // Decisions layer: screen every owner, rate the customer, decide the due diligence
+    decision OwnerScreening(owner: BeneficialOwner): {
+        checks: [
+            { check: "Adult", passed: owner.age >= 18 }
+            { check: "Identity document provided", passed: owner.documentProvided }
+            { check: "Identity document not expired", passed: owner.documentValid }
+            { check: "Document number format", passed: owner.documentNumberValid }
+            { check: "No sanctions hit", passed: not(owner.sanctionsHit) }
+        ]
+        failed: for c in checks[passed = false] return c.check
+        mustVerify: owner.significant or owner.pep
+        missingDocument: mustVerify and not(owner.documentValid and owner.documentNumberValid)
+    }
+    decision CustomerRisk(customer: Customer): {
+        country: countryRisk(customer.country)
+        industry: industryRisk(customer.industryCode)
+        pepOwner: any(for o in customer.owners return o.pep)
+        foreignOwner: any(for o in customer.owners return o.significant and o.foreign)
+        opaqueOwnership: customer.declaredOwnership < kycPolicy().minimumDeclaredOwnership
+        scorecard: riskScorecard(customer.companyAgeYears, customer.cashIntensive, customer.expectedMonthlyVolume, pepOwner, foreignOwner, opaqueOwnership)
+        breakdown: concatenate([{ factor: "Country " + customer.country, points: country.points }, { factor: "Sector " + industry.sector, points: industry.points }], scorecard)
+        score: sum(for line in breakdown return line.points)
+        rating: riskLevel(score)
+    }
+    decision DueDiligence(customer: Customer): {
+        missingDocuments: for o in customer.owners return if o.OwnerScreening.missingDocument then "A valid identity document of " + o.name else ""
+        requests: append(missingDocuments, if customer.CustomerRisk.opaqueOwnership then "An ownership structure chart" else "")[... != ""]
+        sanctionsHit: any(for o in customer.owners return o.sanctionsHit)
+        verdict: dueDiligence(customer.CustomerRisk.country.level = "PROHIBITED", sanctionsHit, count(requests), customer.CustomerRisk.pepOwner, customer.CustomerRisk.rating.level)
+        nextReview: if verdict.outcome = "ACCEPT" then customer.onboardingDate + period("P" + toString(customer.CustomerRisk.rating.reviewYears) + "Y") else customer.onboardingDate
+    }
+
+    // Service layer: the external contract
+    service onboardCustomer(customer: Customer): {
+        @ReturnNode(name: "Onboarding decision")
+        return: {
+            customerId: customer.customerId
+            outcome: customer.DueDiligence.verdict.outcome
+            dueDiligence: customer.DueDiligence.verdict.diligence
+            reason: customer.DueDiligence.verdict.reason
+            requests: customer.DueDiligence.requests
+            riskLevel: customer.CustomerRisk.rating.level
+            riskScore: customer.CustomerRisk.score
+            riskBreakdown: customer.CustomerRisk.breakdown
+            nextReview: customer.DueDiligence.nextReview
+            declaredOwnership: customer.declaredOwnership
+            significantOwners: customer.significantOwners
+            owners: for o in customer.owners return {
+                name: o.name
+                share: o.ownershipShare
+                significant: o.significant
+                pep: o.pep
+                mustVerify: o.OwnerScreening.mustVerify
+                failedChecks: o.OwnerScreening.failed
+            }
+        }
+    }
+
+    // Example execution
+    @Name("Fintech start-up")
+    workbook fintechBook: {
+        @InputNode(name: "Business customer")
+        customer: {
+            customerId: "C-88213"
+            legalName: "Baltic Pay Labs UAB"
+            country: "LT"
+            industryCode: "64.19"
+            incorporationDate: date("2025-08-18")
+            onboardingDate: date("2026-11-12")
+            expectedMonthlyVolume: 750000
+            owners: [
+                { name: "Rokas Vaitkus"; birthDate: date("1990-02-03"); nationality: "LT"; ownershipShare: 0.45; documentType: "passport"; documentNumber: "LT1234567"; documentExpiry: date("2031-02-02") }
+                { name: "Elena Moretti"; birthDate: date("1984-10-19"); nationality: "IT"; ownershipShare: 0.3; pep: true; documentType: "id-card"; documentNumber: "CA00123B"; documentExpiry: date("2029-06-30") }
+                { name: "Tomas Petrauskas"; birthDate: date("1995-07-14"); nationality: "LT"; ownershipShare: 0.15; documentType: "id-card"; documentNumber: "39507140" }
+            ]
+        }
+        @FunctionNode(name: "Onboarding decision")
+        decision: onboardCustomer(customer: customer)
+    }
+    @Name("Bakery with an expired passport")
+    workbook bakeryBook: {
+        @InputNode(name: "Business customer")
+        customer: {
+            customerId: "C-88214"
+            legalName: "Kepykla Saulute MB"
+            country: "LT"
+            industryCode: "10.71"
+            incorporationDate: date("2012-03-01")
+            onboardingDate: date("2026-11-12")
+            expectedMonthlyVolume: 40000
+            cashIntensive: true
+            owners: [
+                { name: "Asta Jankauskiene"; birthDate: date("1971-05-22"); nationality: "LT"; ownershipShare: 1; documentType: "passport"; documentNumber: "LT7654321"; documentExpiry: date("2026-10-31") }
+            ]
+        }
+        @FunctionNode(name: "Onboarding decision")
+        decision: onboardCustomer(customer: customer)
+    }
+}

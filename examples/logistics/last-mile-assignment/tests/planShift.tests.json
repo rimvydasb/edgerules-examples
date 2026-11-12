@@ -1,0 +1,192 @@
+{
+  "rows": [
+    {
+      "path": "shift.shiftId",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "shift.shiftDate",
+      "section": "inputs",
+      "order": 1,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "shift.couriers",
+      "section": "inputs",
+      "order": 2,
+      "type": "Courier[]",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "shift.parcels",
+      "section": "inputs",
+      "order": 3,
+      "type": "Parcel[]",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "status",
+      "section": "assertions",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "diagnosis",
+      "section": "assertions",
+      "order": 1,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "summary.assigned",
+      "section": "assertions",
+      "order": 2,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "summary.totalCost",
+      "section": "assertions",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "summary.objective",
+      "section": "assertions",
+      "order": 4,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "unassigned",
+      "section": "assertions",
+      "order": 5,
+      "type": "array",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "planShift-1",
+      "name": "Morning shift: every express parcel delivered",
+      "order": 0,
+      "inputs": {
+        "shift.shiftId": "SH-1",
+        "shift.shiftDate": "2026-11-17",
+        "shift.couriers": "[{\"courierId\":\"C1\",\"name\":\"Mia (bike)\",\"vehicle\":\"bike\",\"capacityKg\":25,\"shiftMinutes\":30,\"zones\":[\"center\"]},{\"courierId\":\"C2\",\"name\":\"Jonas (van)\",\"vehicle\":\"van\",\"capacityKg\":400,\"shiftMinutes\":45,\"zones\":[\"center\",\"north\",\"east\"]},{\"courierId\":\"C3\",\"name\":\"Ruta (cold van)\",\"vehicle\":\"cold-van\",\"capacityKg\":250,\"shiftMinutes\":40,\"zones\":[\"center\",\"north\",\"south\",\"east\"]}]",
+        "shift.parcels": "[{\"parcelId\":\"P01\",\"zone\":\"center\",\"weightKg\":1.2,\"priority\":\"express\"},{\"parcelId\":\"P02\",\"zone\":\"center\",\"weightKg\":3.5,\"priority\":\"standard\"},{\"parcelId\":\"P03\",\"zone\":\"center\",\"weightKg\":12,\"priority\":\"standard\"},{\"parcelId\":\"P04\",\"zone\":\"north\",\"weightKg\":4,\"priority\":\"express\"},{\"parcelId\":\"P05\",\"zone\":\"north\",\"weightKg\":22,\"priority\":\"standard\"},{\"parcelId\":\"P06\",\"zone\":\"east\",\"weightKg\":8,\"priority\":\"standard\"},{\"parcelId\":\"P07\",\"zone\":\"east\",\"weightKg\":2,\"priority\":\"express\",\"coldChain\":true},{\"parcelId\":\"P08\",\"zone\":\"south\",\"weightKg\":6,\"priority\":\"standard\"},{\"parcelId\":\"P09\",\"zone\":\"south\",\"weightKg\":3,\"priority\":\"express\"},{\"parcelId\":\"P10\",\"zone\":\"west\",\"weightKg\":15,\"priority\":\"standard\"},{\"parcelId\":\"P11\",\"zone\":\"center\",\"weightKg\":0.8,\"priority\":\"standard\"},{\"parcelId\":\"P12\",\"zone\":\"center\",\"weightKg\":2.4,\"priority\":\"express\"},{\"parcelId\":\"P13\",\"zone\":\"north\",\"weightKg\":5.5,\"priority\":\"standard\"},{\"parcelId\":\"P14\",\"zone\":\"west\",\"weightKg\":1,\"priority\":\"standard\",\"coldChain\":true}]"
+      },
+      "assertions": {
+        "status": "optimal",
+        "diagnosis": "",
+        "summary.assigned": "11",
+        "summary.totalCost": "",
+        "summary.objective": "560.8",
+        "unassigned": ""
+      }
+    },
+    {
+      "id": "planShift-2",
+      "name": "Two small parcels fit on one bike",
+      "order": 1,
+      "inputs": {
+        "shift.shiftId": "SH-1",
+        "shift.shiftDate": "2026-11-17",
+        "shift.couriers": "[{\"courierId\":\"B1\",\"name\":\"Bike\",\"vehicle\":\"bike\",\"capacityKg\":25,\"shiftMinutes\":20,\"zones\":[\"center\"]}]",
+        "shift.parcels": "[{\"parcelId\":\"A\",\"zone\":\"center\",\"weightKg\":3,\"priority\":\"standard\"},{\"parcelId\":\"B\",\"zone\":\"center\",\"weightKg\":3,\"priority\":\"standard\"}]"
+      },
+      "assertions": {
+        "status": "optimal",
+        "diagnosis": "",
+        "summary.assigned": "2",
+        "summary.totalCost": "10.4",
+        "summary.objective": "39.6",
+        "unassigned": "[]"
+      }
+    },
+    {
+      "id": "planShift-3",
+      "name": "Bike capacity full after one parcel",
+      "order": 2,
+      "inputs": {
+        "shift.shiftId": "SH-1",
+        "shift.shiftDate": "2026-11-17",
+        "shift.couriers": "[{\"courierId\":\"B1\",\"name\":\"Bike\",\"vehicle\":\"bike\",\"capacityKg\":5,\"shiftMinutes\":30,\"zones\":[\"center\"]}]",
+        "shift.parcels": "[{\"parcelId\":\"A\",\"zone\":\"center\",\"weightKg\":3,\"priority\":\"standard\"},{\"parcelId\":\"B\",\"zone\":\"center\",\"weightKg\":3,\"priority\":\"standard\"}]"
+      },
+      "assertions": {
+        "status": "optimal",
+        "diagnosis": "",
+        "summary.assigned": "1",
+        "summary.totalCost": "",
+        "summary.objective": "19.8",
+        "unassigned": ""
+      }
+    },
+    {
+      "id": "planShift-4",
+      "name": "Bike time full: the express parcel goes first",
+      "order": 3,
+      "inputs": {
+        "shift.shiftId": "SH-1",
+        "shift.shiftDate": "2026-11-17",
+        "shift.couriers": "[{\"courierId\":\"B1\",\"name\":\"Bike\",\"vehicle\":\"bike\",\"capacityKg\":25,\"shiftMinutes\":8,\"zones\":[\"center\"]}]",
+        "shift.parcels": "[{\"parcelId\":\"A\",\"zone\":\"center\",\"weightKg\":1,\"priority\":\"standard\"},{\"parcelId\":\"B\",\"zone\":\"center\",\"weightKg\":1,\"priority\":\"express\"}]"
+      },
+      "assertions": {
+        "status": "optimal",
+        "diagnosis": "",
+        "summary.assigned": "1",
+        "summary.totalCost": "",
+        "summary.objective": "94.8",
+        "unassigned": "[{\"parcelId\":\"A\",\"reason\":\"No capacity or time left in the shift\"}]"
+      }
+    },
+    {
+      "id": "planShift-5",
+      "name": "Cold-chain parcel without a cold van",
+      "order": 4,
+      "inputs": {
+        "shift.shiftId": "SH-1",
+        "shift.shiftDate": "2026-11-17",
+        "shift.couriers": "[{\"courierId\":\"V1\",\"name\":\"Van\",\"vehicle\":\"van\",\"capacityKg\":100,\"shiftMinutes\":60,\"zones\":[\"center\"]}]",
+        "shift.parcels": "[{\"parcelId\":\"A\",\"zone\":\"center\",\"weightKg\":2,\"priority\":\"express\",\"coldChain\":true}]"
+      },
+      "assertions": {
+        "status": "optimal",
+        "diagnosis": "",
+        "summary.assigned": "0",
+        "summary.totalCost": "",
+        "summary.objective": "",
+        "unassigned": "[{\"parcelId\":\"A\",\"reason\":\"No courier can carry it: The parcel needs a cold-chain van\"}]"
+      }
+    },
+    {
+      "id": "planShift-6",
+      "name": "Too many express parcels for the cold van",
+      "order": 5,
+      "inputs": {
+        "shift.shiftId": "SH-1",
+        "shift.shiftDate": "2026-11-17",
+        "shift.couriers": "[{\"courierId\":\"C1\",\"name\":\"Mia (bike)\",\"vehicle\":\"bike\",\"capacityKg\":25,\"shiftMinutes\":30,\"zones\":[\"center\"]},{\"courierId\":\"C3\",\"name\":\"Ruta (cold van)\",\"vehicle\":\"cold-van\",\"capacityKg\":250,\"shiftMinutes\":25,\"zones\":[\"center\",\"north\",\"south\",\"east\"]}]",
+        "shift.parcels": "[{\"parcelId\":\"X01\",\"zone\":\"south\",\"weightKg\":2,\"priority\":\"express\"},{\"parcelId\":\"X02\",\"zone\":\"south\",\"weightKg\":4,\"priority\":\"express\",\"coldChain\":true},{\"parcelId\":\"X03\",\"zone\":\"east\",\"weightKg\":1,\"priority\":\"express\"},{\"parcelId\":\"X04\",\"zone\":\"center\",\"weightKg\":1.5,\"priority\":\"express\"},{\"parcelId\":\"X05\",\"zone\":\"center\",\"weightKg\":3,\"priority\":\"standard\"}]"
+      },
+      "assertions": {
+        "status": "infeasible",
+        "diagnosis": "",
+        "summary.assigned": "0",
+        "summary.totalCost": "",
+        "summary.objective": "",
+        "unassigned": ""
+      }
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 2,
+  "layouts": {
+    "mixedReturnBook": {
+      "positions": {},
+      "outputs": [
+        {
+          "id": "output",
+          "label": "Outcome",
+          "source": {
+            "node": "mixedReturnBook.decision",
+            "handle": "out:outcome"
+          }
+        },
+        {
+          "id": "output2",
+          "label": "Items",
+          "source": {
+            "node": "mixedReturnBook.decision",
+            "handle": "out:items"
+          }
+        },
+        {
+          "id": "output3",
+          "label": "Total refund",
+          "source": {
+            "node": "mixedReturnBook.decision",
+            "handle": "out:totalRefund"
+          }
+        },
+        {
+          "id": "output4",
+          "label": "Refund by",
+          "source": {
+            "node": "mixedReturnBook.decision",
+            "handle": "out:refundBy"
+          }
+        }
+      ],
+      "charts": [
+        {
+          "id": "chart",
+          "label": "Value and refund by item",
+          "source": {
+            "node": "mixedReturnBook.decision",
+            "handle": "out:items"
+          },
+          "config": {
+            "kind": "bar",
+            "x": "sku",
+            "series": ["value", "refund"]
+          },
+          "size": {
+            "width": 520,
+            "height": 320
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "rows": [
+    {
+      "path": "size",
+      "section": "inputs",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "monthly",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "povertyLine-1",
+      "name": "One person",
+      "order": 0,
+      "inputs": {
+        "size": "1"
+      },
+      "assertions": {
+        "monthly": "1305"
+      }
+    },
+    {
+      "id": "povertyLine-2",
+      "name": "Eight persons",
+      "order": 1,
+      "inputs": {
+        "size": "8"
+      },
+      "assertions": {
+        "monthly": "4513"
+      }
+    },
+    {
+      "id": "povertyLine-3",
+      "name": "Ten persons",
+      "order": 2,
+      "inputs": {
+        "size": "10"
+      },
+      "assertions": {
+        "monthly": "5431"
+      }
+    }
+  ]
+}

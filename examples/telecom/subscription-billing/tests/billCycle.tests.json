@@ -1,0 +1,377 @@
+{
+  "rows": [
+    {
+      "path": "cycle.accountId",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "cycle.periodStart",
+      "section": "inputs",
+      "order": 1,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "cycle.periodEnd",
+      "section": "inputs",
+      "order": 2,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "cycle.country",
+      "section": "inputs",
+      "order": 3,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "cycle.customerType",
+      "section": "inputs",
+      "order": 4,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "cycle.vatId",
+      "section": "inputs",
+      "order": 5,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "cycle.carriedOverGb",
+      "section": "inputs",
+      "order": 6,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "cycle.usedGb",
+      "section": "inputs",
+      "order": 7,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "cycle.plans",
+      "section": "inputs",
+      "order": 8,
+      "type": "PlanPeriod[]",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "cycle.promotions",
+      "section": "inputs",
+      "order": 9,
+      "type": "Promotion[]",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "periodDays",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "net",
+      "section": "assertions",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "vatNote",
+      "section": "assertions",
+      "order": 2,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "vatAmount",
+      "section": "assertions",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "total",
+      "section": "assertions",
+      "order": 4,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "usage.includedGb",
+      "section": "assertions",
+      "order": 5,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "usage.overageGb",
+      "section": "assertions",
+      "order": 6,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "usage.rolloverGb",
+      "section": "assertions",
+      "order": 7,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "billCycle-1",
+      "name": "Full month within the allowance",
+      "order": 0,
+      "inputs": {
+        "cycle.accountId": "ACC-1",
+        "cycle.periodStart": "2027-01-01",
+        "cycle.periodEnd": "2027-01-31",
+        "cycle.country": "LT",
+        "cycle.customerType": "consumer",
+        "cycle.vatId": "",
+        "cycle.carriedOverGb": "0",
+        "cycle.usedGb": "12",
+        "cycle.plans": "[{\"plan\":\"plus\",\"startDate\":\"2027-01-01\",\"endDate\":\"2027-01-31\"}]",
+        "cycle.promotions": "[]"
+      },
+      "assertions": {
+        "periodDays": "31",
+        "net": "25",
+        "vatNote": "",
+        "vatAmount": "5.25",
+        "total": "30.25",
+        "usage.includedGb": "20",
+        "usage.overageGb": "0",
+        "usage.rolloverGb": "5"
+      }
+    },
+    {
+      "id": "billCycle-2",
+      "name": "Upgrade on 15 February with a welcome promotion",
+      "order": 1,
+      "inputs": {
+        "cycle.accountId": "ACC-1",
+        "cycle.periodStart": "2027-02-01",
+        "cycle.periodEnd": "2027-02-28",
+        "cycle.country": "LT",
+        "cycle.customerType": "consumer",
+        "cycle.vatId": "",
+        "cycle.carriedOverGb": "1.5",
+        "cycle.usedGb": "32.4",
+        "cycle.plans": "[{\"plan\":\"start\",\"startDate\":\"2027-02-01\",\"endDate\":\"2027-02-14\"},{\"plan\":\"plus\",\"startDate\":\"2027-02-15\",\"endDate\":\"2027-02-28\"}]",
+        "cycle.promotions": "[{\"code\":\"WELCOME20\",\"percent\":20,\"validUntil\":\"2027-02-10\"}]"
+      },
+      "assertions": {
+        "periodDays": "28",
+        "net": "49.57",
+        "vatNote": "",
+        "vatAmount": "10.41",
+        "total": "59.98",
+        "usage.includedGb": "14",
+        "usage.overageGb": "19",
+        "usage.rolloverGb": "0"
+      }
+    },
+    {
+      "id": "billCycle-3",
+      "name": "Usage exactly at the allowance",
+      "order": 2,
+      "inputs": {
+        "cycle.accountId": "ACC-1",
+        "cycle.periodStart": "2027-02-01",
+        "cycle.periodEnd": "2027-02-28",
+        "cycle.country": "LT",
+        "cycle.customerType": "consumer",
+        "cycle.vatId": "",
+        "cycle.carriedOverGb": "0",
+        "cycle.usedGb": "20",
+        "cycle.plans": "[{\"plan\":\"plus\",\"startDate\":\"2027-02-01\",\"endDate\":\"2027-02-28\"}]",
+        "cycle.promotions": "[]"
+      },
+      "assertions": {
+        "periodDays": "28",
+        "net": "25",
+        "vatNote": "",
+        "vatAmount": "",
+        "total": "",
+        "usage.includedGb": "",
+        "usage.overageGb": "0",
+        "usage.rolloverGb": "0"
+      }
+    },
+    {
+      "id": "billCycle-4",
+      "name": "0.1 GB over the allowance bills one GB",
+      "order": 3,
+      "inputs": {
+        "cycle.accountId": "ACC-1",
+        "cycle.periodStart": "2027-02-01",
+        "cycle.periodEnd": "2027-02-28",
+        "cycle.country": "LT",
+        "cycle.customerType": "consumer",
+        "cycle.vatId": "",
+        "cycle.carriedOverGb": "0",
+        "cycle.usedGb": "20.1",
+        "cycle.plans": "[{\"plan\":\"plus\",\"startDate\":\"2027-02-01\",\"endDate\":\"2027-02-28\"}]",
+        "cycle.promotions": "[]"
+      },
+      "assertions": {
+        "periodDays": "",
+        "net": "27",
+        "vatNote": "",
+        "vatAmount": "",
+        "total": "",
+        "usage.includedGb": "",
+        "usage.overageGb": "1",
+        "usage.rolloverGb": ""
+      }
+    },
+    {
+      "id": "billCycle-5",
+      "name": "Promotion ends in the middle of the cycle",
+      "order": 4,
+      "inputs": {
+        "cycle.accountId": "ACC-1",
+        "cycle.periodStart": "2027-03-01",
+        "cycle.periodEnd": "2027-03-31",
+        "cycle.country": "LT",
+        "cycle.customerType": "consumer",
+        "cycle.vatId": "",
+        "cycle.carriedOverGb": "0",
+        "cycle.usedGb": "5",
+        "cycle.plans": "[{\"plan\":\"plus\",\"startDate\":\"2027-03-01\",\"endDate\":\"2027-03-31\"}]",
+        "cycle.promotions": "[{\"code\":\"SPRING10\",\"percent\":10,\"validUntil\":\"2027-03-15\"}]"
+      },
+      "assertions": {
+        "periodDays": "",
+        "net": "23.79",
+        "vatNote": "",
+        "vatAmount": "5",
+        "total": "28.79",
+        "usage.includedGb": "",
+        "usage.overageGb": "",
+        "usage.rolloverGb": ""
+      }
+    },
+    {
+      "id": "billCycle-6",
+      "name": "Promotion expired before the cycle",
+      "order": 5,
+      "inputs": {
+        "cycle.accountId": "ACC-1",
+        "cycle.periodStart": "2027-03-01",
+        "cycle.periodEnd": "2027-03-31",
+        "cycle.country": "LT",
+        "cycle.customerType": "consumer",
+        "cycle.vatId": "",
+        "cycle.carriedOverGb": "0",
+        "cycle.usedGb": "5",
+        "cycle.plans": "[{\"plan\":\"plus\",\"startDate\":\"2027-03-01\",\"endDate\":\"2027-03-31\"}]",
+        "cycle.promotions": "[{\"code\":\"OLD10\",\"percent\":10,\"validUntil\":\"2027-02-20\"}]"
+      },
+      "assertions": {
+        "periodDays": "",
+        "net": "25",
+        "vatNote": "",
+        "vatAmount": "",
+        "total": "30.25",
+        "usage.includedGb": "",
+        "usage.overageGb": "",
+        "usage.rolloverGb": ""
+      }
+    },
+    {
+      "id": "billCycle-7",
+      "name": "EU business with a VAT ID: reverse charge",
+      "order": 6,
+      "inputs": {
+        "cycle.accountId": "ACC-1",
+        "cycle.periodStart": "2027-01-01",
+        "cycle.periodEnd": "2027-01-31",
+        "cycle.country": "DE",
+        "cycle.customerType": "business",
+        "cycle.vatId": "DE123456789",
+        "cycle.carriedOverGb": "0",
+        "cycle.usedGb": "3",
+        "cycle.plans": "[{\"plan\":\"plus\",\"startDate\":\"2027-01-01\",\"endDate\":\"2027-01-31\"}]",
+        "cycle.promotions": "[]"
+      },
+      "assertions": {
+        "periodDays": "",
+        "net": "25",
+        "vatNote": "EU business customer: reverse charge",
+        "vatAmount": "0",
+        "total": "25",
+        "usage.includedGb": "",
+        "usage.overageGb": "",
+        "usage.rolloverGb": ""
+      }
+    },
+    {
+      "id": "billCycle-8",
+      "name": "German business without a VAT ID",
+      "order": 7,
+      "inputs": {
+        "cycle.accountId": "ACC-1",
+        "cycle.periodStart": "2027-01-01",
+        "cycle.periodEnd": "2027-01-31",
+        "cycle.country": "DE",
+        "cycle.customerType": "business",
+        "cycle.vatId": "",
+        "cycle.carriedOverGb": "0",
+        "cycle.usedGb": "3",
+        "cycle.plans": "[{\"plan\":\"plus\",\"startDate\":\"2027-01-01\",\"endDate\":\"2027-01-31\"}]",
+        "cycle.promotions": "[]"
+      },
+      "assertions": {
+        "periodDays": "",
+        "net": "25",
+        "vatNote": "German VAT 19%",
+        "vatAmount": "4.75",
+        "total": "29.75",
+        "usage.includedGb": "",
+        "usage.overageGb": "",
+        "usage.rolloverGb": ""
+      }
+    },
+    {
+      "id": "billCycle-9",
+      "name": "Rollover capped by the current plan",
+      "order": 8,
+      "inputs": {
+        "cycle.accountId": "ACC-1",
+        "cycle.periodStart": "2027-01-01",
+        "cycle.periodEnd": "2027-01-31",
+        "cycle.country": "LT",
+        "cycle.customerType": "consumer",
+        "cycle.vatId": "",
+        "cycle.carriedOverGb": "2",
+        "cycle.usedGb": "1",
+        "cycle.plans": "[{\"plan\":\"start\",\"startDate\":\"2027-01-01\",\"endDate\":\"2027-01-31\"}]",
+        "cycle.promotions": "[]"
+      },
+      "assertions": {
+        "periodDays": "",
+        "net": "15",
+        "vatNote": "",
+        "vatAmount": "",
+        "total": "",
+        "usage.includedGb": "7",
+        "usage.overageGb": "",
+        "usage.rolloverGb": "2"
+      }
+    }
+  ]
+}

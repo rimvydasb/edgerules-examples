@@ -1,0 +1,165 @@
+{
+    // Structure layer: the household and its members
+    @Name("Household application")
+    type Household: { applicationId: <string>; applicationDate: <date>; monthlyRent: <number, default: 0, min: 0>; monthlyUtilities: <number, default: 0, min: 0>; assets: <number, min: 0>; members: <Member[]> }
+    @Name("Household member")
+    type Member: { owner household: <Household>; name: <string>; birthDate: <date>; disabled: <boolean, default: false>; student: <boolean, default: false>; earnedIncome: <number, default: 0, min: 0>; unearnedIncome: <number, default: 0, min: 0> }
+
+    // Facts layer: the terms of the program
+    facts MemberFacts(member: Member): {
+        age: age(member.birthDate, member.household.applicationDate)
+        elderly: age >= 60
+        studentChild: age < 18 and member.student
+        countedEarnedIncome: if studentChild then 0 else member.earnedIncome
+        countedIncome: countedEarnedIncome + member.unearnedIncome
+    }
+    facts HouseholdFacts(household: Household): {
+        size: count(household.members)
+        grossIncome: sum(for m in household.members return m.countedIncome)
+        earnedIncome: sum(for m in household.members return m.countedEarnedIncome)
+        elderlyOrDisabled: any(for m in household.members return m.elderly or m.disabled)
+        shelterCosts: household.monthlyRent + household.monthlyUtilities
+    }
+
+    // Knowledge layer: the program parameters and the tables by household size
+    func programRules(): {
+        grossLimitRate: 1.3
+        earnedIncomeDeduction: 0.2
+        benefitReductionRate: 0.3
+        assetLimit: 3000
+        assetLimitElderlyOrDisabled: 4500
+        shelterDeductionCap: 712
+        minimumBenefit: 24
+    }
+    func testOutcome(known: boolean, passed: boolean): if not(known) then "UNKNOWN" else if passed then "PASSED" else "FAILED"
+    ruleset povertyLine(size: number): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { size: 1 }, then: { monthly: 1305 } }
+            { when: { size: 2 }, then: { monthly: 1763 } }
+            { when: { size: 3 }, then: { monthly: 2221 } }
+            { when: { size: 4 }, then: { monthly: 2680 } }
+            { when: { size: 5 }, then: { monthly: 3138 } }
+            { when: { size: 6 }, then: { monthly: 3596 } }
+            { when: { size: 7 }, then: { monthly: 4055 } }
+            { when: { size: >= 8 }, then: { monthly: 4513 + 459 * (size - 8) } }
+        ]
+    }
+    ruleset maximumBenefit(size: number): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { size: 1 }, then: { monthly: 292 } }
+            { when: { size: 2 }, then: { monthly: 536 } }
+            { when: { size: 3 }, then: { monthly: 768 } }
+            { when: { size: 4 }, then: { monthly: 975 } }
+            { when: { size: 5 }, then: { monthly: 1158 } }
+            { when: { size: 6 }, then: { monthly: 1390 } }
+            { when: { size: 7 }, then: { monthly: 1536 } }
+            { when: { size: >= 8 }, then: { monthly: 1756 + 220 * (size - 8) } }
+        ]
+    }
+    ruleset standardDeduction(size: number): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { size: <= 3 }, then: { monthly: 204 } }
+            { when: { size: 4 }, then: { monthly: 217 } }
+            { when: { size: 5 }, then: { monthly: 254 } }
+        ]
+        default: { monthly: 291 }
+    }
+
+    // Decisions layer: the income test, the asset test, eligibility and the benefit
+    decision IncomeTest(household: Household): {
+        povertyLine: povertyLine(household.size).monthly
+        grossLimit: roundHalfUp(povertyLine * programRules().grossLimitRate, 0)
+        grossPassed: household.elderlyOrDisabled or household.grossIncome <= grossLimit
+        earnedIncomeDeduction: round(household.earnedIncome * programRules().earnedIncomeDeduction, 2)
+        standardDeduction: standardDeduction(household.size).monthly
+        adjustedIncome: max([0, household.grossIncome - earnedIncomeDeduction - standardDeduction])
+        excessShelterCosts: max([0, household.shelterCosts - adjustedIncome / 2])
+        shelterDeduction: if household.elderlyOrDisabled then excessShelterCosts else min([excessShelterCosts, programRules().shelterDeductionCap])
+        netIncome: max([0, adjustedIncome - shelterDeduction])
+        netPassed: netIncome <= povertyLine
+    }
+    decision AssetTest(household: Household): {
+        limit: if household.elderlyOrDisabled then programRules().assetLimitElderlyOrDisabled else programRules().assetLimit
+        passed: household.assets <= limit
+    }
+    decision Eligibility(household: Household): {
+        ageProofs: for m in household.members return if explain(m.age).status = "ok" then "" else "Proof of age for " + m.name
+        agesKnown: count(ageProofs[... != ""]) = 0
+        assetsKnown: explain(household.assets).status = "ok"
+        missingDocuments: append(ageProofs, if assetsKnown then "" else "Statement of assets")[... != ""]
+        tests: [
+            { test: "Gross income at most 130% of the poverty line, or an elderly or disabled member", outcome: testOutcome(agesKnown, household.IncomeTest.grossPassed) }
+            { test: "Net income at most the poverty line", outcome: testOutcome(agesKnown, household.IncomeTest.netPassed) }
+            { test: "Assets within the limit", outcome: testOutcome(agesKnown and assetsKnown, household.AssetTest.passed) }
+        ]
+        failedTests: for t in tests[outcome = "FAILED"] return t.test
+        status: if count(missingDocuments) > 0 then "PENDING" else if count(failedTests) = 0 then "ELIGIBLE" else "INELIGIBLE"
+    }
+    decision Benefit(household: Household): {
+        eligible: household.Eligibility.status = "ELIGIBLE"
+        maximum: maximumBenefit(household.size).monthly
+        calculated: floor(maximum - household.IncomeTest.netIncome * programRules().benefitReductionRate)
+        minimum: if household.size <= 2 then programRules().minimumBenefit else 0
+        monthly: if eligible then max([calculated, minimum, 0]) else 0
+    }
+
+    // Service layer: the external contract
+    service assessHousehold(household: Household): {
+        @ReturnNode(name: "Assessment")
+        return: {
+            applicationId: household.applicationId
+            status: household.Eligibility.status
+            monthlyBenefit: household.Benefit.monthly
+            missingDocuments: household.Eligibility.missingDocuments
+            failedTests: household.Eligibility.failedTests
+            tests: household.Eligibility.tests
+            profile: {
+                size: household.size
+                elderlyOrDisabled: household.elderlyOrDisabled
+                grossIncome: household.grossIncome
+                shelterCosts: household.shelterCosts
+            }
+            income: household.IncomeTest
+            members: for m in household.members return { name: m.name, age: m.age, countedIncome: m.countedIncome }
+        }
+    }
+
+    // Example execution
+    @Name("Family of four")
+    workbook familyBook: {
+        @InputNode(name: "Household application")
+        household: {
+            applicationId: "APP-2026-7781"
+            applicationDate: date("2026-11-02")
+            monthlyRent: 1150
+            monthlyUtilities: 240
+            assets: 1200
+            members: [
+                { name: "Maria Lopez"; birthDate: date("1988-03-09"); earnedIncome: 2100 }
+                { name: "Daniel Lopez"; birthDate: date("1986-07-21"); unearnedIncome: 450 }
+                { name: "Sofia Lopez"; birthDate: date("2010-01-15"); student: true; earnedIncome: 320 }
+                { name: "Leo Lopez"; birthDate: date("2017-09-30") }
+            ]
+        }
+        @FunctionNode(name: "Assessment")
+        assessment: assessHousehold(household: household)
+    }
+    @Name("Incomplete application")
+    workbook incompleteBook: {
+        @InputNode(name: "Household application")
+        household: {
+            applicationId: "APP-2026-7790"
+            applicationDate: date("2026-11-05")
+            monthlyRent: 700
+            members: [
+                { name: "Walter Brown"; birthDate: date("1957-02-14"); unearnedIncome: 1450 }
+                { name: "June Brown"; unearnedIncome: 600 }
+            ]
+        }
+        @FunctionNode(name: "Assessment")
+        assessment: assessHousehold(household: household)
+    }
+}

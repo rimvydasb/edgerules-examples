@@ -1,0 +1,30 @@
+{
+  "$schema": "../../../node_modules/edgerules-react/schemas/example.schema.json",
+  "kind": "EdgeRulesProject",
+  "formatVersion": 3,
+  "name": "Auto Insurance Premium",
+  "description": "Rates a car policy by its riskiest driver, the vehicle, the territory and the deductible, with dated rate tables and capped discounts",
+  "tags": ["insurance", "auto", "rating", "premium", "effective-dated", "decision-table"],
+  "model": {
+    "format": "dsl",
+    "source": "model/main.edge",
+    "name": "Auto Insurance Premium",
+    "version": "1.0.0"
+  },
+  "documentation": "docs/descriptions.json",
+  "tests": [
+    "tests/PolicyRating.tests.json",
+    "tests/autoQuote.tests.json",
+    "tests/driverAgeFactor.tests.json",
+    "tests/rateVersion.tests.json",
+    "tests/vehicleFactor.tests.json"
+  ],
+  "flow": "flow/layout.json",
+  "example": {
+    "industry": "insurance",
+    "level": "intermediate",
+    "features": ["type", "facts", "decision-table", "decision", "function", "service", "workbook", "chart"],
+    "engine": ">=0.2.7-alpha",
+    "authors": ["edgerules"]
+  }
+}

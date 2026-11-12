@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "byPath": {
+    "*": "Builds the invoice of one billing cycle of a mobile plan: pro rata plan changes, graduated data overage, promotions, data rollover and VAT",
+    "BillingCycle": "One billing cycle of an account: the period, the tax country, the customer type, the data used, the plan periods and the promotions",
+    "BillingCycleFacts": "The days of the cycle, the plan at the end of the cycle and whether the customer has a VAT ID",
+    "DataUsage": "The included data, the extra data billed by the started GB, the unused data, the rollover and the overage charge",
+    "Discounts": "The discount of every promotion, pro rata for its valid days",
+    "Invoice": "The invoice lines, the net amount, the VAT and the total",
+    "PlanPeriod": "A part of the cycle with one plan, from its start date to its end date",
+    "PlanPeriodFacts": "The days of a plan period and its share of the cycle",
+    "Promotion": "A promotion code with a discount percent on the recurring charges, valid until a date",
+    "PromotionFacts": "The days of the cycle on which the promotion is valid",
+    "RecurringCharges": "The monthly fee of every plan period, pro rata for its days",
+    "Tier": "A tier of the data overage price: the upper limit in GB and the price per GB",
+    "TierLine": "The GB billed in one tier and their amount",
+    "billCycle": "Bills one cycle and returns the invoice and the data usage",
+    "graduatedCharge": "Splits the extra GB over the price tiers, from the first tier up, and stops when no GB are left",
+    "overageTiers": "The graduated price of extra data",
+    "planCatalog": "The plans: monthly fee, included data and rollover cap",
+    "tiersBook": "The graduated price of 27 GB of extra data",
+    "tiersBook.charge": "The charge of every tier and the total",
+    "tiersBook.extraGb": "The extra data in GB",
+    "upgradeBook": "A consumer who upgrades from the Start plan to the Plus plan in the middle of February and uses more data than included",
+    "upgradeBook.cycle": "The billing cycle",
+    "upgradeBook.invoice": "The invoice of the cycle",
+    "vatTreatment": "The VAT rate by country, customer type and VAT ID, with reverse charge for EU business customers"
+  }
+}

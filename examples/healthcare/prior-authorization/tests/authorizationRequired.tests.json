@@ -1,0 +1,75 @@
+{
+  "rows": [
+    {
+      "path": "serviceCode",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "plan",
+      "section": "inputs",
+      "order": 1,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "required",
+      "section": "assertions",
+      "order": 0,
+      "type": "boolean",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "authorizationRequired-1",
+      "name": "Office visit",
+      "order": 0,
+      "inputs": {
+        "serviceCode": "99213",
+        "plan": "bronze"
+      },
+      "assertions": {
+        "required": "false"
+      }
+    },
+    {
+      "id": "authorizationRequired-2",
+      "name": "MRI on the gold plan",
+      "order": 1,
+      "inputs": {
+        "serviceCode": "70553",
+        "plan": "gold"
+      },
+      "assertions": {
+        "required": "false"
+      }
+    },
+    {
+      "id": "authorizationRequired-3",
+      "name": "MRI on the silver plan",
+      "order": 2,
+      "inputs": {
+        "serviceCode": "70553",
+        "plan": "silver"
+      },
+      "assertions": {
+        "required": "true"
+      }
+    },
+    {
+      "id": "authorizationRequired-4",
+      "name": "Biologic on the gold plan",
+      "order": 3,
+      "inputs": {
+        "serviceCode": "J0135",
+        "plan": "gold"
+      },
+      "assertions": {
+        "required": "true"
+      }
+    }
+  ]
+}

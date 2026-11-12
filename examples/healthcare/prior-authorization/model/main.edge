@@ -1,0 +1,137 @@
+{
+    // Structure layer: the request, the member and the treatment history
+    @Name("Authorization request")
+    type AuthRequest: { requestId: <string>; receivedAt: <datetime>; serviceDate: <date>; urgency: <string, enum: ["standard", "urgent"]>; serviceCode: <string>; diagnosisCodes: <string[]>; providerInNetwork: <boolean>; documents: <string[], default: []>; member: <Member>; treatments: <PriorTreatment[], default: []> }
+    @Name("Plan member")
+    type Member: { owner request: <AuthRequest>; memberId: <string>; plan: <string, enum: ["bronze", "silver", "gold"]>; birthDate: <date>; coverageStart: <date>; coverageEnd: <date> }
+    @Name("Prior treatment")
+    type PriorTreatment: { owner request: <AuthRequest>; therapy: <string>; startDate: <date>; endDate: <date>; outcome: <string, enum: ["failed", "intolerant", "effective", "ongoing"]> }
+
+    // Facts layer: the clinical and coverage terms
+    facts MemberFacts(member: Member): {
+        age: age(member.birthDate, member.request.serviceDate)
+        coverageEndsOn: coalesce(member.coverageEnd, date("9999-12-31"))
+        coveredOnServiceDate: member.request.serviceDate >= member.coverageStart and member.request.serviceDate <= coverageEndsOn
+    }
+    facts PriorTreatmentFacts(treatment: PriorTreatment): {
+        trialDays: (treatment.endDate - treatment.startDate).days + 1
+        unsuccessful: contains(["failed", "intolerant"], treatment.outcome)
+    }
+    facts AuthRequestFacts(request: AuthRequest): {
+        decisionDue: request.receivedAt + (if request.urgency = "urgent" then duration("PT72H") else duration("P14D"))
+    }
+
+    // Knowledge layer: the medical policy of each service and the verdict table
+    ruleset medicalPolicy(serviceCode: string): {
+        hitPolicy: "unique-match"
+        rules: [
+            { when: { serviceCode: "J0135" }, then: { service: "Adalimumab injection", indications: ["M05", "M06", "L40", "K50", "K51"], stepTherapy: "methotrexate", minTrialDays: 90, requiredDocuments: ["clinical-notes", "tb-screening"], validMonths: 12 } }
+            { when: { serviceCode: "70553" }, then: { service: "MRI of the brain", indications: ["G35", "G43", "C71", "R51"], stepTherapy: "", minTrialDays: 0, requiredDocuments: ["clinical-notes"], validMonths: 3 } }
+            { when: { serviceCode: "27447" }, then: { service: "Total knee replacement", indications: ["M17"], stepTherapy: "physical-therapy", minTrialDays: 84, requiredDocuments: ["clinical-notes", "imaging-report"], validMonths: 6 } }
+        ]
+    }
+    ruleset authorizationRequired(serviceCode: string, plan: string): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { serviceCode: "99213" }, then: { required: false } }
+            { when: { serviceCode: "70553", plan: "gold" }, then: { required: false } }
+        ]
+        default: { required: true }
+    }
+    ruleset authorizationVerdict(required: boolean, knownService: boolean, covered: boolean, inNetwork: boolean, missingDocuments: number, indicated: boolean, stepTherapyMet: boolean): {
+        hitPolicy: "first-match"
+        rules: [
+            { when: { required: false }, then: { status: "APPROVED", code: "NO_AUTH_REQUIRED", reason: "The plan does not require an authorization for this service" } }
+            { when: { knownService: false }, then: { status: "PENDED", code: "UNKNOWN_SERVICE", reason: "The service code is not in the medical policy; a reviewer must decide" } }
+            { when: { covered: false }, then: { status: "DENIED", code: "COVERAGE_INACTIVE", reason: "The member is not covered on the service date" } }
+            { when: { inNetwork: false }, then: { status: "DENIED", code: "OUT_OF_NETWORK", reason: "The provider is not in the network" } }
+            { when: { missingDocuments: > 0 }, then: { status: "PENDED", code: "MISSING_DOCUMENTS", reason: "Required documents are missing" } }
+            { when: { indicated: false }, then: { status: "DENIED", code: "NOT_INDICATED", reason: "No diagnosis matches an indication of the service" } }
+            { when: { stepTherapyMet: false }, then: { status: "DENIED", code: "STEP_THERAPY", reason: "The required first-line therapy was not tried long enough" } }
+        ]
+        default: { status: "APPROVED", code: "CRITERIA_MET", reason: "All medical criteria are met" }
+    }
+    func matchesIndication(diagnosisCodes: string[], indications: string[]): any(for code in diagnosisCodes return any(for prefix in indications return startsWith(code, prefix)))
+
+    // Decisions layer: coverage, clinical criteria and the verdict
+    decision CoverageCheck(request: AuthRequest): {
+        policy: medicalPolicy(request.serviceCode)
+        knownService: explain(policy).status = "ok"
+        required: authorizationRequired(request.serviceCode, request.member.plan).required
+        covered: request.member.coveredOnServiceDate
+    }
+    decision ClinicalReview(request: AuthRequest): {
+        policy: request.CoverageCheck.policy
+        indicated: matchesIndication(request.diagnosisCodes, policy.indications)
+        qualifyingTrials: for t in request.treatments return t.therapy = policy.stepTherapy and t.unsuccessful and (t.trialDays >= policy.minTrialDays or t.outcome = "intolerant")
+        stepTherapyMet: policy.stepTherapy = "" or any(qualifyingTrials)
+        missingDocuments: (for d in policy.requiredDocuments return if contains(request.documents, d) then "" else d)[... != ""]
+    }
+    decision AuthorizationDecision(request: AuthRequest): {
+        verdict: authorizationVerdict(request.CoverageCheck.required, request.CoverageCheck.knownService, request.CoverageCheck.covered, request.providerInNetwork, count(request.ClinicalReview.missingDocuments), request.ClinicalReview.indicated, request.ClinicalReview.stepTherapyMet)
+        approved: verdict.status = "APPROVED"
+        validUntil: if approved and request.CoverageCheck.required then request.serviceDate + period("P" + toString(request.CoverageCheck.policy.validMonths) + "M") else request.serviceDate
+    }
+
+    // Service layer: the external contract
+    service authorize(request: AuthRequest): {
+        @ReturnNode(name: "Authorization")
+        return: {
+            requestId: request.requestId
+            status: request.AuthorizationDecision.verdict.status
+            code: request.AuthorizationDecision.verdict.code
+            reason: request.AuthorizationDecision.verdict.reason
+            service: if request.CoverageCheck.knownService then request.CoverageCheck.policy.service else "Service " + request.serviceCode
+            validUntil: request.AuthorizationDecision.validUntil
+            decisionDue: request.decisionDue
+            missingDocuments: request.ClinicalReview.missingDocuments
+            checks: {
+                authorizationRequired: request.CoverageCheck.required
+                covered: request.CoverageCheck.covered
+                inNetwork: request.providerInNetwork
+                indicated: request.ClinicalReview.indicated
+                stepTherapyMet: request.ClinicalReview.stepTherapyMet
+            }
+            treatments: for t in request.treatments return { therapy: t.therapy, trialDays: t.trialDays, outcome: t.outcome }
+        }
+    }
+
+    // Example execution
+    @Name("Biologic for rheumatoid arthritis")
+    workbook biologicBook: {
+        @InputNode(name: "Authorization request")
+        request: {
+            requestId: "PA-2026-11-0042"
+            receivedAt: datetime("2026-11-12T09:30:00Z")
+            serviceDate: date("2026-11-20")
+            urgency: "standard"
+            serviceCode: "J0135"
+            diagnosisCodes: ["M05.79", "E11.9"]
+            providerInNetwork: true
+            documents: ["clinical-notes", "tb-screening", "lab-results"]
+            member: { memberId: "M-55102"; plan: "silver"; birthDate: date("1979-04-08"); coverageStart: date("2024-01-01") }
+            treatments: [
+                { therapy: "methotrexate"; startDate: date("2026-03-02"); endDate: date("2026-07-15"); outcome: "failed" }
+                { therapy: "prednisone"; startDate: date("2026-07-16"); endDate: date("2026-08-30"); outcome: "effective" }
+            ]
+        }
+        @FunctionNode(name: "Authorization")
+        decision: authorize(request: request)
+    }
+    @Name("Urgent MRI without notes")
+    workbook mriBook: {
+        @InputNode(name: "Authorization request")
+        request: {
+            requestId: "PA-2026-11-0057"
+            receivedAt: datetime("2026-11-12T16:45:00Z")
+            serviceDate: date("2026-11-13")
+            urgency: "urgent"
+            serviceCode: "70553"
+            diagnosisCodes: ["G35"]
+            providerInNetwork: true
+            member: { memberId: "M-61877"; plan: "bronze"; birthDate: date("1991-12-01"); coverageStart: date("2026-01-01"); coverageEnd: date("2026-12-31") }
+        }
+        @FunctionNode(name: "Authorization")
+        decision: authorize(request: request)
+    }
+}

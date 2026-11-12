@@ -1,0 +1,75 @@
+{
+  "rows": [
+    {
+      "path": "vehicle",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "zone",
+      "section": "inputs",
+      "order": 1,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "minutes",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "stopMinutes-1",
+      "name": "Bike in the center",
+      "order": 0,
+      "inputs": {
+        "vehicle": "bike",
+        "zone": "center"
+      },
+      "assertions": {
+        "minutes": "8"
+      }
+    },
+    {
+      "id": "stopMinutes-2",
+      "name": "Bike outside the center",
+      "order": 1,
+      "inputs": {
+        "vehicle": "bike",
+        "zone": "north"
+      },
+      "assertions": {
+        "minutes": "15"
+      }
+    },
+    {
+      "id": "stopMinutes-3",
+      "name": "Van in the center",
+      "order": 2,
+      "inputs": {
+        "vehicle": "van",
+        "zone": "center"
+      },
+      "assertions": {
+        "minutes": "14"
+      }
+    },
+    {
+      "id": "stopMinutes-4",
+      "name": "Van outside the center",
+      "order": 3,
+      "inputs": {
+        "vehicle": "cold-van",
+        "zone": "south"
+      },
+      "assertions": {
+        "minutes": "10"
+      }
+    }
+  ]
+}

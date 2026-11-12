@@ -1,0 +1,123 @@
+{
+  "rows": [
+    {
+      "path": "vehicle",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "zoneServed",
+      "section": "inputs",
+      "order": 1,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "coldChain",
+      "section": "inputs",
+      "order": 2,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "weightKg",
+      "section": "inputs",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "eligible",
+      "section": "assertions",
+      "order": 0,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "reason",
+      "section": "assertions",
+      "order": 1,
+      "type": "string",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "courierFit-1",
+      "name": "Zone not served",
+      "order": 0,
+      "inputs": {
+        "vehicle": "van",
+        "zoneServed": "false",
+        "coldChain": "false",
+        "weightKg": "1"
+      },
+      "assertions": {
+        "eligible": "false",
+        "reason": "The courier does not serve the zone"
+      }
+    },
+    {
+      "id": "courierFit-2",
+      "name": "Cold chain in a van",
+      "order": 1,
+      "inputs": {
+        "vehicle": "van",
+        "zoneServed": "true",
+        "coldChain": "true",
+        "weightKg": "1"
+      },
+      "assertions": {
+        "eligible": "false",
+        "reason": "The parcel needs a cold-chain van"
+      }
+    },
+    {
+      "id": "courierFit-3",
+      "name": "Cold chain in a cold van",
+      "order": 2,
+      "inputs": {
+        "vehicle": "cold-van",
+        "zoneServed": "true",
+        "coldChain": "true",
+        "weightKg": "1"
+      },
+      "assertions": {
+        "eligible": "true",
+        "reason": ""
+      }
+    },
+    {
+      "id": "courierFit-4",
+      "name": "5 kg on a bike",
+      "order": 3,
+      "inputs": {
+        "vehicle": "bike",
+        "zoneServed": "true",
+        "coldChain": "false",
+        "weightKg": "5"
+      },
+      "assertions": {
+        "eligible": "true",
+        "reason": ""
+      }
+    },
+    {
+      "id": "courierFit-5",
+      "name": "5.1 kg on a bike",
+      "order": 4,
+      "inputs": {
+        "vehicle": "bike",
+        "zoneServed": "true",
+        "coldChain": "false",
+        "weightKg": "5.1"
+      },
+      "assertions": {
+        "eligible": "false",
+        "reason": "The parcel is too heavy for a bike"
+      }
+    }
+  ]
+}

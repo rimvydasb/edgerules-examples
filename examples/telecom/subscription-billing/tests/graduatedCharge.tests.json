@@ -1,0 +1,100 @@
+{
+  "rows": [
+    {
+      "path": "units",
+      "section": "inputs",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "tiers",
+      "section": "inputs",
+      "order": 1,
+      "type": "Tier[]",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "total",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "lines",
+      "section": "assertions",
+      "order": 1,
+      "type": "TierLine[]",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "graduatedCharge-1",
+      "name": "No extra data",
+      "order": 0,
+      "inputs": {
+        "units": "0",
+        "tiers": "[{\"tier\":\"First 5 GB\",\"upToGb\":5,\"pricePerGb\":2},{\"tier\":\"Next 15 GB\",\"upToGb\":20,\"pricePerGb\":1.5},{\"tier\":\"Above 20 GB\",\"upToGb\":1000000,\"pricePerGb\":1}]"
+      },
+      "assertions": {
+        "total": "0",
+        "lines": "[]"
+      }
+    },
+    {
+      "id": "graduatedCharge-2",
+      "name": "Exactly the first tier",
+      "order": 1,
+      "inputs": {
+        "units": "5",
+        "tiers": "[{\"tier\":\"First 5 GB\",\"upToGb\":5,\"pricePerGb\":2},{\"tier\":\"Next 15 GB\",\"upToGb\":20,\"pricePerGb\":1.5},{\"tier\":\"Above 20 GB\",\"upToGb\":1000000,\"pricePerGb\":1}]"
+      },
+      "assertions": {
+        "total": "10",
+        "lines": "[{\"tier\":\"First 5 GB\",\"gb\":5,\"pricePerGb\":2,\"amount\":10}]"
+      }
+    },
+    {
+      "id": "graduatedCharge-3",
+      "name": "One GB into the second tier",
+      "order": 2,
+      "inputs": {
+        "units": "6",
+        "tiers": "[{\"tier\":\"First 5 GB\",\"upToGb\":5,\"pricePerGb\":2},{\"tier\":\"Next 15 GB\",\"upToGb\":20,\"pricePerGb\":1.5},{\"tier\":\"Above 20 GB\",\"upToGb\":1000000,\"pricePerGb\":1}]"
+      },
+      "assertions": {
+        "total": "11.5",
+        "lines": ""
+      }
+    },
+    {
+      "id": "graduatedCharge-4",
+      "name": "Exactly two tiers",
+      "order": 3,
+      "inputs": {
+        "units": "20",
+        "tiers": "[{\"tier\":\"First 5 GB\",\"upToGb\":5,\"pricePerGb\":2},{\"tier\":\"Next 15 GB\",\"upToGb\":20,\"pricePerGb\":1.5},{\"tier\":\"Above 20 GB\",\"upToGb\":1000000,\"pricePerGb\":1}]"
+      },
+      "assertions": {
+        "total": "32.5",
+        "lines": ""
+      }
+    },
+    {
+      "id": "graduatedCharge-5",
+      "name": "All three tiers",
+      "order": 4,
+      "inputs": {
+        "units": "27",
+        "tiers": "[{\"tier\":\"First 5 GB\",\"upToGb\":5,\"pricePerGb\":2},{\"tier\":\"Next 15 GB\",\"upToGb\":20,\"pricePerGb\":1.5},{\"tier\":\"Above 20 GB\",\"upToGb\":1000000,\"pricePerGb\":1}]"
+      },
+      "assertions": {
+        "total": "39.5",
+        "lines": "[{\"tier\":\"First 5 GB\",\"gb\":5,\"pricePerGb\":2,\"amount\":10},{\"tier\":\"Next 15 GB\",\"gb\":15,\"pricePerGb\":1.5,\"amount\":22.5},{\"tier\":\"Above 20 GB\",\"gb\":7,\"pricePerGb\":1,\"amount\":7}]"
+      }
+    }
+  ]
+}

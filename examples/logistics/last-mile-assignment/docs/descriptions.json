@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "byPath": {
+    "*": "Plans a delivery shift: rules decide which courier may carry which parcel, and a MILP optimisation assigns the parcels within capacity and shift time",
+    "Candidates": "Every parcel and courier pair, the eligible pairs, and the parcels and couriers that have at least one",
+    "Courier": "A courier: vehicle, capacity in kilograms, minutes in the shift and the zones served",
+    "Dispatch": "The optimised plan, the diagnosis when no plan exists, the route of every courier and the unassigned parcels",
+    "Pair": "One parcel and one courier: whether the courier may carry it, why not, the stop time, the cost and the value",
+    "Parcel": "A parcel: delivery zone, weight, priority and the cold-chain flag",
+    "ParcelFacts": "Whether the parcel is express, and the value of delivering it",
+    "Shift": "A delivery shift: the parcels to deliver and the couriers on duty",
+    "ShiftFacts": "The number of parcels, couriers and express parcels, and the total weight",
+    "candidatePair": "The fit, the stop time, the cost and the value of one parcel with one courier",
+    "courierFit": "Whether a courier may carry a parcel: zone, cold chain and bike weight",
+    "dispatchPlan": "The assignment of parcels to couriers with the largest value: each parcel at most once, every express parcel delivered, within capacity and time",
+    "dispatchPolicy": "The parameters of the dispatch policy: the delivery values, the bike weight limit and the cost per minute",
+    "morningBook": "A morning shift of 14 parcels for a bike, a van and a cold van",
+    "morningBook.plan": "The dispatch plan",
+    "morningBook.shift": "The delivery shift",
+    "peakBook": "A peak day with more express parcels than the cold van can deliver",
+    "peakBook.plan": "The dispatch plan, with the diagnosis of the solver",
+    "peakBook.shift": "The delivery shift",
+    "planShift": "Plans a shift and returns the routes, the unassigned parcels with reasons and a summary",
+    "stopCost": "The fixed cost of one stop by vehicle",
+    "stopMinutes": "The minutes of one stop by vehicle and zone"
+  }
+}

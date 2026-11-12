@@ -1,0 +1,29 @@
+{
+  "$schema": "../../../node_modules/edgerules-react/schemas/example.schema.json",
+  "kind": "EdgeRulesProject",
+  "formatVersion": 3,
+  "name": "Returns and Refund Policy",
+  "description": "Accepts or rejects every returned item by window, condition and fault, and calculates the restocking fee, the refund and the refund date",
+  "tags": ["retail", "returns", "refund", "explain", "business-days", "decision-table"],
+  "model": {
+    "format": "dsl",
+    "source": "model/main.edge",
+    "name": "Returns and Refund Policy",
+    "version": "1.0.0"
+  },
+  "documentation": "docs/descriptions.json",
+  "tests": [
+    "tests/ReturnDecision.tests.json",
+    "tests/restockingFee.tests.json",
+    "tests/returnRefund.tests.json",
+    "tests/returnWindow.tests.json"
+  ],
+  "flow": "flow/layout.json",
+  "example": {
+    "industry": "retail",
+    "level": "beginner",
+    "features": ["type", "facts", "decision-table", "decision", "function", "service", "workbook", "chart"],
+    "engine": ">=0.2.7-alpha",
+    "authors": ["edgerules"]
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "rows": [
+    {
+      "path": "age",
+      "section": "inputs",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "serviceYears",
+      "section": "inputs",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "days",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "vacationDays-1",
+      "name": "16 years old, 1 year of service",
+      "order": 0,
+      "inputs": {
+        "age": "16",
+        "serviceYears": "1"
+      },
+      "assertions": {
+        "days": "27"
+      }
+    },
+    {
+      "id": "vacationDays-2",
+      "name": "25 years old, 5 years of service",
+      "order": 1,
+      "inputs": {
+        "age": "25",
+        "serviceYears": "5"
+      },
+      "assertions": {
+        "days": "22"
+      }
+    },
+    {
+      "id": "vacationDays-3",
+      "name": "44 years old, 20 years of service",
+      "order": 2,
+      "inputs": {
+        "age": "44",
+        "serviceYears": "20"
+      },
+      "assertions": {
+        "days": "24"
+      }
+    },
+    {
+      "id": "vacationDays-4",
+      "name": "44 years old, 30 years of service",
+      "order": 3,
+      "inputs": {
+        "age": "44",
+        "serviceYears": "30"
+      },
+      "assertions": {
+        "days": "30"
+      }
+    },
+    {
+      "id": "vacationDays-5",
+      "name": "50 years old, 20 years of service",
+      "order": 4,
+      "inputs": {
+        "age": "50",
+        "serviceYears": "20"
+      },
+      "assertions": {
+        "days": "24"
+      }
+    },
+    {
+      "id": "vacationDays-6",
+      "name": "50 years old, 30 years of service",
+      "order": 5,
+      "inputs": {
+        "age": "50",
+        "serviceYears": "30"
+      },
+      "assertions": {
+        "days": "30"
+      }
+    },
+    {
+      "id": "vacationDays-7",
+      "name": "60 years old, 20 years of service",
+      "order": 6,
+      "inputs": {
+        "age": "60",
+        "serviceYears": "20"
+      },
+      "assertions": {
+        "days": "30"
+      }
+    },
+    {
+      "id": "vacationDays-8",
+      "name": "45 years old, no service yet",
+      "order": 7,
+      "inputs": {
+        "age": "45",
+        "serviceYears": "0"
+      },
+      "assertions": {
+        "days": "24"
+      }
+    },
+    {
+      "id": "vacationDays-9",
+      "name": "18 years old, 14 years of service",
+      "order": 8,
+      "inputs": {
+        "age": "18",
+        "serviceYears": "14"
+      },
+      "assertions": {
+        "days": "22"
+      }
+    }
+  ]
+}

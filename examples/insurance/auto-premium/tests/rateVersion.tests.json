@@ -1,0 +1,42 @@
+{
+  "rows": [
+    {
+      "path": "quoteDate",
+      "section": "inputs",
+      "order": 0,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "version",
+      "section": "assertions",
+      "order": 0,
+      "type": "string",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "rateVersion-1",
+      "name": "Last day of the 2026 rates",
+      "order": 0,
+      "inputs": {
+        "quoteDate": "2026-12-31"
+      },
+      "assertions": {
+        "version": "2026-01"
+      }
+    },
+    {
+      "id": "rateVersion-2",
+      "name": "First day of the 2027 rates",
+      "order": 1,
+      "inputs": {
+        "quoteDate": "2027-01-01"
+      },
+      "assertions": {
+        "version": "2027-01"
+      }
+    }
+  ]
+}

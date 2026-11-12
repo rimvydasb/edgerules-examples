@@ -1,0 +1,143 @@
+{
+  "rows": [
+    {
+      "path": "policy.policyId",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "policy.quoteDate",
+      "section": "inputs",
+      "order": 1,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "policy.coverage",
+      "section": "inputs",
+      "order": 2,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "policy.deductible",
+      "section": "inputs",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "policy.territory",
+      "section": "inputs",
+      "order": 4,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "policy.customerSince",
+      "section": "inputs",
+      "order": 5,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "policy.vehicle",
+      "section": "inputs",
+      "order": 6,
+      "type": "Vehicle",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "policy.drivers",
+      "section": "inputs",
+      "order": 7,
+      "type": "Driver[]",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "rateVersion",
+      "section": "assertions",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "base",
+      "section": "assertions",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "ratedDriver.name",
+      "section": "assertions",
+      "order": 2,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "ratedDriver.factor",
+      "section": "assertions",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "premium",
+      "section": "assertions",
+      "order": 4,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "PolicyRating-1",
+      "name": "Family policy rated by the teenage driver",
+      "order": 0,
+      "inputs": {
+        "policy.policyId": "Q-2026-0417",
+        "policy.quoteDate": "2026-11-12",
+        "policy.coverage": "comprehensive",
+        "policy.deductible": "500",
+        "policy.territory": "suburban",
+        "policy.customerSince": "2019-03-01",
+        "policy.vehicle": "{\"make\":\"Volvo XC60\",\"modelYear\":2024,\"value\":46000,\"safetyFeatures\":[\"automatic-emergency-braking\"]}",
+        "policy.drivers": "[{\"name\":\"Ingrid Larsen\",\"birthDate\":\"1979-02-11\",\"licenseDate\":\"1997-06-20\"},{\"name\":\"Erik Larsen\",\"birthDate\":\"1977-08-03\",\"licenseDate\":\"1995-04-02\",\"minorViolations\":1},{\"name\":\"Maja Larsen\",\"birthDate\":\"2007-05-30\",\"licenseDate\":\"2025-09-15\"}]"
+      },
+      "assertions": {
+        "rateVersion": "2026-01",
+        "base": "780",
+        "ratedDriver.name": "Maja Larsen",
+        "ratedDriver.factor": "2.28",
+        "premium": "2311.92"
+      }
+    },
+    {
+      "id": "PolicyRating-2",
+      "name": "Parents only: rated by the driver with a violation",
+      "order": 1,
+      "inputs": {
+        "policy.policyId": "Q-2026-0418",
+        "policy.quoteDate": "2026-11-12",
+        "policy.coverage": "comprehensive",
+        "policy.deductible": "500",
+        "policy.territory": "suburban",
+        "policy.customerSince": "2019-03-01",
+        "policy.vehicle": "{\"make\":\"Volvo XC60\",\"modelYear\":2024,\"value\":46000,\"safetyFeatures\":[]}",
+        "policy.drivers": "[{\"name\":\"Ingrid Larsen\",\"birthDate\":\"1979-02-11\",\"licenseDate\":\"1997-06-20\"},{\"name\":\"Erik Larsen\",\"birthDate\":\"1977-08-03\",\"licenseDate\":\"1995-04-02\",\"minorViolations\":1}]"
+      },
+      "assertions": {
+        "rateVersion": "",
+        "base": "",
+        "ratedDriver.name": "Erik Larsen",
+        "ratedDriver.factor": "1.1",
+        "premium": "1115.4"
+      }
+    }
+  ]
+}

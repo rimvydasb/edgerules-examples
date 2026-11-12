@@ -4,5 +4,47 @@
     "title": "Financial",
     "description": "Credit, pricing, repayment and sales planning",
     "icon": "bank"
+  },
+  {
+    "id": "insurance",
+    "title": "Insurance",
+    "description": "Rating, underwriting and premium calculation",
+    "icon": "shield"
+  },
+  {
+    "id": "healthcare",
+    "title": "Healthcare",
+    "description": "Coverage, prior authorization and clinical criteria",
+    "icon": "heart"
+  },
+  {
+    "id": "logistics",
+    "title": "Logistics",
+    "description": "Carrier selection, shipping cost and delivery planning",
+    "icon": "truck"
+  },
+  {
+    "id": "retail",
+    "title": "Retail",
+    "description": "Returns, refunds and customer policies",
+    "icon": "store"
+  },
+  {
+    "id": "telecom",
+    "title": "Telecom",
+    "description": "Subscription plans, usage billing and tax",
+    "icon": "wifi"
+  },
+  {
+    "id": "public",
+    "title": "Public Sector",
+    "description": "Benefit eligibility and rules as code",
+    "icon": "government"
+  },
+  {
+    "id": "hr",
+    "title": "Human Resources",
+    "description": "Leave, pay and employee policies",
+    "icon": "puzzle"
   }
 ]

@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 2,
+  "layouts": {
+    "biologicBook": {
+      "positions": {},
+      "outputs": [
+        {
+          "id": "output",
+          "label": "Status",
+          "source": {
+            "node": "biologicBook.decision",
+            "handle": "out:status"
+          }
+        },
+        {
+          "id": "output2",
+          "label": "Reason",
+          "source": {
+            "node": "biologicBook.decision",
+            "handle": "out:reason"
+          }
+        },
+        {
+          "id": "output3",
+          "label": "Checks",
+          "source": {
+            "node": "biologicBook.decision",
+            "handle": "out:checks"
+          }
+        },
+        {
+          "id": "output4",
+          "label": "Valid until",
+          "source": {
+            "node": "biologicBook.decision",
+            "handle": "out:validUntil"
+          }
+        }
+      ],
+      "charts": [
+        {
+          "id": "chart",
+          "label": "Prior treatments in days",
+          "source": {
+            "node": "biologicBook.decision",
+            "handle": "out:treatments"
+          },
+          "config": {
+            "kind": "bar",
+            "x": "therapy",
+            "series": ["trialDays"]
+          },
+          "size": {
+            "width": 480,
+            "height": 300
+          }
+        }
+      ]
+    },
+    "mriBook": {
+      "positions": {},
+      "outputs": [
+        {
+          "id": "output",
+          "label": "Status",
+          "source": {
+            "node": "mriBook.decision",
+            "handle": "out:status"
+          }
+        },
+        {
+          "id": "output2",
+          "label": "Missing documents",
+          "source": {
+            "node": "mriBook.decision",
+            "handle": "out:missingDocuments"
+          }
+        },
+        {
+          "id": "output3",
+          "label": "Decision due",
+          "source": {
+            "node": "mriBook.decision",
+            "handle": "out:decisionDue"
+          }
+        }
+      ]
+    }
+  }
+}

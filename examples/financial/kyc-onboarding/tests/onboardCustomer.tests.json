@@ -1,0 +1,352 @@
+{
+  "rows": [
+    {
+      "path": "customer.customerId",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "customer.legalName",
+      "section": "inputs",
+      "order": 1,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "customer.country",
+      "section": "inputs",
+      "order": 2,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "customer.industryCode",
+      "section": "inputs",
+      "order": 3,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "customer.incorporationDate",
+      "section": "inputs",
+      "order": 4,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "customer.onboardingDate",
+      "section": "inputs",
+      "order": 5,
+      "type": "date",
+      "present": true
+    },
+    {
+      "path": "customer.expectedMonthlyVolume",
+      "section": "inputs",
+      "order": 6,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "customer.cashIntensive",
+      "section": "inputs",
+      "order": 7,
+      "type": "boolean",
+      "present": true
+    },
+    {
+      "path": "customer.owners",
+      "section": "inputs",
+      "order": 8,
+      "type": "BeneficialOwner[]",
+      "present": true,
+      "custom": true
+    },
+    {
+      "path": "outcome",
+      "section": "assertions",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "dueDiligence",
+      "section": "assertions",
+      "order": 1,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "riskLevel",
+      "section": "assertions",
+      "order": 2,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "riskScore",
+      "section": "assertions",
+      "order": 3,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "requests",
+      "section": "assertions",
+      "order": 4,
+      "type": "string[]",
+      "present": true
+    },
+    {
+      "path": "nextReview",
+      "section": "assertions",
+      "order": 5,
+      "type": "date",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "onboardCustomer-1",
+      "name": "Fintech with a politically exposed owner",
+      "order": 0,
+      "inputs": {
+        "customer.customerId": "C-1",
+        "customer.legalName": "Test UAB",
+        "customer.country": "LT",
+        "customer.industryCode": "64.19",
+        "customer.incorporationDate": "2025-08-18",
+        "customer.onboardingDate": "2026-11-12",
+        "customer.expectedMonthlyVolume": "750000",
+        "customer.cashIntensive": "false",
+        "customer.owners": "[{\"name\":\"Rokas Vaitkus\",\"birthDate\":\"1980-01-01\",\"nationality\":\"LT\",\"ownershipShare\":0.45,\"pep\":false,\"sanctionsHit\":false,\"documentType\":\"passport\",\"documentNumber\":\"LT1234567\",\"documentExpiry\":\"2030-01-01\"},{\"name\":\"Elena Moretti\",\"birthDate\":\"1980-01-01\",\"nationality\":\"IT\",\"ownershipShare\":0.3,\"pep\":true,\"sanctionsHit\":false,\"documentType\":\"id-card\",\"documentNumber\":\"CA00123B\",\"documentExpiry\":\"2030-01-01\"},{\"name\":\"Tomas Petrauskas\",\"birthDate\":\"1980-01-01\",\"nationality\":\"LT\",\"ownershipShare\":0.15,\"pep\":false,\"sanctionsHit\":false,\"documentType\":\"passport\"}]"
+      },
+      "assertions": {
+        "outcome": "ACCEPT",
+        "dueDiligence": "ENHANCED",
+        "riskLevel": "HIGH",
+        "riskScore": "70",
+        "requests": "[]",
+        "nextReview": "2027-11-12"
+      }
+    },
+    {
+      "id": "onboardCustomer-2",
+      "name": "Low-risk company, valid documents",
+      "order": 1,
+      "inputs": {
+        "customer.customerId": "C-1",
+        "customer.legalName": "Test UAB",
+        "customer.country": "LT",
+        "customer.industryCode": "62.01",
+        "customer.incorporationDate": "2016-05-01",
+        "customer.onboardingDate": "2026-11-12",
+        "customer.expectedMonthlyVolume": "50000",
+        "customer.cashIntensive": "true",
+        "customer.owners": "[{\"name\":\"Asta Jankauskiene\",\"birthDate\":\"1980-01-01\",\"nationality\":\"LT\",\"ownershipShare\":1,\"pep\":false,\"sanctionsHit\":false,\"documentType\":\"passport\",\"documentNumber\":\"LT1234567\",\"documentExpiry\":\"2030-01-01\"}]"
+      },
+      "assertions": {
+        "outcome": "ACCEPT",
+        "dueDiligence": "SIMPLIFIED",
+        "riskLevel": "LOW",
+        "riskScore": "15",
+        "requests": "[]",
+        "nextReview": "2031-11-12"
+      }
+    },
+    {
+      "id": "onboardCustomer-3",
+      "name": "Medium risk: cash-intensive restaurant",
+      "order": 2,
+      "inputs": {
+        "customer.customerId": "C-1",
+        "customer.legalName": "Test UAB",
+        "customer.country": "LT",
+        "customer.industryCode": "56.10",
+        "customer.incorporationDate": "2016-05-01",
+        "customer.onboardingDate": "2026-11-12",
+        "customer.expectedMonthlyVolume": "120000",
+        "customer.cashIntensive": "true",
+        "customer.owners": "[{\"name\":\"Asta Jankauskiene\",\"birthDate\":\"1980-01-01\",\"nationality\":\"LT\",\"ownershipShare\":1,\"pep\":false,\"sanctionsHit\":false,\"documentType\":\"passport\",\"documentNumber\":\"LT1234567\",\"documentExpiry\":\"2030-01-01\"}]"
+      },
+      "assertions": {
+        "outcome": "ACCEPT",
+        "dueDiligence": "STANDARD",
+        "riskLevel": "MEDIUM",
+        "riskScore": "30",
+        "requests": "",
+        "nextReview": "2029-11-12"
+      }
+    },
+    {
+      "id": "onboardCustomer-4",
+      "name": "Passport expired before onboarding",
+      "order": 3,
+      "inputs": {
+        "customer.customerId": "C-1",
+        "customer.legalName": "Test UAB",
+        "customer.country": "LT",
+        "customer.industryCode": "62.01",
+        "customer.incorporationDate": "2016-05-01",
+        "customer.onboardingDate": "2026-11-12",
+        "customer.expectedMonthlyVolume": "50000",
+        "customer.cashIntensive": "false",
+        "customer.owners": "[{\"name\":\"Asta Jankauskiene\",\"birthDate\":\"1980-01-01\",\"nationality\":\"LT\",\"ownershipShare\":1,\"pep\":false,\"sanctionsHit\":false,\"documentType\":\"passport\",\"documentNumber\":\"LT1234567\",\"documentExpiry\":\"2026-10-31\"}]"
+      },
+      "assertions": {
+        "outcome": "PENDING",
+        "dueDiligence": "NONE",
+        "riskLevel": "",
+        "riskScore": "",
+        "requests": "[\"A valid identity document of Asta Jankauskiene\"]",
+        "nextReview": "2026-11-12"
+      }
+    },
+    {
+      "id": "onboardCustomer-5",
+      "name": "Passport expires on the onboarding day",
+      "order": 4,
+      "inputs": {
+        "customer.customerId": "C-1",
+        "customer.legalName": "Test UAB",
+        "customer.country": "LT",
+        "customer.industryCode": "62.01",
+        "customer.incorporationDate": "2016-05-01",
+        "customer.onboardingDate": "2026-11-12",
+        "customer.expectedMonthlyVolume": "50000",
+        "customer.cashIntensive": "false",
+        "customer.owners": "[{\"name\":\"Asta Jankauskiene\",\"birthDate\":\"1980-01-01\",\"nationality\":\"LT\",\"ownershipShare\":1,\"pep\":false,\"sanctionsHit\":false,\"documentType\":\"passport\",\"documentNumber\":\"LT1234567\",\"documentExpiry\":\"2026-11-12\"}]"
+      },
+      "assertions": {
+        "outcome": "PENDING",
+        "dueDiligence": "",
+        "riskLevel": "",
+        "riskScore": "",
+        "requests": "[\"A valid identity document of Asta Jankauskiene\"]",
+        "nextReview": ""
+      }
+    },
+    {
+      "id": "onboardCustomer-6",
+      "name": "Passport number too short",
+      "order": 5,
+      "inputs": {
+        "customer.customerId": "C-1",
+        "customer.legalName": "Test UAB",
+        "customer.country": "LT",
+        "customer.industryCode": "62.01",
+        "customer.incorporationDate": "2016-05-01",
+        "customer.onboardingDate": "2026-11-12",
+        "customer.expectedMonthlyVolume": "50000",
+        "customer.cashIntensive": "false",
+        "customer.owners": "[{\"name\":\"Asta Jankauskiene\",\"birthDate\":\"1980-01-01\",\"nationality\":\"LT\",\"ownershipShare\":1,\"pep\":false,\"sanctionsHit\":false,\"documentType\":\"passport\",\"documentNumber\":\"LT12345\",\"documentExpiry\":\"2030-01-01\"}]"
+      },
+      "assertions": {
+        "outcome": "PENDING",
+        "dueDiligence": "",
+        "riskLevel": "",
+        "riskScore": "",
+        "requests": "[\"A valid identity document of Asta Jankauskiene\"]",
+        "nextReview": ""
+      }
+    },
+    {
+      "id": "onboardCustomer-7",
+      "name": "Owner at exactly 25% must be verified, 24.9% need not",
+      "order": 6,
+      "inputs": {
+        "customer.customerId": "C-1",
+        "customer.legalName": "Test UAB",
+        "customer.country": "LT",
+        "customer.industryCode": "62.01",
+        "customer.incorporationDate": "2016-05-01",
+        "customer.onboardingDate": "2026-11-12",
+        "customer.expectedMonthlyVolume": "50000",
+        "customer.cashIntensive": "false",
+        "customer.owners": "[{\"name\":\"Main Owner\",\"birthDate\":\"1980-01-01\",\"nationality\":\"LT\",\"ownershipShare\":0.551,\"pep\":false,\"sanctionsHit\":false,\"documentType\":\"passport\",\"documentNumber\":\"LT1234567\",\"documentExpiry\":\"2030-01-01\"},{\"name\":\"Quarter Owner\",\"birthDate\":\"1980-01-01\",\"nationality\":\"LT\",\"ownershipShare\":0.25,\"pep\":false,\"sanctionsHit\":false,\"documentType\":\"passport\"},{\"name\":\"Small Owner\",\"birthDate\":\"1980-01-01\",\"nationality\":\"LT\",\"ownershipShare\":0.199,\"pep\":false,\"sanctionsHit\":false,\"documentType\":\"passport\"}]"
+      },
+      "assertions": {
+        "outcome": "PENDING",
+        "dueDiligence": "",
+        "riskLevel": "",
+        "riskScore": "",
+        "requests": "[\"A valid identity document of Quarter Owner\"]",
+        "nextReview": ""
+      }
+    },
+    {
+      "id": "onboardCustomer-8",
+      "name": "Less than 75% of the ownership declared",
+      "order": 7,
+      "inputs": {
+        "customer.customerId": "C-1",
+        "customer.legalName": "Test UAB",
+        "customer.country": "LT",
+        "customer.industryCode": "62.01",
+        "customer.incorporationDate": "2016-05-01",
+        "customer.onboardingDate": "2026-11-12",
+        "customer.expectedMonthlyVolume": "50000",
+        "customer.cashIntensive": "false",
+        "customer.owners": "[{\"name\":\"Asta Jankauskiene\",\"birthDate\":\"1980-01-01\",\"nationality\":\"LT\",\"ownershipShare\":0.6,\"pep\":false,\"sanctionsHit\":false,\"documentType\":\"passport\",\"documentNumber\":\"LT1234567\",\"documentExpiry\":\"2030-01-01\"}]"
+      },
+      "assertions": {
+        "outcome": "PENDING",
+        "dueDiligence": "",
+        "riskLevel": "",
+        "riskScore": "15",
+        "requests": "[\"An ownership structure chart\"]",
+        "nextReview": ""
+      }
+    },
+    {
+      "id": "onboardCustomer-9",
+      "name": "Minority owner on a sanctions list",
+      "order": 8,
+      "inputs": {
+        "customer.customerId": "C-1",
+        "customer.legalName": "Test UAB",
+        "customer.country": "LT",
+        "customer.industryCode": "62.01",
+        "customer.incorporationDate": "2016-05-01",
+        "customer.onboardingDate": "2026-11-12",
+        "customer.expectedMonthlyVolume": "50000",
+        "customer.cashIntensive": "false",
+        "customer.owners": "[{\"name\":\"Asta Jankauskiene\",\"birthDate\":\"1980-01-01\",\"nationality\":\"LT\",\"ownershipShare\":0.9,\"pep\":false,\"sanctionsHit\":false,\"documentType\":\"passport\",\"documentNumber\":\"LT1234567\",\"documentExpiry\":\"2030-01-01\"},{\"name\":\"Ivan Example\",\"birthDate\":\"1980-01-01\",\"nationality\":\"LT\",\"ownershipShare\":0.1,\"pep\":false,\"sanctionsHit\":true,\"documentType\":\"passport\",\"documentNumber\":\"LT1234567\",\"documentExpiry\":\"2030-01-01\"}]"
+      },
+      "assertions": {
+        "outcome": "REJECT",
+        "dueDiligence": "NONE",
+        "riskLevel": "",
+        "riskScore": "",
+        "requests": "",
+        "nextReview": "2026-11-12"
+      }
+    },
+    {
+      "id": "onboardCustomer-10",
+      "name": "Company in a prohibited country",
+      "order": 9,
+      "inputs": {
+        "customer.customerId": "C-1",
+        "customer.legalName": "Test UAB",
+        "customer.country": "KP",
+        "customer.industryCode": "62.01",
+        "customer.incorporationDate": "2016-05-01",
+        "customer.onboardingDate": "2026-11-12",
+        "customer.expectedMonthlyVolume": "50000",
+        "customer.cashIntensive": "false",
+        "customer.owners": "[{\"name\":\"Asta Jankauskiene\",\"birthDate\":\"1980-01-01\",\"nationality\":\"LT\",\"ownershipShare\":1,\"pep\":false,\"sanctionsHit\":false,\"documentType\":\"passport\",\"documentNumber\":\"LT1234567\",\"documentExpiry\":\"2030-01-01\"}]"
+      },
+      "assertions": {
+        "outcome": "REJECT",
+        "dueDiligence": "",
+        "riskLevel": "HIGH",
+        "riskScore": "105",
+        "requests": "",
+        "nextReview": ""
+      }
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "rows": [
+    {
+      "path": "industryCode",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "sector",
+      "section": "assertions",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "level",
+      "section": "assertions",
+      "order": 1,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "points",
+      "section": "assertions",
+      "order": 2,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "industryRisk-1",
+      "name": "Gambling",
+      "order": 0,
+      "inputs": {
+        "industryCode": "92.00"
+      },
+      "assertions": {
+        "sector": "Gambling",
+        "level": "HIGH",
+        "points": "25"
+      }
+    },
+    {
+      "id": "industryRisk-2",
+      "name": "Payment institution",
+      "order": 1,
+      "inputs": {
+        "industryCode": "64.19"
+      },
+      "assertions": {
+        "sector": "Financial services",
+        "level": "HIGH",
+        "points": ""
+      }
+    },
+    {
+      "id": "industryRisk-3",
+      "name": "Restaurant",
+      "order": 2,
+      "inputs": {
+        "industryCode": "56.10"
+      },
+      "assertions": {
+        "sector": "",
+        "level": "MEDIUM",
+        "points": "10"
+      }
+    },
+    {
+      "id": "industryRisk-4",
+      "name": "Software",
+      "order": 3,
+      "inputs": {
+        "industryCode": "62.01"
+      },
+      "assertions": {
+        "sector": "Other",
+        "level": "LOW",
+        "points": "0"
+      }
+    }
+  ]
+}

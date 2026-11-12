@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 2,
+  "layouts": {
+    "familyBook": {
+      "positions": {},
+      "outputs": [
+        {
+          "id": "output",
+          "label": "Underwriting",
+          "source": {
+            "node": "familyBook.quote",
+            "handle": "out:outcome"
+          }
+        },
+        {
+          "id": "output2",
+          "label": "Annual premium",
+          "source": {
+            "node": "familyBook.quote",
+            "handle": "out:annualPremium"
+          }
+        },
+        {
+          "id": "output3",
+          "label": "Discounts",
+          "source": {
+            "node": "familyBook.quote",
+            "handle": "out:discounts"
+          }
+        },
+        {
+          "id": "output4",
+          "label": "Drivers",
+          "source": {
+            "node": "familyBook.quote",
+            "handle": "out:drivers"
+          }
+        },
+        {
+          "id": "output5",
+          "label": "Requote in 2027",
+          "source": {
+            "node": "familyBook.requote",
+            "handle": "out:result"
+          }
+        }
+      ],
+      "charts": [
+        {
+          "id": "chart",
+          "label": "Rating factors",
+          "source": {
+            "node": "familyBook.quote",
+            "handle": "out:breakdown"
+          },
+          "config": {
+            "kind": "bar",
+            "x": "factor",
+            "series": ["value"]
+          },
+          "size": {
+            "width": 480,
+            "height": 300
+          }
+        },
+        {
+          "id": "chart2",
+          "label": "Driver factors",
+          "source": {
+            "node": "familyBook.quote",
+            "handle": "out:drivers"
+          },
+          "config": {
+            "kind": "bar",
+            "x": "name",
+            "series": ["ageFactor", "experienceFactor", "recordFactor", "factor"]
+          },
+          "size": {
+            "width": 520,
+            "height": 320
+          }
+        }
+      ]
+    }
+  }
+}

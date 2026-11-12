@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "byPath": {
+    "*": "Decides a prior authorization request of a health plan: authorization requirement, coverage, network, documents, diagnosis and step therapy",
+    "AuthRequest": "A prior authorization request: the service, the diagnoses, the provider network, the documents, the member and the prior treatments",
+    "AuthRequestFacts": "The date and time by which the payer must decide: 72 hours for urgent requests, 14 days otherwise",
+    "AuthorizationDecision": "The verdict and the last day of the authorization",
+    "ClinicalReview": "The diagnosis match, the step therapy trials and the missing documents",
+    "CoverageCheck": "The medical policy of the service, whether it is known, whether an authorization is required and whether the member is covered",
+    "Member": "The plan member: plan, birth date and coverage period; an open coverage has no end date",
+    "MemberFacts": "The age of the member and whether the coverage includes the service date",
+    "PriorTreatment": "A treatment that the member had before: therapy, start and end date, and outcome",
+    "PriorTreatmentFacts": "The length of a treatment in days and whether it failed or was not tolerated",
+    "authorizationRequired": "Whether the plan requires an authorization for the service",
+    "authorizationVerdict": "Combines the checks into APPROVED, DENIED or PENDED, with a reason code, in the order of the review",
+    "authorize": "Decides a request and returns the status, the reason, the checks, the validity and the deadline",
+    "biologicBook": "A biologic drug for rheumatoid arthritis after a failed methotrexate trial",
+    "biologicBook.decision": "The authorization decision",
+    "biologicBook.request": "The authorization request",
+    "matchesIndication": "Whether any diagnosis code starts with an indication prefix",
+    "medicalPolicy": "The medical policy of each service: the indications as ICD-10 prefixes, the step therapy, the documents and the validity",
+    "mriBook": "An urgent brain MRI that arrives without clinical notes",
+    "mriBook.decision": "The authorization decision",
+    "mriBook.request": "The authorization request"
+  }
+}

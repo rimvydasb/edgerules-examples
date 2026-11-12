@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 2,
+  "layouts": {
+    "tiersBook": {
+      "positions": {},
+      "outputs": [
+        {
+          "id": "output",
+          "label": "Total",
+          "source": {
+            "node": "tiersBook.charge",
+            "handle": "out:total"
+          }
+        }
+      ],
+      "charts": [
+        {
+          "id": "chart",
+          "label": "Charge by tier",
+          "source": {
+            "node": "tiersBook.charge",
+            "handle": "out:lines"
+          },
+          "config": {
+            "kind": "bar",
+            "x": "tier",
+            "series": ["gb", "amount"]
+          },
+          "size": {
+            "width": 480,
+            "height": 300
+          }
+        }
+      ]
+    },
+    "upgradeBook": {
+      "positions": {},
+      "outputs": [
+        {
+          "id": "output",
+          "label": "Invoice lines",
+          "source": {
+            "node": "upgradeBook.invoice",
+            "handle": "out:lines"
+          }
+        },
+        {
+          "id": "output2",
+          "label": "Total with VAT",
+          "source": {
+            "node": "upgradeBook.invoice",
+            "handle": "out:total"
+          }
+        },
+        {
+          "id": "output3",
+          "label": "Data usage",
+          "source": {
+            "node": "upgradeBook.invoice",
+            "handle": "out:usage"
+          }
+        }
+      ],
+      "charts": [
+        {
+          "id": "chart",
+          "label": "Invoice lines",
+          "source": {
+            "node": "upgradeBook.invoice",
+            "handle": "out:lines"
+          },
+          "config": {
+            "kind": "bar",
+            "x": "description",
+            "series": ["amount"]
+          },
+          "size": {
+            "width": 560,
+            "height": 320
+          }
+        }
+      ]
+    }
+  }
+}

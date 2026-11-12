@@ -1,0 +1,125 @@
+{
+  "rows": [
+    {
+      "path": "coverage",
+      "section": "inputs",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "ageYears",
+      "section": "inputs",
+      "order": 1,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "value",
+      "section": "inputs",
+      "order": 2,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "factor",
+      "section": "assertions",
+      "order": 0,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "vehicleFactor-1",
+      "name": "Liability ignores the vehicle",
+      "order": 0,
+      "inputs": {
+        "coverage": "liability",
+        "ageYears": "1",
+        "value": "90000"
+      },
+      "assertions": {
+        "factor": "1"
+      }
+    },
+    {
+      "id": "vehicleFactor-2",
+      "name": "Luxury vehicle",
+      "order": 1,
+      "inputs": {
+        "coverage": "comprehensive",
+        "ageYears": "1",
+        "value": "90000"
+      },
+      "assertions": {
+        "factor": "1.5"
+      }
+    },
+    {
+      "id": "vehicleFactor-3",
+      "name": "Expensive new vehicle",
+      "order": 2,
+      "inputs": {
+        "coverage": "comprehensive",
+        "ageYears": "3",
+        "value": "46000"
+      },
+      "assertions": {
+        "factor": "1.3"
+      }
+    },
+    {
+      "id": "vehicleFactor-4",
+      "name": "Expensive older vehicle",
+      "order": 3,
+      "inputs": {
+        "coverage": "standard",
+        "ageYears": "4",
+        "value": "46000"
+      },
+      "assertions": {
+        "factor": "1.2"
+      }
+    },
+    {
+      "id": "vehicleFactor-5",
+      "name": "Mid-range vehicle",
+      "order": 4,
+      "inputs": {
+        "coverage": "standard",
+        "ageYears": "6",
+        "value": "20000"
+      },
+      "assertions": {
+        "factor": "1"
+      }
+    },
+    {
+      "id": "vehicleFactor-6",
+      "name": "Old cheap vehicle",
+      "order": 5,
+      "inputs": {
+        "coverage": "standard",
+        "ageYears": "12",
+        "value": "8000"
+      },
+      "assertions": {
+        "factor": "0.8"
+      }
+    },
+    {
+      "id": "vehicleFactor-7",
+      "name": "Cheap vehicle",
+      "order": 6,
+      "inputs": {
+        "coverage": "standard",
+        "ageYears": "5",
+        "value": "12000"
+      },
+      "assertions": {
+        "factor": "0.9"
+      }
+    }
+  ]
+}

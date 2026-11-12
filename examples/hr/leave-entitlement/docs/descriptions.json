@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "byPath": {
+    "*": "Calculates the annual leave of every employee from age and years of service, with a pro rata share for part-time employees and new hires and a capped carry-over",
+    "Employee": "One employee: birth date, hire date, contract, FTE, carried-over days and taken days",
+    "EmployeeFacts": "The terms of the policy for one employee: age, years of service, months in service and working time",
+    "LeaveBalance": "The carry-over within the cap, the forfeited days, the available days and the remaining days",
+    "LeaveEntitlement": "The vacation days of the employee, pro rata for part-time work and for months in service, rounded up to half days",
+    "LeaveYear": "The leave year: the calculation date and the employees",
+    "Profile": "An age and a number of service years, to look up in the vacation days table",
+    "benchmarkBook": "The seven cases of the vacation days benchmark",
+    "benchmarkBook.days": "The vacation days of each benchmark case",
+    "benchmarkBook.profiles": "The ages and the service years of the benchmark",
+    "extraDays": "The vacation days table: every matching rule adds extra days to the base days",
+    "halfDaysUp": "Rounds a number of days up to the next half day",
+    "leaveEntitlements": "The entitlement and the balance of every employee of the leave year, and a team summary",
+    "leavePolicy": "The parameters of the leave policy: the base days and the carry-over cap",
+    "teamBook": "The leave of a team of six employees in 2026",
+    "teamBook.entitlements": "The entitlement and the balance of every employee",
+    "teamBook.leaveYear": "The calculation date and the employees",
+    "vacationDays": "The base days plus the extra days of every matching rule",
+    "vacationDaysTable": "The vacation days of each profile"
+  }
+}

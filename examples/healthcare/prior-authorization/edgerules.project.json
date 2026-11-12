@@ -1,0 +1,24 @@
+{
+  "$schema": "../../../node_modules/edgerules-react/schemas/example.schema.json",
+  "kind": "EdgeRulesProject",
+  "formatVersion": 3,
+  "name": "Insurance Prior Authorization",
+  "description": "Decides a prior authorization request: coverage, network, required documents, diagnosis and step therapy, with the decision deadline",
+  "tags": ["healthcare", "prior-authorization", "step-therapy", "icd-10", "explain", "decision-table"],
+  "model": {
+    "format": "dsl",
+    "source": "model/main.edge",
+    "name": "Insurance Prior Authorization",
+    "version": "1.0.0"
+  },
+  "documentation": "docs/descriptions.json",
+  "tests": ["tests/authorizationRequired.tests.json", "tests/authorize.tests.json"],
+  "flow": "flow/layout.json",
+  "example": {
+    "industry": "healthcare",
+    "level": "advanced",
+    "features": ["type", "facts", "decision-table", "decision", "function", "service", "workbook", "chart"],
+    "engine": ">=0.2.7-alpha",
+    "authors": ["edgerules"]
+  }
+}

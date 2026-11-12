@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "byPath": {
+    "*": "Onboards a business customer: screens every beneficial owner, scores the money laundering risk and decides REJECT, PENDING or ACCEPT with a due diligence level",
+    "BeneficialOwner": "A beneficial owner: identity, ownership share, PEP and sanctions flags, and the identity document",
+    "Customer": "A business customer: country, industry code, incorporation and onboarding dates, expected volume and beneficial owners",
+    "CustomerFacts": "The age of the company, the declared ownership and the number of significant owners",
+    "CustomerRisk": "The country, sector and scorecard points of the customer, the total score and the risk level",
+    "DueDiligence": "The open requests, the sanctions check, the verdict and the date of the next review",
+    "OwnerFacts": "The age of the owner, whether the share is significant, whether the owner is foreign, and whether the identity document is provided, valid and well-formed",
+    "OwnerScreening": "The screening checks of one owner, whether the owner must be verified, and whether a valid document is missing",
+    "bakeryBook": "A bakery whose only owner has an expired passport",
+    "bakeryBook.customer": "The business customer",
+    "bakeryBook.decision": "The onboarding decision",
+    "countryRisk": "The risk level and points of the country of the customer",
+    "dueDiligence": "The onboarding outcome and the due diligence level, from the most severe finding down",
+    "fintechBook": "A young payment company with a politically exposed owner",
+    "fintechBook.customer": "The business customer",
+    "fintechBook.decision": "The onboarding decision",
+    "industryRisk": "The risk level and points of the sector, by the prefix of the industry code",
+    "kycPolicy": "The parameters of the KYC policy: the significant share and the minimum declared ownership",
+    "onboardCustomer": "Decides the onboarding of a business customer and returns the verdict, the risk, the requests and the owners",
+    "riskLevel": "The risk level of a score and the years until the next review",
+    "riskScorecard": "The risk factors of the customer and their points"
+  }
+}

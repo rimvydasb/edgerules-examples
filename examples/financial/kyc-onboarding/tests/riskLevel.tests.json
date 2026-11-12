@@ -1,0 +1,75 @@
+{
+  "rows": [
+    {
+      "path": "score",
+      "section": "inputs",
+      "order": 0,
+      "type": "number",
+      "present": true
+    },
+    {
+      "path": "level",
+      "section": "assertions",
+      "order": 0,
+      "type": "string",
+      "present": true
+    },
+    {
+      "path": "reviewYears",
+      "section": "assertions",
+      "order": 1,
+      "type": "number",
+      "present": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "riskLevel-1",
+      "name": "29 points",
+      "order": 0,
+      "inputs": {
+        "score": "29"
+      },
+      "assertions": {
+        "level": "LOW",
+        "reviewYears": "5"
+      }
+    },
+    {
+      "id": "riskLevel-2",
+      "name": "30 points",
+      "order": 1,
+      "inputs": {
+        "score": "30"
+      },
+      "assertions": {
+        "level": "MEDIUM",
+        "reviewYears": "3"
+      }
+    },
+    {
+      "id": "riskLevel-3",
+      "name": "59 points",
+      "order": 2,
+      "inputs": {
+        "score": "59"
+      },
+      "assertions": {
+        "level": "MEDIUM",
+        "reviewYears": "3"
+      }
+    },
+    {
+      "id": "riskLevel-4",
+      "name": "60 points",
+      "order": 3,
+      "inputs": {
+        "score": "60"
+      },
+      "assertions": {
+        "level": "HIGH",
+        "reviewYears": "1"
+      }
+    }
+  ]
+}
